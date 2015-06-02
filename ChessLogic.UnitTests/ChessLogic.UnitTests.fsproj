@@ -60,6 +60,7 @@
     <Error Condition="!Exists('..\packages\xunit.core.2.0.0\build\portable-net45+win+wpa81+wp80+monotouch+monoandroid+Xamarin.iOS\xunit.core.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\xunit.core.2.0.0\build\portable-net45+win+wpa81+wp80+monotouch+monoandroid+Xamarin.iOS\xunit.core.props'))" />
   </Target>
   <ItemGroup>
+    <Compile Include="DumpTests.fs" />
     <Compile Include="Parsing.fs" />
     <Compile Include="FenPrinterTests.fs" />
     <Compile Include="FenParserTests.fs" />

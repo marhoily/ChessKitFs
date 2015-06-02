@@ -51,6 +51,7 @@
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
     <Compile Include="Definitions.fs" />
+    <Compile Include="Dump.fs" />
     <Compile Include="FenPrinter.fs" />
     <Compile Include="Parsing.fs" />
     <Compile Include="FenParser.fs" />
