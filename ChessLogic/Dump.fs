@@ -4,25 +4,25 @@ open System.Text
 open Definitions
 
 let Print(board : Position) = 
-    let sb = new StringBuilder(17 * 36)
-    sb.AppendLine(" ╔═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╗") |> ignore
-    sb.AppendLine("8║ 1 │ 2 │ 3 │ 4 │ 5 │ 6 │ 7 │ 8 ║") |> ignore
-    sb.AppendLine(" ╟───┼───┼───┼───┼───┼───┼───┼───╢") |> ignore
-    sb.AppendLine("7║ 1 │ 2 │ 3 │ 4 │ 5 │ 6 │ 7 │ 8 ║") |> ignore
-    sb.AppendLine(" ╟───┼───┼───┼───┼───┼───┼───┼───╢") |> ignore
-    sb.AppendLine("6║ 1 │ 2 │ 3 │ 4 │ 5 │ 6 │ 7 │ 8 ║") |> ignore
-    sb.AppendLine(" ╟───┼───┼───┼───┼───┼───┼───┼───╢") |> ignore
-    sb.AppendLine("5║ 1 │ 2 │ 3 │ 4 │ 5 │ 6 │ 7 │ 8 ║") |> ignore
-    sb.AppendLine(" ╟───┼───┼───┼───┼───┼───┼───┼───╢") |> ignore
-    sb.AppendLine("4║ 1 │ 2 │ 3 │ 4 │ 5 │ 6 │ 7 │ 8 ║") |> ignore
-    sb.AppendLine(" ╟───┼───┼───┼───┼───┼───┼───┼───╢") |> ignore
-    sb.AppendLine("3║ 1 │ 2 │ 3 │ 4 │ 5 │ 6 │ 7 │ 8 ║") |> ignore
-    sb.AppendLine(" ╟───┼───┼───┼───┼───┼───┼───┼───╢") |> ignore
-    sb.AppendLine("2║ 1 │ 2 │ 3 │ 4 │ 5 │ 6 │ 7 │ 8 ║") |> ignore
-    sb.AppendLine(" ╟───┼───┼───┼───┼───┼───┼───┼───╢") |> ignore
-    sb.AppendLine("1║ 1 │ 2 │ 3 │ 4 │ 5 │ 6 │ 7 │ 8 ║") |> ignore
-    sb.AppendLine(" ╚═══╧═══╧═══╧═══╧═══╧═══╧═══╧═══╝") |> ignore
-    sb.AppendLine("   A   B   C   D   E   F   G   H  ") |> ignore
+    let sb = 
+        new StringBuilder(" ╔═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╗\r\n" 
+                        + "8║   │ r │   │   │ k │   │   │ r ║\r\n" 
+                        + " ╟───┼───┼───┼───┼───┼───┼───┼───╢\r\n" 
+                        + "7║ p │   │   │ n │   │ p │   │ p ║\r\n" 
+                        + " ╟───┼───┼───┼───┼───┼───┼───┼───╢\r\n" 
+                        + "6║ n │ p │   │   │   │   │ p │   ║\r\n" 
+                        + " ╟───┼───┼───┼───┼───┼───┼───┼───╢\r\n" 
+                        + "5║   │   │ p │   │ B │   │ b │   ║\r\n" 
+                        + " ╟───┼───┼───┼───┼───┼───┼───┼───╢\r\n" 
+                        + "4║   │   │   │   │   │   │   │ P ║\r\n" 
+                        + " ╟───┼───┼───┼───┼───┼───┼───┼───╢\r\n" 
+                        + "3║   │ P │   │ P │   │   │   │   ║\r\n" 
+                        + " ╟───┼───┼───┼───┼───┼───┼───┼───╢\r\n" 
+                        + "2║ P │   │ P │ N │   │   │   │ P ║\r\n" 
+                        + " ╟───┼───┼───┼───┼───┼───┼───┼───╢\r\n" 
+                        + "1║ R │ N │ Q │   │   │ R │ K │   ║\r\n" 
+                        + " ╚═══╧═══╧═══╧═══╧═══╧═══╧═══╧═══╝\r\n" 
+                        + "   A   B   C   D   E   F   G   H  \r\n")
     for position = 0 to 63 do
         let piece = board.Placement.[position]
         let file = position % 8
