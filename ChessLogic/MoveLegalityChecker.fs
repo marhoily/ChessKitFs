@@ -3,6 +3,7 @@
 open CoordinateNotation
 open Definitions
 open IsAttackedBy
+open System.Collections.Generic
 
 type ObservationHint = 
     | Capture
@@ -107,9 +108,16 @@ let ValidateMove move position =
     // Can replace with List.contains in F# 4.0
     let contains item = List.exists (fun i -> i = item)
     // Can replace with List.except in F# 4.0
-    let except list2 list1 = 
-        Set.difference (Set.ofList list1) (Set.ofList list2)
-        |> List.ofSeq
+    let except (itemsToExclude: 'T list) list =
+        match box itemsToExclude with
+        | null -> nullArg "itemsToExclude"
+        | _ -> ()
+
+        match list with
+        | [] -> list
+        | _ ->
+            let cached = new HashSet<'T>(itemsToExclude, HashIdentity.Structural)
+            list |> List.filter cached.Add
 
     let hasNoEnPassant = 
         { eh with Observations = [ Capture; EnPassant ]
