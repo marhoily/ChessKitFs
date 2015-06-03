@@ -107,7 +107,7 @@ let ValidateMove move position =
     // Can replace with List.contains in F# 4.0
     let contains item = List.exists (fun i -> i = item)
     // Can replace with List.except in F# 4.0
-    let except list1 list2 = 
+    let except list2 list1 = 
         Set.difference (Set.ofList list1) (Set.ofList list2)
         |> List.ofSeq
 

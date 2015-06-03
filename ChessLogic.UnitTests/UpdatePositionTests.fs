@@ -52,14 +52,14 @@ let BlackKingCastling() =
            "1r3rk1/p2n1p1p/np4p1/2p1B1b1/7P/1P1P4/P1PN3P/RNQ2RK1 w - - 1 19"
 
 [<Fact>]
-let ``Kill WhiteKing catling``() = 
+let ``Kill WhiteKing castling``() = 
     "rnbqkb1r/p2ppp1p/6pn/1pp5/4N2P/7N/PPPPPPP1/R1BQKB1R w KQkq - 2 5"
     |> after "h1-g1"
     |> should equal 
            "rnbqkb1r/p2ppp1p/6pn/1pp5/4N2P/7N/PPPPPPP1/R1BQKBR1 b Qkq - 3 5"
 
 [<Fact>]
-let ``Kill BlackQueen catling``() = 
+let ``Kill BlackQueen castling``() = 
     "r1b1kb1r/p2p3p/n6n/q1p1pp1P/1p2N1p1/PQP3PN/1P1PPP2/R1B1KBR1 b Qkq - 1 12"
     |> after "a8-b8"
     |> should equal 
