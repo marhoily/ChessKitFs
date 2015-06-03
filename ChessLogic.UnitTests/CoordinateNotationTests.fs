@@ -38,6 +38,6 @@ let ``works with a1-h8=Q``() = positive "a1-h8=Q"
 [<Fact>]
 let ``meaningful error for a1h8``() = negative "a1h8" "Error in Ln: 1 Col: 3
 a1h8
-  ^*
+  ^
 Expecting: '-' or 'x'
 "
