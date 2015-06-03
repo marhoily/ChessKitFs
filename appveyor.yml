@@ -1,9 +1,21 @@
+version: 0.5.0.{build}
+
+assembly_info:
+  patch: true
+  file: AssemblyInfo.*
+  assembly_version: "{version}"
+  assembly_file_version: "{version}"
+  assembly_informational_version: "{version}"
+
 configuration:
   - Release
 
 before_build:
   nuget restore
 
+after_build:
+c:\Users\Ilya\Source\Repos\ChessKitFs\ChessLogic>nuget pack ChessLogic.nuspec -V
+ersion 0.5.0.19
 test_script:
   - xunit.console.clr4.exe ChessLogic.UnitTests\bin\release\Chess.UnitTests.dll /appveyor
 
