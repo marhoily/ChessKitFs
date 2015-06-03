@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/20euy0r0xxsp19fx?svg=true)](https://ci.appveyor.com/project/marhoily/chesskitfs)
+
 # What it is
 F# chess game with following features planned:
  * Read [FEN](http://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation) into convenient Board class **done**
