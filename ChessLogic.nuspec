@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+    <metadata>
+        <id>ChessKit.ChessLogic</id>
+        <version>0.5.0.4</version>
+        <authors>Ilya Margolin</authors>
+        <projectUrl>https://github.com/marhoily/ChessKitFs</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Chess board representation with abilities ro read FEN, SAN, give detailed validation info on moves, get all legal moves in position, and make Zobrist hash keys</description>
+        <summary>The goal of ChessLogic is to enable different UIs with chess controls.</summary>
+        <tags>chess fen san zobrist</tags>
+        <dependencies>
+            <group targetFramework=".NETFramework4.5">
+                <dependency id="FParsec" version="1.0.1" />
+            </group>
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="ChessLogic\bin\Release\ChessLogic.dll" target="lib\net45\ChessLogic.dll" />
+        <file src="ChessLogic\bin\Release\ChessLogic.XML" target="lib\net45\ChessLogic.XML" />
+    </files>
+</package>
