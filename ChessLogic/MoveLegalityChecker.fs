@@ -104,7 +104,13 @@ let ValidateMove move position =
     let hasNoCastling = { eh with Errors = [ HasNoCastling ] }
     let castleThroughCheck = { eh with Errors = [ CastleThroughCheck ] }
     let castleFromCheck = { eh with Errors = [ CastleFromCheck ] }
-    
+    // Can replace with List.contains in F# 4.0
+    let contains item = List.exists (fun i -> i = item)
+    // Can replace with List.except in F# 4.0
+    let except list1 list2 = 
+        Set.difference (Set.ofList list1) (Set.ofList list2)
+        |> List.ofSeq
+
     let hasNoEnPassant = 
         { eh with Observations = [ Capture; EnPassant ]
                   Errors = [ HasNoEnPassant ] }
@@ -152,7 +158,7 @@ let ValidateMove move position =
         | _ -> doesNotMoveThisWay
     
     let validateKingMove fromSquare toSquare = 
-        let castling opt = position.CastlingAvailability |> List.contains opt
+        let castling opt = position.CastlingAvailability |> contains opt
         
         let long B C D E attacked available = 
             if at D <> None || at B <> None then doesNotJump
@@ -235,12 +241,12 @@ let ValidateMove move position =
         | None -> hint
     
     let assignMissingPromotionHint hint = 
-        if hint.Observations |> List.contains Promotion then 
+        if hint.Observations |> contains Promotion then 
             { hint with Errors = MissingPromotionHint :: hint.Errors }
         else hint
     
     let assignPromotionHintIsNotNeededHint hint = 
-        if not (hint.Observations |> List.contains Promotion) then 
+        if not (hint.Observations |> contains Promotion) then 
             { hint with Errors = PromotionHintIsNotNeeded :: hint.Errors }
         else hint
     
@@ -259,14 +265,14 @@ let ValidateMove move position =
     let setupResultPosition f t promoteTo fPt color hint = 
         let newPlacement = Array.copy position.Placement
         // Remove the pawn captured en-passant
-        if hint.Observations |> List.contains EnPassant then 
+        if hint.Observations |> contains EnPassant then 
             let capture = 
                 if color = White then +8
                 else -8
             newPlacement.[(t |> ToIndex) + capture] <- None
         // Remove the piece from the old square and put it to the new square
         let piece = 
-            if hint.Observations |> List.contains Promotion then promoteTo
+            if hint.Observations |> contains Promotion then promoteTo
             else fPt
         newPlacement.[t |> ToIndex] <- Some((color, piece))
         newPlacement.[f |> ToIndex] <- None
@@ -284,12 +290,12 @@ let ValidateMove move position =
         | None -> ()
         // Figure out new en-passant option, half-move clock, full-move number
         let newEnPassant = 
-            if hint.Observations |> List.contains DoublePush then Some(fst f)
+            if hint.Observations |> contains DoublePush then Some(fst f)
             else None
         
         let newHalfMoveClock = 
             if hint.Piece = Some(Pawn) 
-               || hint.Observations |> List.contains Capture then 0
+               || hint.Observations |> contains Capture then 0
             else position.HalfMoveClock + 1
         
         let newMoveNumber = 
@@ -309,8 +315,8 @@ let ValidateMove move position =
         
         let newCastlingAvailability = 
             position.CastlingAvailability
-            |> List.except (optionsInvalidatedBy f)
-            |> List.except (optionsInvalidatedBy t)
+            |> except (optionsInvalidatedBy f)
+            |> except (optionsInvalidatedBy t)
         
         // Figure out new active color, and if the move gives check
         let newActiveColor = Color.oppositeOf position.ActiveColor
