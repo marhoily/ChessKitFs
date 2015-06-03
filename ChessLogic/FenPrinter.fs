@@ -9,7 +9,8 @@ let ToFen p =
             c
             |> List.map CastlingHint.toString
             |> List.toArray
-            |> System.String
+            // This can be just "System.String" in F# 4.0
+            |> (fun arr -> (new System.String(arr))) 
         if result = "" then "-"
         else result
     
