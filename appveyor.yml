@@ -2,4 +2,4 @@ before_build:
   nuget restore
 
 test_script:
-  - Tools\xunit.console.clr4.exe ChessLogic.UnitTests\bin\Debug\Chess.UnitTests.dll /appveyor
+  - xunit.console.clr4.exe ChessLogic.UnitTests\bin\Debug\Chess.UnitTests.dll /appveyor
