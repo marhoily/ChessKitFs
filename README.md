@@ -12,3 +12,6 @@ F# chess game with following features planned:
 # What it is not 
  * it is not a chess engine
  * it's not nearly optimal enough to enable you to write a chess engine on top of it
+
+# Known issues
+ * you have to set up <assemblybinding> in your app.config [manually](http://stackoverflow.com/questions/30620085/add-bindingredirect-doesnt-change-app-config-though-it-should)
