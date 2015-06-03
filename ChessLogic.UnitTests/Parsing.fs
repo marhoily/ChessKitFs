@@ -2,7 +2,6 @@
 
 open FsUnit.Xunit
 open Parsing
-open System.Text
 
 let shouldEqual (actual:string) (expected:string) = 
     let a = actual.Replace("\r\n", "\n")

@@ -40,7 +40,7 @@ Expecting: any char in ‘pnbrqkPNBRQK’, integer number (32-bit, signed) or ' 
 let ``starting position print-out looks fine``() = 
     StartingPosition
     |> BoardToString
-    |> should equal "rnbqkbnr
+    |> shouldEqual "rnbqkbnr
 pppppppp
 ........
 ........
