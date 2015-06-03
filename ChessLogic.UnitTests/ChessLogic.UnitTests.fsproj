@@ -10,7 +10,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Chess.UnitTests</RootNamespace>
     <AssemblyName>Chess.UnitTests</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Name>ChessLogic.UnitTests</Name>
