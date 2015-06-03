@@ -3,3 +3,6 @@ before_build:
 
 test_script:
   - xunit.console.clr4.exe ChessLogic.UnitTests\bin\Debug\Chess.UnitTests.dll /appveyor
+
+artifacts:
+  - path: '**\*.nupkg'
