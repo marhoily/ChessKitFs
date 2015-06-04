@@ -5,7 +5,7 @@
         <version>$version$</version>
         <authors>Ilya Margolin</authors>
         <projectUrl>https://github.com/marhoily/ChessKitFs</projectUrl>
-        <iconUrl>https://github.com/marhoily/ChessKitFs/blob/master/ico.png</iconUrl>
+        <iconUrl>https://raw.githubusercontent.com/marhoily/ChessKitFs/master/ico.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Chess board representation with abilities ro read FEN, SAN, give detailed validation info on moves, get all legal moves in position, and make Zobrist hash keys</description>
         <summary>The goal of ChessLogic is to enable different UIs with chess controls.</summary>
