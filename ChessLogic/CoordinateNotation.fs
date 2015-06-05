@@ -28,12 +28,6 @@ type Move =
                  PieceToString(White, move.PromoteTo))
 
 let ToCoordinateNotation (m:Move) = m.AsString
-//    function 
-//    | UsualMove(f, t) -> vectorToString (f, t)
-//    | PromotionMove move -> 
-//        String.Format
-//            ("{0}={1}", vectorToString move.Vector, 
-//             PieceToString(White, move.PromoteTo))
 
 let private coordinate = 
     pipe2 (anyOf "abcdefgh") pint32 
