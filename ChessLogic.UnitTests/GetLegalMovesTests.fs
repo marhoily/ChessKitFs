@@ -42,6 +42,34 @@ let check from (expected : string list) position =
               if valid then yield m |> toString ]
     actual |> should equal (expected2 |> List.sort)
 
+let checkAll expected position = 
+    let toString m = 
+        match m.Move with
+        | UsualMove(_, t) -> CoordinateToString t
+        | PromotionMove({ Vector = (_, t) }) -> CoordinateToString t
+    
+    let p = 
+        position
+        |> ParseFen
+        |> unwrap
+    
+    printf "%s" (Print p)
+    let actual = 
+        p
+        |> GetLegalMoves.All
+        |> List.map toString
+        |> List.sort
+    actual |> should equal (expected |> List.sort)
+    // Now do full search and make sure ValidateMove agrees
+    let expected2 = 
+        [ for i = 0 to 63 do
+              for j = 0 to 63 do
+                  let t = UsualMove((j % 8, j / 8), (i % 8, i / 8))
+                  let m = ValidateMove t p
+                  let valid = m.Hint.Errors |> List.isEmpty
+                  if valid then yield m |> toString ]
+    actual |> should equal (expected2 |> List.sort)
+
 [<Fact>]
 let ``empty square``() = "8/8/8/8/8/8/8/8 w - - 0 1" |> check "e4" []
 
@@ -66,6 +94,9 @@ let king() =
 let knight() = 
     "8/8/8/8/4n3/8/8/8 b - - 0 1" 
     |> check "e4" [ "d2"; "c3"; "c5"; "d6"; "f6"; "g5"; "g3"; "f2" ]
+
+[<Fact>]
+let all() = "8/8/8/3pp3/3PP3/8/8/8 w - - 0 2" |> checkAll [ "e5"; "d5" ]
 
 // ---------------- White Pawn ----------------
 [<Fact>]

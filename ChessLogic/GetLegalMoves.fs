@@ -41,5 +41,14 @@ let FromSquare from position =
     | Some(_, Queen) -> iter [  -15; +17; +15; -17; -1; +1; +16; -16 ]
     | Some(_, King) -> gen u [  -15; +17; +15; -17; -1; +1; +16; -16 ]
     | Some(_, Knight) -> gen u [  33; 31; -33; -31; 18; 14; -18; -14  ]    
-    | _ -> []
+    | None -> []
     |> List.filter (fun m -> m.Hint.Errors |> List.isEmpty)
+
+let All position = 
+    [ for i = 0 to 63 do
+        let square = (i % 8, i / 8)
+        match position |> PieceAt square with
+        | Some(color, _) -> 
+            if color = position.ActiveColor then
+                yield! position |> FromSquare square 
+        | _ -> yield! [] ]
