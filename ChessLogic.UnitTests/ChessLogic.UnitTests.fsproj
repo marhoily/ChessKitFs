@@ -68,11 +68,10 @@
     <Compile Include="IsAttackedByTests.fs" />
     <Compile Include="MoveLegalityCheckerTests.fs" />
     <Compile Include="UpdatePositionTests.fs" />
-    <Compile Include="MoveCommandTests.fs" />
+    <Compile Include="GetLegalMovesTests.fs" />
     <Content Include="packages.config" />
     <Content Include="app.config" />
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="GetLegalMovesTests.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FParsec">
