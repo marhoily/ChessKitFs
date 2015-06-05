@@ -16,6 +16,6 @@ let FromSquare from position =
         if snd from = rank7 then
             gen p [-16; -15; -17]
         else
-            gen u [-16; -32]
+            gen u [-16; -32; -15; -17]
     | _ -> []
-    |> List.filter (fun m -> m.Hint.Errors |> List.length = 0)
+    |> List.filter (fun m -> m.Hint.Errors |> List.isEmpty)
