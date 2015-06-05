@@ -121,3 +121,18 @@ let ``black bishop: a1-b2``() =
     "8/8/8/8/8/2p5/8/b7 b - - 0 1"
     |> check "a1" [ "b2" ]
 
+[<Fact>]
+let ``black bishop: a8-b7``() = 
+    "b7/8/2p5/8/8/8/8/8 b - - 0 1"
+    |> check "a8" [ "b7" ]
+
+[<Fact>]
+let ``black bishop: h8-g7``() = 
+    "7b/8/5p2/8/8/8/8/8 b - - 0 1"
+    |> check "h8" [ "g7" ]
+
+[<Fact>]
+let ``black bishop: h1-g2``() = 
+    "8/8/8/8/8/5p2/8/7b b - - 0 1"
+    |> check "h1" [ "g2" ]
+
