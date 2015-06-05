@@ -57,7 +57,6 @@
     <Compile Include="FenParser.fs" />
     <Compile Include="CoordinateNotation.fs" />
     <Compile Include="IsAttackedBy.fs" />
-    <Compile Include="IsMoveToCheck.fs" />
     <Compile Include="MoveLegalityChecker.fs" />
     <Compile Include="GetLegalMoves.fs" />
     <Content Include="packages.config" />

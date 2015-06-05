@@ -11,10 +11,6 @@ let unwrap = function
     | Ok(p) -> p
     | Error(e) -> failwith (e.ToString())
 
-let peel = function 
-    | Ok(p) -> p
-    | Error(p) -> p
-
 let wrap = function 
     | Success(p, _, _) -> Ok(p)
     | Failure(e, _, _) -> Error(e)
@@ -46,9 +42,3 @@ let parsePieceType = function
     | 'Q' | 'q' -> Queen
     | 'K' | 'k' -> King
     | _ -> failwith ("unknown piece letter")
-    
-let parseColorLetter = function 
-    | 'w' -> White
-    | 'b' -> Black
-    | _ -> failwith ("unknown color letter")
-    
