@@ -44,3 +44,8 @@ let ``white pawn on e2``() =
 let ``e7-d8 capture``() = 
     "3qr3/4P3/8/8/8/8/8/8 w - - 0 1"
     |> check "e7" [ "d8" ]
+
+[<Fact>]
+let ``e7-f8 capture``() = 
+    "4rr2/4P3/8/8/8/8/8/8 w - - 0 1"
+    |> check "e7" [ "f8" ]
