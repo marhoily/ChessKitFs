@@ -114,3 +114,10 @@ let ``black pawn: e7-d6 capture``() =
 let ``black pawn: e7-f6 capture``() = 
     "8/4p3/4RR2/8/8/8/8/8 b - - 0 1"
     |> check "e7" [ "f6" ]
+
+// ---------------- Black Bishop ----------------
+[<Fact>]
+let ``black bishop: a1-b2``() = 
+    "8/8/8/8/8/1p6/8/b7 b - - 0 1"
+    |> check "a1" [ "b2" ]
+
