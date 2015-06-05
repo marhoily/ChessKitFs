@@ -6,6 +6,7 @@ open MoveLegalityChecker
 
 let FromSquare from position =
     let rank7 = 1
+    let rank2 = 6
     let m i = (from, (from |> toX88) + i |> fromX88)
     let p i = PromotionMove({ Vector = m i; PromoteTo = Queen})
     let u i = UsualMove(m i)
@@ -17,5 +18,10 @@ let FromSquare from position =
             gen p [-16; -15; -17]
         else
             gen u [-16; -32; -15; -17]
+    | Some(Black, Pawn) -> 
+        if snd from = rank2 then
+            gen p [+16; +15; +17]
+        else
+            gen u [+16; +32; +15; +17]
     | _ -> []
     |> List.filter (fun m -> m.Hint.Errors |> List.isEmpty)

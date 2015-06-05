@@ -25,6 +25,7 @@ let check from (expected : string list) position =
         |> List.sort
     actual |> should equal (expected |> List.sort)
 
+    // Now do full search and make sure ValidateMove agrees
     let expected2 = 
         [ for i = 0 to 63 do
             let t = UsualMove(f, (i%8, i/8))
@@ -44,36 +45,72 @@ let ``empty square``() =
 
 // ---------------- White Pawn ----------------
 [<Fact>]
-let ``white pawn on h6``() = 
+let ``white pawn: h6-h7``() = 
     "8/8/7P/8/8/8/8/8 w - - 0 1"
     |> check "h6" [ "h7" ]
 
 [<Fact>]
-let ``white pawn on h7``() = 
+let ``white pawn: h7-h8=Q``() = 
     "8/7P/8/8/8/8/8/8 w - - 0 1"
     |> check "h7" [ "h8" ]
 
 [<Fact>]
-let ``e2-e3, e2-e4``() = 
+let ``white pawn: e2-e3, e2-e4``() = 
     "8/8/8/8/8/8/4P3/8 w - - 0 1"
     |> check "e2" [ "e3"; "e4" ]
 
 [<Fact>]
-let ``e7-d8 capture``() = 
+let ``white pawn: e7-d8=Q capture``() = 
     "3qr3/4P3/8/8/8/8/8/8 w - - 0 1"
     |> check "e7" [ "d8" ]
 
 [<Fact>]
-let ``e7-f8 capture``() = 
+let ``white pawn: e7-f8=Q capture``() = 
     "4rr2/4P3/8/8/8/8/8/8 w - - 0 1"
     |> check "e7" [ "f8" ]
 
 [<Fact>]
-let ``e2-d3 capture``() = 
+let ``white pawn: e2-d3 capture``() = 
     "8/8/8/8/8/3qr3/4P3/8 w - - 0 1"
     |> check "e2" [ "d3" ]
 
 [<Fact>]
-let ``e2-f3 capture``() = 
+let ``white pawn: e2-f3 capture``() = 
     "8/8/8/8/8/4rr2/4P3/8 w - - 0 1"
     |> check "e2" [ "f3" ]
+
+// ---------------- Black Pawn ----------------
+[<Fact>]
+let ``black pawn: h3-h2``() = 
+    "8/8/8/8/8/7p/8/8 b - - 0 1"
+    |> check "h3" [ "h2" ]
+
+[<Fact>]
+let ``black pawn: h2-h1=Q``() = 
+    "8/8/8/8/8/8/7p/8 b - - 0 1"
+    |> check "h2" [ "h1" ]
+
+[<Fact>]
+let ``black pawn: e7-e6, e7-e5``() = 
+    "8/4p3/8/8/8/8/8/8 b - - 0 1"
+    |> check "e7" [ "e6"; "e5" ]
+
+[<Fact>]
+let ``black pawn: e2-d1=Q capture``() = 
+    "8/8/8/8/8/8/4p3/3RB3 b - - 0 1"
+    |> check "e2" [ "d1" ]
+
+[<Fact>]
+let ``black pawn: e2-f1=Q capture``() = 
+    "8/8/8/8/8/8/4p3/4NQ2 b - - 0 1"
+    |> check "e2" [ "f1" ]
+
+[<Fact>]
+let ``black pawn: e7-d6 capture``() = 
+    "8/4p3/3BN3/8/8/8/8/8 b - - 0 1"
+    |> check "e7" [ "d6" ]
+
+[<Fact>]
+let ``black pawn: e7-f6 capture``() = 
+    "8/4p3/4RR2/8/8/8/8/8 b - - 0 1"
+    |> check "e7" [ "f6" ]
