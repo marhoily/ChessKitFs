@@ -50,6 +50,7 @@
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
+    <Compile Include="Fs4.fs" />
     <Compile Include="Definitions.fs" />
     <Compile Include="Dump.fs" />
     <Compile Include="FenPrinter.fs" />
@@ -59,6 +60,7 @@
     <Compile Include="IsAttackedBy.fs" />
     <Compile Include="MoveLegalityChecker.fs" />
     <Compile Include="GetLegalMoves.fs" />
+    <Compile Include="San.fs" />
     <Content Include="packages.config" />
     <Content Include="app.config" />
     <None Include="ChessLogic.nuspec" />

@@ -9,6 +9,8 @@ let LetterToFileNoCheck(p : char) : File = int (p) - int ('a')
 
 type Rank = int
 
+let rankToString (rank : Rank) = (8 - rank).ToString()
+
 type Coordinate = File * Rank
 
 // https://chessprogramming.wikispaces.com/0x88
@@ -16,7 +18,7 @@ let toX88 = function
     | (x, y) -> x + y * 16
 let fromX88 i = (i % 16, i / 16)
 let CoordinateToString = function 
-    | (file, rank) -> printFile file + (8 - rank).ToString()
+    | (file, rank) -> printFile file + rankToString rank
 
 type Color = 
     | Black
