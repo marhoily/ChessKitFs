@@ -138,7 +138,7 @@ let ``bishop: h8-g7``() =
 
 [<Fact>]
 let ``bishop: h1-g2``() = 
-    "8/8/8/8/8/5P2/8/7B b w - 0 1"
+    "8/8/8/8/8/5P2/8/7B w - - 0 1"
     |> check "h1" [ "g2" ]
 
 [<Fact>]
