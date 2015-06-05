@@ -34,32 +34,32 @@ let ToSanString (board : Position) (move:ValidatedMove) :string =
     else if piece = Pawn then
         if move.Hint.Observations |> MyList.contains Capture then
             sb.Append(file f) |> ignore
-        else
-            sb.Append(piece |> typeToString) |> ignore
-            let disambiguationList =
-              [ for move2 in board |> GetLegalMoves.All do
-                    let (f2, t2, _) = decompose move2
-                    let at x = board |> PieceAt x
-                    if f <> f2 && t = t2 && at f = at f2 then 
-                        yield f2 ]
-            if not (disambiguationList |> List.isEmpty) then
-                let uniqueFile = 
+    else
+        sb.Append(piece |> typeToString) |> ignore
+        let disambiguationList =
+            [ for move2 in board |> GetLegalMoves.All do
+                let (f2, t2, _) = decompose move2
+                let at x = board |> PieceAt x
+                if f <> f2 && t = t2 && at f = at f2 then 
+                    yield f2 ]
+        if not (disambiguationList |> List.isEmpty) then
+            let uniqueFile = 
+                disambiguationList 
+                |> List.forall (fun f2 -> (f |> fst) <> (f2 |> fst))
+            if uniqueFile then
+                sb.Append(file f) |> ignore
+            else
+                let uniqueRank = 
                     disambiguationList 
-                    |> List.forall (fun f2 -> (f |> fst) <> (f2 |> fst))
-                if uniqueFile then
-                    sb.Append(file f) |> ignore
-                else
-                    let uniqueRank = 
-                        disambiguationList 
-                        |> List.forall (fun f2 -> (f |> snd) <> (f2 |> snd))
-                    if uniqueRank then
-                        sb.Append(rank f) |> ignore
-                    else 
-                        sb.Append(fileAndRank f) |> ignore
-        if move.Hint.Observations |> MyList.contains Capture then
-            sb.Append('x') |> ignore
+                    |> List.forall (fun f2 -> (f |> snd) <> (f2 |> snd))
+                if uniqueRank then
+                    sb.Append(rank f) |> ignore
+                else 
+                    sb.Append(fileAndRank f) |> ignore
+    if move.Hint.Observations |> MyList.contains Capture then
+        sb.Append('x') |> ignore
 
-        sb.Append(fileAndRank t) |> ignore
+    sb.Append(fileAndRank t) |> ignore
     
     if move.Hint.Observations |> MyList.contains Promotion then
         sb.Append('=').Append(PieceToString(White, p)) |> ignore
