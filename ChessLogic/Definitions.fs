@@ -4,7 +4,7 @@ open System.Text
 
 type File = int
 
-let printFile (f : File) = char(int 'a' + f) |> string
+let fileToStirng (f : File) = char(int 'a' + f) |> string
 let LetterToFileNoCheck(p : char) : File = int (p) - int ('a')
 
 type Rank = int
@@ -18,7 +18,7 @@ let toX88 = function
     | (x, y) -> x + y * 16
 let fromX88 i = (i % 16, i / 16)
 let CoordinateToString = function 
-    | (file, rank) -> printFile file + rankToString rank
+    | (file, rank) -> fileToStirng file + rankToString rank
 
 type Color = 
     | Black

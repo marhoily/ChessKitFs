@@ -17,7 +17,7 @@ let ToFen p =
     let printOutEnPassant c e = 
         match e with
         | Some(file) -> 
-            (printFile file) + (if c = Black then "3"
+            (fileToStirng file) + (if c = Black then "3"
                                 else "6")
         | None -> "-"
     
