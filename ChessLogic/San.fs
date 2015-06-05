@@ -40,34 +40,37 @@ let ToSanString (board : Position) (move : ValidatedMove) : string =
         move.Hint.ResultPosition.Value.Observations |> MyList.contains Mate
     let append (str : string) = sb.Append(str) |> ignore
     let appendc (str : char) = sb.Append(str) |> ignore
-    if castling = Some(WK) || castling = Some(BK) then 
-        sb.Append("O-O") |> ignore
-    else if castling = Some(WQ) || castling = Some(BQ) then 
-        sb.Append("O-O-O") |> ignore
+    
+    let disambiguationList = 
+        lazy ([ for move2 in board |> GetLegalMoves.All do
+                    let (f2, t2, _) = decompose move2
+                    let at x = board |> PieceAt x
+                    if f <> f2 && t = t2 && at f = at f2 then yield f2 ])
+    
+    let ambiguous() = not (disambiguationList.Value |> List.isEmpty)
+    let unique fn = 
+        disambiguationList.Value 
+        |> List.forall (fun f2 -> (f |> fn) <> (f2 |> fn))
+    let shortCastling = castling = Some(WK) || castling = Some(BK)
+    let longCastling = castling = Some(WQ) || castling = Some(BQ)
+    // Actual algorithm
+    if shortCastling then append "O-O"
+    else if longCastling then append "O-O-O"
     else 
-        if piece = Pawn then 
-            if capture then sb.Append(file f) |> ignore
-        else 
-            sb.Append(piece |> typeToString) |> ignore
-            let disambiguationList = 
-                [ for move2 in board |> GetLegalMoves.All do
-                      let (f2, t2, _) = decompose move2
-                      let at x = board |> PieceAt x
-                      if f <> f2 && t = t2 && at f = at f2 then yield f2 ]
-            if not (disambiguationList |> List.isEmpty) then 
-                let uniqueFile = 
-                    disambiguationList 
-                    |> List.forall (fun f2 -> (f |> fst) <> (f2 |> fst))
-                if uniqueFile then sb.Append(file f) |> ignore
-                else 
-                    let uniqueRank = 
-                        disambiguationList 
-                        |> List.forall (fun f2 -> (f |> snd) <> (f2 |> snd))
-                    if uniqueRank then sb.Append(rank f) |> ignore
-                    else append(fileAndRank f)
-        if capture then appendc 'x'
-        append(fileAndRank t)
-    if promotion then appendc '='; appendc(PieceToString(White, p)) 
+         if piece = Pawn then 
+             if capture then append (file f)
+         else 
+             appendc (piece |> typeToString)
+             if ambiguous() then 
+                 if unique fst then append (file f)
+                 else if unique snd then append (rank f)
+                 else append (fileAndRank f)
+         if capture then appendc 'x'
+         append (fileAndRank t)
+    if promotion then 
+        appendc '='
+        appendc (p |> typeToString)
     if check then appendc '+'
-    else if mate then appendc '#'
+    else 
+        if mate then appendc '#'
     string sb
