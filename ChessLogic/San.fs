@@ -16,33 +16,30 @@ let ToSanString (board : Position) (move : ValidatedMove) : string =
         | Queen -> 'Q'
         | King -> 'K'
     
-    let sb = new StringBuilder(6)
-    let castling = move.Hint.Castling
-    
     let decompose m = 
         match m.Move with
         | UsualMove(f, t) -> (f, t, Queen)
         | PromotionMove({ Vector = (f, t); PromoteTo = p }) -> (f, t, p)
-    
-    let (f, t, p) = decompose move
     
     let piece = 
         match move.Hint.Piece with
         | Some(t) -> t
         | _ -> failwith "unexpected"
     
-    let file x = 
-        x
-        |> fst
-        |> printFile
-    
-    let rank x = 
-        x
-        |> snd
-        |> rankToString
-    
+    let sb = new StringBuilder(6)
+    let castling = move.Hint.Castling
+    let (f, t, p) = decompose move
+    let file x = printFile (x |> fst)
+    let rank x = rankToString (x |> snd)
     let fileAndRank = CoordinateToString
     let capture = move.Hint.Observations |> MyList.contains Capture
+    let promotion = move.Hint.Observations |> MyList.contains Promotion
+    let check = 
+        move.Hint.ResultPosition.Value.Observations |> MyList.contains Check
+    let mate = 
+        move.Hint.ResultPosition.Value.Observations |> MyList.contains Mate
+    let append (str : string) = sb.Append(str) |> ignore
+    let appendc (str : char) = sb.Append(str) |> ignore
     if castling = Some(WK) || castling = Some(BK) then 
         sb.Append("O-O") |> ignore
     else if castling = Some(WQ) || castling = Some(BQ) then 
@@ -67,14 +64,10 @@ let ToSanString (board : Position) (move : ValidatedMove) : string =
                         disambiguationList 
                         |> List.forall (fun f2 -> (f |> snd) <> (f2 |> snd))
                     if uniqueRank then sb.Append(rank f) |> ignore
-                    else sb.Append(fileAndRank f) |> ignore
-        if capture then sb.Append('x') |> ignore
-        sb.Append(fileAndRank t) |> ignore
-    if move.Hint.Observations |> MyList.contains Promotion then 
-        sb.Append('=').Append(PieceToString(White, p)) |> ignore
-    if move.Hint.ResultPosition.Value.Observations |> MyList.contains Check then 
-        sb.Append('+') |> ignore
-    else 
-        if move.Hint.ResultPosition.Value.Observations |> MyList.contains Mate then 
-            sb.Append('#') |> ignore
+                    else append(fileAndRank f)
+        if capture then appendc 'x'
+        append(fileAndRank t)
+    if promotion then appendc '='; appendc(PieceToString(White, p)) 
+    if check then appendc '+'
+    else if mate then appendc '#'
     string sb
