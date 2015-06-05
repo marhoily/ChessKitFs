@@ -1,6 +1,6 @@
 # Chess Kit (F#)
 [![Build status](https://ci.appveyor.com/api/projects/status/20euy0r0xxsp19fx?svg=true)](https://ci.appveyor.com/project/marhoily/chesskitfs)
-[![ChessKit.ChessLogic](https://img.shields.io/nuget/dt/ChessKit.ChessLogic.svg)](https://www.nuget.org/packages/ChessKit.ChessLogic/)
+[![ChessKit.ChessLogic](https://img.shields.io/nuget/v/ChessKit.ChessLogic.svg)](https://www.nuget.org/packages/ChessKit.ChessLogic/)
 
 ### What it is
 V 1.0 is going to include:
@@ -21,6 +21,6 @@ Versions after 1 can include:
  * [PGN] (http://en.wikipedia.org/wiki/Portable_Game_Notation) load\save
  * [UCI] (http://en.wikipedia.org/wiki/Universal_Chess_Interface) interfaces
  * Chess game commenting facilities
-
-# Known issues
+ 
+### Known issues
  * you have to set up <assemblybinding> in your app.config [manually](http://stackoverflow.com/questions/30620085/add-bindingredirect-doesnt-change-app-config-though-it-should)
