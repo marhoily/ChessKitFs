@@ -49,5 +49,10 @@ let ``Check``() =
     "2kr4/pp2n1p1/6qr/n3P3/1NpP1p2/2P2B2/PQ3B1P/Rb3K2 b - - 0 28" 
     |> check "b1-d3" "Bd3+"
 
+[<Fact>]
+let ``Promotion``() = 
+    "5r2/ppkP2p1/4P3/n2n1q2/1Np2p2/2P2Q2/P4B1r/R3K3 w - - 0 36" 
+    |> check "d7-d8=N" "d8=N"
+
     
     
