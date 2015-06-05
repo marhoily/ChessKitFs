@@ -22,19 +22,20 @@ let check from (expected : string list) position =
         p
         |> GetLegalMoves.FromSquare f
         |> List.map toString
-    actual |> should equal expected
+        |> List.sort
+    actual |> should equal (expected |> List.sort)
 
-//    let expected2 = 
-//        [ for i = 0 to 63 do
-//            let t = UsualMove(f, (i%8, i/8))
-//            let m = ValidateMove t p
-//            let valid = 
-//                m.Hint.Errors 
-//                |> List.filter (fun err -> err <> MissingPromotionHint)
-//                |> List.isEmpty
-//            if valid then yield m |> toString ]
-//
-//    actual |> should equal expected2
+    let expected2 = 
+        [ for i = 0 to 63 do
+            let t = UsualMove(f, (i%8, i/8))
+            let m = ValidateMove t p
+            let valid = 
+                m.Hint.Errors 
+                |> List.filter (fun err -> err <> MissingPromotionHint)
+                |> List.isEmpty
+            if valid then yield m |> toString ]
+
+    actual |> should equal (expected2 |> List.sort)
 
 [<Fact>]
 let ``empty square``() = 

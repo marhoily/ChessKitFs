@@ -125,7 +125,7 @@ let ValidateMove move position =
     
     let at i = position |> PieceAt(i % 16, i / 16)
     
-    let validatePawnMove fromSquare toSquare = 
+    let validatePawnMove sideToMove fromSquare toSquare = 
         let validateDoublePush v c = 
             if fromSquare / 16 <> c then doesNotMoveThisWay
             else if at toSquare <> None then doesNotCaptureThisWay
@@ -149,15 +149,15 @@ let ValidateMove move position =
         let looksEnPassanty c1 c2 c3 color () = 
             fromSquare / 16 = c1 && at (fromSquare + c2) = None 
             && at (fromSquare + c3) = (Some(color, Pawn))
-        match (toSquare - fromSquare) with
-        | -32 -> validateDoublePush -16 6
-        | +32 -> validateDoublePush +16 1
-        | -16 -> validatePush 1
-        | +16 -> validatePush 6
-        | -15 -> validateCapture 1 (looksEnPassanty 3 -31 +1 Black)
-        | -17 -> validateCapture 1 (looksEnPassanty 3 -33 -1 Black)
-        | +17 -> validateCapture 6 (looksEnPassanty 4 +33 +1 White)
-        | +15 -> validateCapture 6 (looksEnPassanty 4 +31 -1 White)
+        match (sideToMove, (toSquare - fromSquare)) with
+        | (White, -32) -> validateDoublePush -16 6
+        | (Black, +32) -> validateDoublePush +16 1
+        | (White, -16) -> validatePush 1
+        | (Black, +16) -> validatePush 6
+        | (White, -15) -> validateCapture 1 (looksEnPassanty 3 -31 +1 Black)
+        | (White, -17) -> validateCapture 1 (looksEnPassanty 3 -33 -1 Black)
+        | (Black, +17) -> validateCapture 6 (looksEnPassanty 4 +33 +1 White)
+        | (Black, +15) -> validateCapture 6 (looksEnPassanty 4 +31 -1 White)
         | _ -> doesNotMoveThisWay
     
     let validateKnightMove f t = 
@@ -215,9 +215,9 @@ let ValidateMove move position =
     let validateQueenMove = 
         validateSlidingMove [ 16; -16; 01; -01; 15; -15; 17; -17 ]
     
-    let validateByPieceType pieceType = 
+    let validateByPieceType sideToMove pieceType = 
         match pieceType with
-        | Pawn -> validatePawnMove
+        | Pawn -> validatePawnMove sideToMove
         | Knight -> validateKnightMove
         | King -> validateKingMove
         | Bishop -> validateBishopMove
@@ -349,7 +349,7 @@ let ValidateMove move position =
     let validateFromTo f t promoteTo = 
         match at64 f with
         | Some(color, fPt) -> 
-            validateByPieceType fPt (toX88 f) (toX88 t)
+            validateByPieceType color fPt (toX88 f) (toX88 t)
             |> addPieceType fPt
             |> checkCapture (at64 t)
             |> checkSideToMove color
