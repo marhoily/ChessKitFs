@@ -44,5 +44,10 @@ let ``Knight``() =
     "r1b1kb1r/pp1n2pp/1q2p3/n2pPp2/2pP1P2/2P1BN2/PP1QB1PP/RN3RK1 w kq f6 0 11" 
     |> check "f3-g5" "Ng5"
 
+[<Fact>]
+let ``Check``() = 
+    "2kr4/pp2n1p1/6qr/n3P3/1NpP1p2/2P2B2/PQ3B1P/Rb3K2 b - - 0 28" 
+    |> check "b1-d3" "Bd3+"
+
     
     
