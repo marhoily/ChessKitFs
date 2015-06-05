@@ -37,5 +37,6 @@ let FromSquare from position =
         if snd from = rank2 then gen p [ +16; +15; +17 ]
         else gen u [ +16; +32; +15; +17 ]
     | Some(Black, Bishop) -> iter [ -15; +17; +15; -17 ]
+    | Some(_, Rook) -> iter [ -1; +1; +16; -16 ]
     | _ -> []
     |> List.filter (fun m -> m.Hint.Errors |> List.isEmpty)

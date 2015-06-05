@@ -43,6 +43,11 @@ let ``empty square``() =
     "8/8/8/8/8/8/8/8 w - - 0 1"
     |> check "e4" []
 
+[<Fact>]
+let ``rook``() = 
+    "8/2N5/8/8/8/2R2q2/8/8 w - - 0 1"
+    |> check "c3" [ "a3"; "b3"; "c1"; "c2"; "c4"; "c5"; "c6"; "d3"; "e3"; "f3" ]
+
 // ---------------- White Pawn ----------------
 [<Fact>]
 let ``white pawn: h6-h7``() = 
@@ -115,39 +120,38 @@ let ``black pawn: e7-f6 capture``() =
     "8/4p3/4RR2/8/8/8/8/8 b - - 0 1"
     |> check "e7" [ "f6" ]
 
-// ---------------- Black Bishop ----------------
+// ---------------- Bishop ----------------
 [<Fact>]
-let ``black bishop: a1-b2``() = 
+let ``bishop: a1-b2``() = 
     "8/8/8/8/8/2p5/8/b7 b - - 0 1"
     |> check "a1" [ "b2" ]
 
 [<Fact>]
-let ``black bishop: a8-b7``() = 
+let ``bishop: a8-b7``() = 
     "b7/8/2p5/8/8/8/8/8 b - - 0 1"
     |> check "a8" [ "b7" ]
 
 [<Fact>]
-let ``black bishop: h8-g7``() = 
+let ``bishop: h8-g7``() = 
     "7b/8/5p2/8/8/8/8/8 b - - 0 1"
     |> check "h8" [ "g7" ]
 
 [<Fact>]
-let ``black bishop: h1-g2``() = 
+let ``bishop: h1-g2``() = 
     "8/8/8/8/8/5p2/8/7b b - - 0 1"
     |> check "h1" [ "g2" ]
 
 [<Fact>]
-let ``black bishop: h1-f3``() = 
+let ``bishop: h1-f3``() = 
     "8/8/8/8/4p3/8/8/7b b - - 0 1"
     |> check "h1" [ "g2"; "f3" ]
 
 [<Fact>]
-let ``black bishop: g1-h2, g1-f2``() = 
+let ``bishop: g1-h2, g1-f2``() = 
     "8/8/8/8/8/4p3/8/6b1 b - - 0 1"
     |> check "g1" [ "h2"; "f2" ]
 
 [<Fact>]
-let ``black bishop captures: h1-g2``() = 
+let ``bishop captures: h1-g2``() = 
     "8/8/8/8/8/8/6B1/7b b - - 0 1"
     |> check "h1" [ "g2" ]
-
