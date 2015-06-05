@@ -20,6 +20,13 @@ let check from position =
            | PromotionMove({Vector = (_, t)}) -> CoordinateToString t)
 
 [<Fact>]
+let ``empty square``() = 
+    let emptyList : string list = []
+    "8/8/8/8/8/8/8/8 w - - 0 1"
+    |> check "e4"
+    |> should equal emptyList
+
+[<Fact>]
 let ``white pawn on h6``() = 
     "8/8/7P/8/8/8/8/8 w - - 0 1"
     |> check "h6"
