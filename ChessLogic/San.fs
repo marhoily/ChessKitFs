@@ -19,7 +19,7 @@ let ToSanString (board : Position) (move:ValidatedMove) :string =
     let sb = new StringBuilder(6)
     let castling = move.Hint.Castling
     let decompose m = 
-        match move.Move with
+        match m.Move with
         | UsualMove(f, t) -> (f, t, Queen)
         | PromotionMove({Vector=(f, t); PromoteTo=p}) -> (f,t,p)
     let (f, t, p) = decompose move
