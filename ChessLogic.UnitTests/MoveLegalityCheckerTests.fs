@@ -271,6 +271,12 @@ module ``White pawn`` =
         check "rnbqk1nr/pppp1ppp/3bp3/8/4P3/7P/PPPP1PP1/RNBQKBNR w KQkq - 1 3" 
             "a2-e2" "Pawn | DoesNotMoveThisWay"
 
+    [<Fact>]
+    let ``does not move backwards``() = 
+        check "8/8/8/8/8/8/4P3/8 w - - 0 1" 
+            "e2-e1" "Pawn | DoesNotMoveThisWay"
+
+
 module ``Black pawn`` = 
     [<Fact>]
     let ``double push from the 5th rank``() = 
