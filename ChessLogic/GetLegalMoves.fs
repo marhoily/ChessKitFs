@@ -39,5 +39,6 @@ let FromSquare from position =
     | Some(_, Bishop) -> iter [ -15; +17; +15; -17 ]
     | Some(_, Rook) -> iter [ -1; +1; +16; -16 ]
     | Some(_, Queen) -> iter [  -15; +17; +15; -17; -1; +1; +16; -16 ]
+    | Some(_, King) -> gen u [  -15; +17; +15; -17; -1; +1; +16; -16 ]
     | _ -> []
     |> List.filter (fun m -> m.Hint.Errors |> List.isEmpty)
