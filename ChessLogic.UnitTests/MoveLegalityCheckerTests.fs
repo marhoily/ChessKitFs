@@ -632,11 +632,6 @@ module Bishop =
     let ``moves NW``() = 
         check "8/8/8/8/8/8/1Kp5/3Bk3 w - - 0 1" "d1-c2" "Bishop | Capture"
     
-    [<Fact>]
-    let ``does not move after same color piece block``() = 
-        check "8/8/8/8/8/1p6/8/b7 b - - 0 1" "a1-c3" 
-            "Bishop | DoesNotMoveThisWay"
-
 module Rook = 
     [<Fact>]
     let ``moves one square N``() = 
