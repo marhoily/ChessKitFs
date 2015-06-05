@@ -1,6 +1,8 @@
+# Chess Kit (F#)
 [![Build status](https://ci.appveyor.com/api/projects/status/20euy0r0xxsp19fx?svg=true)](https://ci.appveyor.com/project/marhoily/chesskitfs)
+[![ChessKit.ChessLogic](https://img.shields.io/nuget/dt/ChessKit.ChessLogic.svg)](https://www.nuget.org/packages/ChessKit.ChessLogic/)
 
-# What it is
+### What it is
 V 1.0 is going to include:
  * Read [FEN](http://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation) into convenient Board class **done**
  * Read string encoded moves in [coordinate](http://en.wikipedia.org/wiki/Chess_notation) "e2-e4" (**done**) and [SAN](http://en.wikipedia.org/wiki/Algebraic_notation_(chess)) "Nxe4+" notations
@@ -9,12 +11,12 @@ V 1.0 is going to include:
  * Print the board nicely as text ;) (**done**)
  * Calculate a [Zobrist hash key](http://en.wikipedia.org/wiki/Zobrist_hashing) for a position
  
-# What it is not 
+### What it is not 
  * it is not a chess engine
  * it's not nearly optimal enough to enable you to write a chess engine on top of it
  * it is not chess games database
 
-# What it might also be
+### What it might also be
 Versions after 1 can include:
  * [PGN] (http://en.wikipedia.org/wiki/Portable_Game_Notation) load\save
  * [UCI] (http://en.wikipedia.org/wiki/Universal_Chess_Interface) interfaces
