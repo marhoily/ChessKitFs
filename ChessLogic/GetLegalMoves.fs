@@ -5,17 +5,16 @@ open Definitions
 open MoveLegalityChecker
 
 let FromSquare from position =
-    let fP = position |> PieceAt from 
-    let fromSquare = toX88 from
-    let at p c = p |> PieceAt (fromX88 c)
-    match fP with
+    let m i = (from, (from |> toX88) + i |> fromX88)
+    let p i = PromotionMove({ Vector = m i
+                              PromoteTo = Queen})
+    let u i = UsualMove(m i)
+    let g v i = position |> ValidateMove (v -16)
+    match position |> PieceAt from  with
     | Some(White, Pawn) -> 
         if snd from = 1 then
-            [position |> ValidateMove (
-                PromotionMove({ 
-                    Vector = (from, (from |> toX88) - 16 |> fromX88);
-                    PromoteTo = Queen}))]
+            [g p -16]
         else
-            [position |> ValidateMove (UsualMove(from, (from |> toX88) - 16 |> fromX88))]
+            [g u -16]
     | _ -> []
     |> List.filter (fun m -> m.Hint.Errors |> List.length = 0)
