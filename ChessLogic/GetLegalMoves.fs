@@ -15,7 +15,7 @@ let FromSquare from position =
     let u i = UsualMove(i)
     let f = from |> toX88
     let validate v t = position |> ValidateMove(v (from, t |> fromX88))
-    
+    let at88 i = position |> PieceAt (i |> fromX88)
     let gen v = 
         List.map (fun i -> f + i)
         >> List.filter (fun x -> (x &&& 0x88) = 0)
@@ -23,8 +23,9 @@ let FromSquare from position =
     
     let rec step start increment = 
         [ let curr = start + increment
-          if curr &&& 0x88 <> 0 then yield! []
-          else yield (validate u curr) ]
+          if curr &&& 0x88 = 0 then 
+              yield validate u curr
+              yield! step curr increment ]
     
     let iter li = li |> List.collect (step f)
     match position |> PieceAt from with
