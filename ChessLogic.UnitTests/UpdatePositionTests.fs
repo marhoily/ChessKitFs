@@ -150,11 +150,11 @@ let Promotion() =
 [<Fact>]
 let ``Promote to Q by default``() = 
     "8/3kbN2/1nr4p/1q1p3P/pPR3P1/2Bp2p1/1Kp5/6R1 b - - 4 64"
-    |> after "c2-c1=Q"
+    |> after "c2-c1"
     |> should equal "8/3kbN2/1nr4p/1q1p3P/pPR3P1/2Bp2p1/1K6/2q3R1 w - - 0 65"
 
 [<Fact>]
 let IsValidPawnMove2() = 
     "8/1P4k1/8/8/3N4/1n1b2B1/1K6/8 w - - 51 130 "
-    |> after "b7-b8=Q"
-    |> should equal "1Q6/6k1/8/8/3N4/1n1b2B1/1K6/8 b - - 0 130"
+    |> after "b7-b8=B"
+    |> should equal "1B6/6k1/8/8/3N4/1n1b2B1/1K6/8 b - - 0 130"

@@ -38,7 +38,7 @@ let ParseCoordinateNotation str =
         match promotion with
         | Some(pieceType) -> 
             PromotionMove({ Vector = (c1, c2)
-                            PromoteTo = parsePieceType pieceType})
+                            PromoteTo = parsePromotionHint pieceType})
         | None -> UsualMove(c1, c2)
     
     let c1 = coordinate .>> ((pchar '-') <|> (pchar 'x'))

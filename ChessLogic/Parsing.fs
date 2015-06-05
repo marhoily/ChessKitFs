@@ -34,11 +34,10 @@ let parsePieceLetter = function
     | 'k' -> (Black, King)
     | _ -> failwith ("unknown piece letter")
     
-let parsePieceType = function 
-    | 'P' | 'p' -> Pawn
-    | 'N' | 'n' -> Knight
-    | 'B' | 'b' -> Bishop
-    | 'R' | 'r' -> Rook
-    | 'Q' | 'q' -> Queen
-    | 'K' | 'k' -> King
-    | _ -> failwith ("unknown piece letter")
+let parsePromotionHint = function 
+    | 'P' -> Pawn
+    | 'N' -> Knight
+    | 'B' -> Bishop
+    | 'R' -> Rook
+    | 'Q' -> Queen
+    | _ -> failwith ("unknown promotion hint")
