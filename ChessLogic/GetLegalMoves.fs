@@ -14,7 +14,7 @@ let FromSquare from position =
     match position |> PieceAt from  with
     | Some(White, Pawn) -> 
         if snd from = rank7 then
-            gen p [-16]
+            gen p [-16; -17]
         else
             gen u [-16; -32]
     | _ -> []
