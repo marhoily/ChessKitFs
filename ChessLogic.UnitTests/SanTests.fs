@@ -59,6 +59,11 @@ let ``Nec6``() =
     "2kr4/pp2n1p1/6qr/n3P3/1NpP1p2/2P2B2/PQ3B1P/Rb3K2 b - - 0 28" 
     |> check "e7-c6=N" "Nec6"
 
+[<Fact>]
+let ``N7c6``() = 
+    "2kr4/pp2n1p1/6qr/4n3/2pP1p2/2PN1B2/PQ3B1P/R4K2 b - - 0 29" 
+    |> check "e7-c6=N" "N7c6"
+    
 
     
     
