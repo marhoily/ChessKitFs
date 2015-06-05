@@ -123,7 +123,7 @@ let ``black pawn: e7-f6 capture``() =
 // ---------------- Bishop ----------------
 [<Fact>]
 let ``bishop: a1-b2``() = 
-    "8/8/8/8/8/2p5/8/b7 b - - 0 1"
+    "8/8/8/8/8/2P5/8/B7 w - - 0 1"
     |> check "a1" [ "b2" ]
 
 [<Fact>]
@@ -138,7 +138,7 @@ let ``bishop: h8-g7``() =
 
 [<Fact>]
 let ``bishop: h1-g2``() = 
-    "8/8/8/8/8/5p2/8/7b b - - 0 1"
+    "8/8/8/8/8/5P2/8/7B b w - 0 1"
     |> check "h1" [ "g2" ]
 
 [<Fact>]
