@@ -51,4 +51,4 @@ let All position =
         | Some(color, _) -> 
             if color = position.ActiveColor then
                 yield! position |> FromSquare square 
-        | _ -> yield! [] ]
+        | _ -> () ]
