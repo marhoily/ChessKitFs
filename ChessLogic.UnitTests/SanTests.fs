@@ -35,6 +35,11 @@ let ``Pawn capture``() =
     |> check "g4-f5" "gxf5"
 
 [<Fact>]
+let ``Pawn push``() = 
+    "r1b1kb1r/pp1n1ppp/1q2p3/n2pP3/2pP1P2/2P1BN2/PP1QB1PP/RN3RK1 b kq - 0 10" 
+    |> check "f7-f5" "f5"
+
+[<Fact>]
 let ``Knight``() = 
     "r1b1kb1r/pp1n2pp/1q2p3/n2pPp2/2pP1P2/2P1BN2/PP1QB1PP/RN3RK1 w kq f6 0 11" 
     |> check "f3-g5" "Ng5"
