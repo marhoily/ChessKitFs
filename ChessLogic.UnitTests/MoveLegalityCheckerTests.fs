@@ -168,7 +168,7 @@ module ``Moves to check`` =
             "g3-g2" "Pawn | MoveToCheck"
     
     [<Fact>]
-    let ``There is check from bishop 1``() = 
+    let ``There is check from bishop``() = 
         check 
             "rnb1kb1r/1pp1pppp/p4n2/2qp4/5P2/3P2PP/PPPNP1B1/R1BQK1NR w KQkq - 3 8" 
             "e1-f2" "King | MoveToCheck"
@@ -631,6 +631,11 @@ module Bishop =
     [<Fact>]
     let ``moves NW``() = 
         check "8/8/8/8/8/8/1Kp5/3Bk3 w - - 0 1" "d1-c2" "Bishop | Capture"
+    
+    [<Fact>]
+    let ``does not move after same color piece block``() = 
+        check "8/8/8/8/8/1p6/8/b7 b - - 0 1" "a1-c3" 
+            "Bishop | DoesNotMoveThisWay"
 
 module Rook = 
     [<Fact>]
