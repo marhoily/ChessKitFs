@@ -10,11 +10,12 @@ let FromSquare from position =
                               PromoteTo = Queen})
     let u i = UsualMove(m i)
     let g v i = position |> ValidateMove (v -16)
+    let gen v il = il |> List.map (g v)
     match position |> PieceAt from  with
     | Some(White, Pawn) -> 
         if snd from = 1 then
-            [g p -16]
+            gen p [-16]
         else
-            [g u -16]
+            gen u [-16]
     | _ -> []
     |> List.filter (fun m -> m.Hint.Errors |> List.length = 0)
