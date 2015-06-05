@@ -146,3 +146,8 @@ let ``black bishop: g1-h2, g1-f2``() =
     "8/8/8/8/8/4p3/8/6b1 b - - 0 1"
     |> check "g1" [ "h2"; "f2" ]
 
+[<Fact>]
+let ``black bishop captures: h1-g2``() = 
+    "8/8/8/8/8/8/6B1/7b b - - 0 1"
+    |> check "h1" [ "g2" ]
+
