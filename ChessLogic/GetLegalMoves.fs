@@ -24,8 +24,8 @@ let FromSquare from position =
     let rec step start increment = 
       [ let curr = start + increment
         if curr &&& 0x88 = 0 then 
-          //  if at88 curr = None then 
-                yield validate u curr
+            yield validate u curr
+            if at88 curr = None then 
                 yield! step curr increment ]
     
     let iter li = li |> List.collect (step f)
