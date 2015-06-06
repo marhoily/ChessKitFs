@@ -106,7 +106,7 @@ let ValidateMove move position =
     let mutable observations = []
     let mutable warnings = []
     let mutable castling = None
-    let mutable piece = None
+    let mutable pieceType = None
     let mutable resultPosition = None
     let doesNotCaptureThisWay() = errors <- DoesNotCaptureThisWay :: errors
     let doesNotMoveThisWay() = errors <- DoesNotMoveThisWay :: errors
@@ -225,16 +225,14 @@ let ValidateMove move position =
     let validateQueenMove = 
         validateSlidingMove [ 16; -16; 01; -01; 15; -15; 17; -17 ]
     
-    let validateByPieceType sideToMove pieceType = 
-        match pieceType with
+    let validateByPieceType sideToMove = 
+        match pieceType.Value with
         | Pawn -> validatePawnMove sideToMove
         | Knight -> validateKnightMove
         | King -> validateKingMove
         | Bishop -> validateBishopMove
         | Rook -> validateRookMove
         | Queen -> validateQueenMove
-    
-    let addPieceType pieceType = piece <- Some(pieceType)
     
     if capturedPiece <> None then 
         if (fst capturedPiece.Value) = position.ActiveColor then toOccupiedCell()
@@ -305,7 +303,7 @@ let ValidateMove move position =
             else None
         
         let newHalfMoveClock = 
-            if piece = Some(Pawn) || observations |> contains Capture then 0
+            if pieceType.Value = Pawn || observations |> contains Capture then 0
             else position.HalfMoveClock + 1
         
         let newMoveNumber = 
@@ -347,8 +345,8 @@ let ValidateMove move position =
     let validateFromTo() = 
         match fP2 with
         | Some(color, fPt) -> 
-            validateByPieceType color fPt (toX88 f2) (toX88 t2)
-            addPieceType fPt
+            pieceType <- Some(fPt)
+            validateByPieceType color (toX88 f2) (toX88 t2)
             checkSideToMove color
             assignResultPosition fPt color
             assignMoveToCheckError()
@@ -369,14 +367,14 @@ let ValidateMove move position =
                     PromoteTo = p2
                     OriginalPosition = position
                     ResultPosition = resultPosition.Value
-                    Piece = piece.Value
+                    Piece = pieceType.Value
                     Castling = castling
                     Observations = observations
                     Warnings = warnings }
     else 
         IllegalMove({ Move = move
                       OriginalPosition = position
-                      Piece = piece
+                      Piece = pieceType
                       Castling = castling
                       Observations = observations
                       Warnings = warnings
