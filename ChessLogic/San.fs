@@ -16,41 +16,38 @@ let ToSanString (board : Position) (move : LegalMove) : string =
         | Queen -> 'Q'
         | King -> 'K'
     
-    let piece = move.Piece
     let sb = new StringBuilder(6)
-    let castling = move.Castling
-    let file x = fileToStirng (x |> fst)
-    let rank x = rankToString (x |> snd)
-    let fileAndRank = CoordinateToString
+    let shortCastling = move.Castling = Some(WK) || move.Castling = Some(BK)
+    let longCastling = move.Castling = Some(WQ) || move.Castling = Some(BQ)
     let capture = move.Observations |> MyList.contains Capture
     let promotion = move.Observations |> MyList.contains Promotion
     let check = move.ResultPosition.Observations |> MyList.contains Check
     let mate = move.ResultPosition.Observations |> MyList.contains Mate
     let append (str : string) = sb.Append(str) |> ignore
     let appendc (str : char) = sb.Append(str) |> ignore
+    let file x = fileToStirng (x |> fst)
+    let rank x = rankToString (x |> snd)
+    let fileAndRank = CoordinateToString
+    let at x = board |> PieceAt x
     
     let disambiguationList = 
-        lazy ([ for move2 in board |> GetLegalMoves.All do
-                    let at x = board |> PieceAt x
-                    if move.Start <> move2.Start then 
-                        if move.End = move2.End then 
-                            if at move.Start = at move2.Start then 
-                                yield move2.Start ])
+        lazy ([ for m in board |> GetLegalMoves.All do
+                    if move.Start <> m.Start then 
+                        if move.End = m.End then 
+                            if at move.Start = at m.Start then yield m.Start ])
     
     let ambiguous() = not (disambiguationList.Value |> List.isEmpty)
     let unique fn = 
         disambiguationList.Value 
-        |> List.forall (fun f2 -> (move.Start |> fn) <> (f2 |> fn))
-    let shortCastling = castling = Some(WK) || castling = Some(BK)
-    let longCastling = castling = Some(WQ) || castling = Some(BQ)
+        |> List.forall (fun x -> (move.Start |> fn) <> (x |> fn))
     // Actual algorithm
     if shortCastling then append "O-O"
     else if longCastling then append "O-O-O"
     else 
-        if piece = Pawn then 
+        if move.Piece = Pawn then 
             if capture then append (file move.Start)
         else 
-            appendc (piece |> typeToString)
+            appendc (move.Piece |> typeToString)
             if ambiguous() then 
                 if unique fst then append (file move.Start)
                 else if unique snd then append (rank move.Start)
