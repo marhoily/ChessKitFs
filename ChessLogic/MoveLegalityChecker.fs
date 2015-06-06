@@ -128,6 +128,11 @@ let ValidateMove move position =
         errors <- HasNoEnPassant :: errors
         observations <- Capture :: EnPassant :: observations
     
+    let f2, t2, p2 = 
+        match move with
+        | UsualMove(f, t) -> (f, t, Queen)
+        | PromotionMove({ Vector = (f, t); PromoteTo = p }) -> (f, t, p)
+
     let at i = position |> PieceAt(i % 16, i / 16)
     
     let validatePawnMove sideToMove fromSquare toSquare = 
@@ -267,20 +272,20 @@ let ValidateMove move position =
                                       ({ p with Observations = newObservations })
         | None -> ()
     
-    let setupResultPosition f t promoteTo fPt color = 
+    let setupResultPosition fPt color = 
         let newPlacement = Array.copy position.Placement
         // Remove the pawn captured en-passant
         if observations |> contains EnPassant then 
             let increment = 
                 if color = White then +8
                 else -8
-            newPlacement.[(t |> ToIndex) + increment] <- None
+            newPlacement.[(t2 |> ToIndex) + increment] <- None
         // Remove the piece from the old square and put it to the new square
         let piece1 = 
-            if observations |> contains Promotion then promoteTo
+            if observations |> contains Promotion then p2
             else fPt
-        newPlacement.[t |> ToIndex] <- Some((color, piece1))
-        newPlacement.[f |> ToIndex] <- None
+        newPlacement.[t2 |> ToIndex] <- Some((color, piece1))
+        newPlacement.[f2 |> ToIndex] <- None
         // Move the rook if it was a castling
         let moveCastlingRook f t = 
             let x88toIndex = fromX88 >> ToIndex
@@ -295,7 +300,7 @@ let ValidateMove move position =
         | None -> ()
         // Figure out new en-passant option, half-move clock, full-move number
         let newEnPassant = 
-            if observations |> contains DoublePush then Some(fst f)
+            if observations |> contains DoublePush then Some(fst f2)
             else None
         
         let newHalfMoveClock = 
@@ -319,8 +324,8 @@ let ValidateMove move position =
         
         let newCastlingAvailability = 
             position.CastlingAvailability
-            |> except (optionsInvalidatedBy f)
-            |> except (optionsInvalidatedBy t)
+            |> except (optionsInvalidatedBy f2)
+            |> except (optionsInvalidatedBy t2)
         
         // Figure out new active color, and if the move gives check
         let newActiveColor = Color.oppositeOf position.ActiveColor
@@ -333,39 +338,37 @@ let ValidateMove move position =
                         CastlingAvailability = newCastlingAvailability
                         Observations = [] }
     
-    let assignResultPosition f t promoteTo fPt color = 
+    let assignResultPosition fPt color = 
         if errors.IsEmpty then 
-            let p = Some(setupResultPosition f t promoteTo fPt color)
+            let p = Some(setupResultPosition fPt color)
             resultPosition <- p
     
     let at64 i64 = position |> PieceAt i64
     
-    let validateFromTo f t promoteTo = 
-        match at64 f with
+    let validateFromTo() = 
+        match at64 f2 with
         | Some(color, fPt) -> 
-            validateByPieceType color fPt (toX88 f) (toX88 t)
+            validateByPieceType color fPt (toX88 f2) (toX88 t2)
             addPieceType fPt
-            checkCapture (at64 t)
+            checkCapture (at64 t2)
             checkSideToMove color
-            assignResultPosition f t promoteTo fPt color
+            assignResultPosition fPt color
             assignMoveToCheckError()
             addObservations()
         | None -> emptyCell()
+
     match move with
-    | UsualMove(f, t) -> 
-        validateFromTo f t Queen
+    | UsualMove(_, _) -> 
+        validateFromTo()
         assignMissingPromotionHint()
-    | PromotionMove({ Vector = (f, t); PromoteTo = promoteTo }) -> 
-        validateFromTo f t promoteTo
+    | PromotionMove(_) -> 
+        validateFromTo()
         assignPromotionHintIsNotNeededHint()
+
     if errors.IsEmpty then 
-        let (f, t, p) = 
-            match move with
-            | UsualMove(f, t) -> (f, t, Queen)
-            | PromotionMove({ Vector = (f, t); PromoteTo = p }) -> (f, t, p)
-        LegalMove { Start = f
-                    End = t
-                    PromoteTo = p
+        LegalMove { Start = f2
+                    End = t2
+                    PromoteTo = p2
                     OriginalPosition = position
                     ResultPosition = resultPosition.Value
                     Piece = piece.Value
