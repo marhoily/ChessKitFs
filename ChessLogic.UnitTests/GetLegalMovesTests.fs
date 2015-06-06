@@ -9,7 +9,9 @@ open CoordinateNotation
 open Definitions
 open Dump
 
+// TODO: remove duplication from check and checkAll!
 let check from (expected : string list) position = 
+    let toString2 m = CoordinateToString m.End
     let toString (m : ValidatedMove) = 
         match m.Move with
         | UsualMove(_, t) -> CoordinateToString t
@@ -26,7 +28,7 @@ let check from (expected : string list) position =
     let actual = 
         p
         |> GetLegalMoves.FromSquare f
-        |> List.map toString
+        |> List.map toString2
         |> List.sort
     actual |> should equal (expected |> List.sort)
     // Now do full search and make sure ValidateMove agrees
@@ -43,6 +45,7 @@ let check from (expected : string list) position =
     actual |> should equal (expected2 |> List.sort)
 
 let checkAll expected position = 
+    let toString2 m = CoordinateToString m.End
     let toString (m : ValidatedMove) = 
         match m.Move with
         | UsualMove(_, t) -> CoordinateToString t
@@ -57,7 +60,7 @@ let checkAll expected position =
     let actual = 
         p
         |> GetLegalMoves.All
-        |> List.map toString
+        |> List.map toString2
         |> List.sort
     actual |> should equal (expected |> List.sort)
     // Now do full search and make sure ValidateMove agrees

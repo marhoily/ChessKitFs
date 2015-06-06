@@ -16,10 +16,7 @@ let ToSanString (board : Position) (move : LegalMove) : string =
         | Queen -> 'Q'
         | King -> 'K'
     
-    let decompose (m : ValidatedMove) = 
-        match m.Move with
-        | UsualMove(f, t) -> (f, t, Queen)
-        | PromotionMove({ Vector = (f, t); PromoteTo = p }) -> (f, t, p)
+    let decompose m = (m.Start, m.End, m.PromoteTo)
     
     let piece = move.Piece
     let sb = new StringBuilder(6)
