@@ -5,7 +5,7 @@ open MoveLegalityChecker
 open System.Text
 open CoordinateNotation
 
-let ToSanString (board : Position) (move : LegalMove) : string = 
+let ToSanString board (move : LegalMove) = 
     let typeToString = 
         function 
         | Pawn -> 'P'
