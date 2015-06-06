@@ -29,7 +29,7 @@ type ErrorHint =
     | DoesNotMoveThisWay
     | CastleFromCheck
 
-type Hint = 
+type private Hint = 
     { Piece : PieceType option
       Castling : CastlingHint option
       Observations : ObservationHint list
@@ -37,12 +37,7 @@ type Hint =
       Warnings : WarningHint list
       ResultPosition : Position option }
 
-type ValidatedMove = 
-    { Move : Move
-      Position : Position
-      Hint : Hint }
-
-let eh = 
+let private eh = 
     { Piece = None
       Castling = None
       Observations = []
@@ -98,7 +93,6 @@ let G8 = 6
 [<Literal>]
 let H8 = 7
 
-
 type LegalMove = 
     { Start : Coordinate
       End : Coordinate
@@ -122,7 +116,6 @@ type IllegalMove =
 type MoveInfo = 
     | LegalMove of LegalMove
     | IllegalMove of IllegalMove
-
 
 let ValidateMove move position = 
     let doesNotCaptureThisWay = { eh with Errors = [ DoesNotCaptureThisWay ] }
@@ -241,7 +234,8 @@ let ValidateMove move position =
         | Rook -> validateRookMove
         | Queen -> validateQueenMove
     
-    let addPieceType pieceType (hint : Hint) = { hint with Piece = Some(pieceType) }
+    let addPieceType pieceType (hint : Hint) = 
+        { hint with Piece = Some(pieceType) }
     
     let checkCapture capture (hint : Hint) = 
         if capture <> None then 
@@ -382,7 +376,7 @@ let ValidateMove move position =
             validateFromTo f t Queen |> assignMissingPromotionHint
         | PromotionMove({ Vector = (f, t); PromoteTo = promoteTo }) -> 
             validateFromTo f t promoteTo |> assignPromotionHintIsNotNeededHint
-
+    
     if hint.Errors |> List.isEmpty then 
         let (f, t, p) = 
             match move with
@@ -396,8 +390,8 @@ let ValidateMove move position =
                     Piece = hint.Piece.Value
                     Castling = hint.Castling
                     Observations = hint.Observations
-                    Warnings = hint.Warnings } 
-    else
+                    Warnings = hint.Warnings }
+    else 
         IllegalMove({ Move = move
                       OriginalPosition = position
                       Piece = hint.Piece
@@ -405,7 +399,8 @@ let ValidateMove move position =
                       Observations = hint.Observations
                       Warnings = hint.Warnings
                       Errors = hint.Errors })
-let UnwrapLegal =
-    function
+
+let UnwrapLegal = 
+    function 
     | LegalMove(m) -> m
     | IllegalMove(_) -> failwith "move is illegal"
