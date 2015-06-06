@@ -120,8 +120,9 @@ let ValidateMove move position =
     let castleFromCheck() = errors <- CastleFromCheck :: errors
     let toOccupiedCell() = errors <- ToOccupiedCell :: errors
     let wrongSideToMove() = errors <- WrongSideToMove :: errors
-    let capture_() = observations <- Capture :: observations
+    let capture() = observations <- Capture :: observations
     let emptyCell() = errors <- EmptyCell :: errors
+    let castle x = castling <- Some(x)
     
     let hasNoEnPassant() = 
         errors <- HasNoEnPassant :: errors
@@ -169,7 +170,6 @@ let ValidateMove move position =
     
     let validateKingMove fromSquare toSquare = 
         let avail opt = position.CastlingAvailability |> contains opt
-        let castle x = castling <- Some(x)
         
         let long B C D E attacked castlingOpt = 
             if at D <> None || at B <> None then doesNotJump()
@@ -229,10 +229,10 @@ let ValidateMove move position =
     
     let addPieceType pieceType = piece <- Some(pieceType)
     
-    let checkCapture capture = 
-        if capture <> None then 
-            if (fst capture.Value) = position.ActiveColor then toOccupiedCell()
-            else capture_()
+    let checkCapture capturedPiece = 
+        if capturedPiece <> None then 
+            if (fst capturedPiece.Value) = position.ActiveColor then toOccupiedCell()
+            else capture()
     
     let checkSideToMove color = 
         if position.ActiveColor <> color then wrongSideToMove()
@@ -271,10 +271,10 @@ let ValidateMove move position =
         let newPlacement = Array.copy position.Placement
         // Remove the pawn captured en-passant
         if observations |> contains EnPassant then 
-            let capture = 
+            let increment = 
                 if color = White then +8
                 else -8
-            newPlacement.[(t |> ToIndex) + capture] <- None
+            newPlacement.[(t |> ToIndex) + increment] <- None
         // Remove the piece from the old square and put it to the new square
         let piece1 = 
             if observations |> contains Promotion then promoteTo
