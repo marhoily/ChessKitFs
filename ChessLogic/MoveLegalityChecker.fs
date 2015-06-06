@@ -132,6 +132,7 @@ let ValidateMove move position =
         match move with
         | UsualMove(f, t) -> (f, t, Queen)
         | PromotionMove({ Vector = (f, t); PromoteTo = p }) -> (f, t, p)
+    
     let at64 i64 = position |> PieceAt i64
     let piece = at64 moveFrom
     let capturedPiece = at64 moveTo
@@ -147,7 +148,8 @@ let ValidateMove move position =
         
         let validatePush c = 
             if at toSquare <> None then doesNotCaptureThisWay()
-            else if fromSquare / 16 = c then promotion()
+            else 
+                if fromSquare / 16 = c then promotion()
         
         let validateCapture c2 looksEnPassanty = 
             if at toSquare = None then 
@@ -155,7 +157,8 @@ let ValidateMove move position =
                     if position.EnPassant = Some(toSquare % 16) then enPassant()
                     else hasNoEnPassant()
                 else onlyCapturesThisWay()
-            else if fromSquare / 16 = c2 then promotion()
+            else 
+                if fromSquare / 16 = c2 then promotion()
         
         let looksEnPassanty c1 c2 c3 clr () = 
             fromSquare / 16 = c1 && at (fromSquare + c2) = None 
@@ -184,7 +187,8 @@ let ValidateMove move position =
             else if at C <> None then doesNotCaptureThisWay()
             else if not (avail castlingOpt) then hasNoCastling()
             else if attacked E then castleFromCheck()
-            else if attacked D then castleThroughCheck()
+            else 
+                if attacked D then castleThroughCheck()
             castle (castlingOpt)
         
         let short E F G attacked castlingOpt = 
@@ -192,7 +196,8 @@ let ValidateMove move position =
             else if at G <> None then doesNotCaptureThisWay()
             else if not (avail castlingOpt) then hasNoCastling()
             else if attacked E then castleFromCheck()
-            else if attacked F then castleThroughCheck()
+            else 
+                if attacked F then castleThroughCheck()
             castle (castlingOpt)
         
         let w = IsAttackedBy Black at
@@ -234,17 +239,14 @@ let ValidateMove move position =
         | Bishop -> validateBishopMove
         | Rook -> validateRookMove
         | Queen -> validateQueenMove
-    
     if capturedPiece <> None then 
         if (fst capturedPiece.Value) = color then toOccupiedCell()
         else capture()
-    
     //let checkSideToMove clr = 
     match piece with
     | Some(pieceColor, _) -> 
         if color <> pieceColor then wrongSideToMove()
     | None -> ()
-    
     let assignMoveToCheckError() = 
         match resultPosition with
         | Some(p) -> 
@@ -347,19 +349,16 @@ let ValidateMove move position =
             resultPosition <- p
     
     match piece with
-    | Some(_, fPt) -> 
-        pieceType <- Some(fPt)
-        if errors.IsEmpty then
-            validateByPieceType() (toX88 moveFrom) (toX88 moveTo)
-            assignResultPosition()
-            assignMoveToCheckError()
-            addObservations()
+    | Some(_, fPt) -> pieceType <- Some(fPt)
     | None -> emptyCell()
-
+    if errors.IsEmpty then 
+        validateByPieceType () (toX88 moveFrom) (toX88 moveTo)
+        assignResultPosition()
+        assignMoveToCheckError()
+        addObservations()
     match move with
     | UsualMove(_, _) -> assignMissingPromotionHint()
     | PromotionMove(_) -> assignPromotionHintIsNotNeededHint()
-
     if errors.IsEmpty then 
         LegalMove { Start = moveFrom
                     End = moveTo
