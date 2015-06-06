@@ -128,14 +128,14 @@ let ValidateMove move position =
         errors <- HasNoEnPassant :: errors
         observations <- Capture :: EnPassant :: observations
     
-    let f2, t2, p2 = 
+    let moveFrom, moveTo, promoteTo = 
         match move with
         | UsualMove(f, t) -> (f, t, Queen)
         | PromotionMove({ Vector = (f, t); PromoteTo = p }) -> (f, t, p)
     let at64 i64 = position |> PieceAt i64
-    let fP2 = at64 f2
-    let capturedPiece = at64 t2
-    let color2 = position.ActiveColor
+    let piece = at64 moveFrom
+    let capturedPiece = at64 moveTo
+    let color = position.ActiveColor
     let at i = position |> PieceAt(i % 16, i / 16)
     
     let validatePawnMove fromSquare toSquare = 
@@ -160,7 +160,7 @@ let ValidateMove move position =
         let looksEnPassanty c1 c2 c3 clr () = 
             fromSquare / 16 = c1 && at (fromSquare + c2) = None 
             && at (fromSquare + c3) = (Some(clr, Pawn))
-        match (color2, (toSquare - fromSquare)) with
+        match (color, (toSquare - fromSquare)) with
         | (White, -32) -> validateDoublePush -16 6
         | (Black, +32) -> validateDoublePush +16 1
         | (White, -16) -> validatePush 1
@@ -236,13 +236,13 @@ let ValidateMove move position =
         | Queen -> validateQueenMove
     
     if capturedPiece <> None then 
-        if (fst capturedPiece.Value) = color2 then toOccupiedCell()
+        if (fst capturedPiece.Value) = color then toOccupiedCell()
         else capture()
     
     //let checkSideToMove clr = 
-    match fP2 with
+    match piece with
     | Some(pieceColor, _) -> 
-        if color2 <> pieceColor then wrongSideToMove()
+        if color <> pieceColor then wrongSideToMove()
     | None -> ()
     
     let assignMoveToCheckError() = 
@@ -280,15 +280,15 @@ let ValidateMove move position =
         // Remove the pawn captured en-passant
         if observations |> contains EnPassant then 
             let increment = 
-                if color2 = White then +8
+                if color = White then +8
                 else -8
-            newPlacement.[(t2 |> ToIndex) + increment] <- None
+            newPlacement.[(moveTo |> ToIndex) + increment] <- None
         // Remove the piece from the old square and put it to the new square
         let piece1 = 
-            if observations |> contains Promotion then p2
+            if observations |> contains Promotion then promoteTo
             else pieceType.Value
-        newPlacement.[t2 |> ToIndex] <- Some((color2, piece1))
-        newPlacement.[f2 |> ToIndex] <- None
+        newPlacement.[moveTo |> ToIndex] <- Some((color, piece1))
+        newPlacement.[moveFrom |> ToIndex] <- None
         // Move the rook if it was a castling
         let moveCastlingRook f t = 
             let x88toIndex = fromX88 >> ToIndex
@@ -303,7 +303,7 @@ let ValidateMove move position =
         | None -> ()
         // Figure out new en-passant option, half-move clock, full-move number
         let newEnPassant = 
-            if observations |> contains DoublePush then Some(fst f2)
+            if observations |> contains DoublePush then Some(fst moveFrom)
             else None
         
         let newHalfMoveClock = 
@@ -311,7 +311,7 @@ let ValidateMove move position =
             else position.HalfMoveClock + 1
         
         let newMoveNumber = 
-            position.FullMoveNumber + if color2 = Black then 1
+            position.FullMoveNumber + if color = Black then 1
                                       else 0
         
         // Figure out new castling availability
@@ -327,11 +327,11 @@ let ValidateMove move position =
         
         let newCastlingAvailability = 
             position.CastlingAvailability
-            |> except (optionsInvalidatedBy f2)
-            |> except (optionsInvalidatedBy t2)
+            |> except (optionsInvalidatedBy moveFrom)
+            |> except (optionsInvalidatedBy moveTo)
         
         // Figure out new active color, and if the move gives check
-        let newActiveColor = Color.oppositeOf color2
+        let newActiveColor = Color.oppositeOf color
         { // Construct new position
           position with Placement = newPlacement
                         ActiveColor = newActiveColor
@@ -346,11 +346,11 @@ let ValidateMove move position =
             let p = Some(setupResultPosition())
             resultPosition <- p
     
-    match fP2 with
+    match piece with
     | Some(_, fPt) -> 
         pieceType <- Some(fPt)
         if errors.IsEmpty then
-            validateByPieceType() (toX88 f2) (toX88 t2)
+            validateByPieceType() (toX88 moveFrom) (toX88 moveTo)
             assignResultPosition()
             assignMoveToCheckError()
             addObservations()
@@ -361,9 +361,9 @@ let ValidateMove move position =
     | PromotionMove(_) -> assignPromotionHintIsNotNeededHint()
 
     if errors.IsEmpty then 
-        LegalMove { Start = f2
-                    End = t2
-                    PromoteTo = p2
+        LegalMove { Start = moveFrom
+                    End = moveTo
+                    PromoteTo = promoteTo
                     OriginalPosition = position
                     ResultPosition = resultPosition.Value
                     Piece = pieceType.Value
