@@ -24,9 +24,9 @@ let ToSanString (board : Position) (move : LegalMove) : string =
     let mate = move.ResultPosition.Observations |> MyList.contains Mate
     let append (str : string) = sb.Append(str) |> ignore
     let appendc (str : char) = sb.Append(str) |> ignore
-    let file x = fileToStirng (x |> fst)
-    let rank x = rankToString (x |> snd)
-    let fileAndRank = CoordinateToString
+    let file, rank, fileAndRankStr = fst, snd, CoordinateToString
+    let fileStr x = fileToStirng (x |> file)
+    let rankStr x = rankToString (x |> rank)
     let at x = board |> PieceAt x
     let isSimilarTo x y = 
         (x.Start <> y.Start) && (x.End = y.End) && (at x.Start = at y.Start)
@@ -44,15 +44,15 @@ let ToSanString (board : Position) (move : LegalMove) : string =
     else if longCastling then append "O-O-O"
     else 
         if move.Piece = Pawn then 
-            if capture then append (file move.Start)
+            if capture then append (fileStr move.Start)
         else 
             appendc (move.Piece |> typeToString)
             if ambiguous() then 
-                if unique fst then append (file move.Start)
-                else if unique snd then append (rank move.Start)
-                else append (fileAndRank move.Start)
+                if unique file then append (fileStr move.Start)
+                else if unique rank then append (rankStr move.Start)
+                else append (fileAndRankStr move.Start)
         if capture then appendc 'x'
-        append (fileAndRank move.End)
+        append (fileAndRankStr move.End)
     if promotion then 
         appendc '='
         appendc (move.PromoteTo |> typeToString)
