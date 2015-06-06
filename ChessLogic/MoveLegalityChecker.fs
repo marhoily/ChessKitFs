@@ -135,6 +135,7 @@ let ValidateMove move position =
     let at64 i64 = position |> PieceAt i64
     let fP2 = at64 f2
     let capturedPiece = at64 t2
+    let color2 = position.ActiveColor
     let at i = position |> PieceAt(i % 16, i / 16)
     
     let validatePawnMove sideToMove fromSquare toSquare = 
@@ -156,9 +157,9 @@ let ValidateMove move position =
                 else onlyCapturesThisWay()
             else if fromSquare / 16 = c2 then promotion()
         
-        let looksEnPassanty c1 c2 c3 color () = 
+        let looksEnPassanty c1 c2 c3 clr () = 
             fromSquare / 16 = c1 && at (fromSquare + c2) = None 
-            && at (fromSquare + c3) = (Some(color, Pawn))
+            && at (fromSquare + c3) = (Some(clr, Pawn))
         match (sideToMove, (toSquare - fromSquare)) with
         | (White, -32) -> validateDoublePush -16 6
         | (Black, +32) -> validateDoublePush +16 1
@@ -235,11 +236,11 @@ let ValidateMove move position =
         | Queen -> validateQueenMove
     
     if capturedPiece <> None then 
-        if (fst capturedPiece.Value) = position.ActiveColor then toOccupiedCell()
+        if (fst capturedPiece.Value) = color2 then toOccupiedCell()
         else capture()
     
-    let checkSideToMove color = 
-        if position.ActiveColor <> color then wrongSideToMove()
+    let checkSideToMove clr = 
+        if color2 <> clr then wrongSideToMove()
     
     let assignMoveToCheckError() = 
         match resultPosition with
@@ -271,19 +272,19 @@ let ValidateMove move position =
                                       ({ p with Observations = newObservations })
         | None -> ()
     
-    let setupResultPosition fPt color = 
+    let setupResultPosition() = 
         let newPlacement = Array.copy position.Placement
         // Remove the pawn captured en-passant
         if observations |> contains EnPassant then 
             let increment = 
-                if color = White then +8
+                if color2 = White then +8
                 else -8
             newPlacement.[(t2 |> ToIndex) + increment] <- None
         // Remove the piece from the old square and put it to the new square
         let piece1 = 
             if observations |> contains Promotion then p2
-            else fPt
-        newPlacement.[t2 |> ToIndex] <- Some((color, piece1))
+            else pieceType.Value
+        newPlacement.[t2 |> ToIndex] <- Some((color2, piece1))
         newPlacement.[f2 |> ToIndex] <- None
         // Move the rook if it was a castling
         let moveCastlingRook f t = 
@@ -307,7 +308,7 @@ let ValidateMove move position =
             else position.HalfMoveClock + 1
         
         let newMoveNumber = 
-            position.FullMoveNumber + if color = Black then 1
+            position.FullMoveNumber + if color2 = Black then 1
                                       else 0
         
         // Figure out new castling availability
@@ -327,7 +328,7 @@ let ValidateMove move position =
             |> except (optionsInvalidatedBy t2)
         
         // Figure out new active color, and if the move gives check
-        let newActiveColor = Color.oppositeOf position.ActiveColor
+        let newActiveColor = Color.oppositeOf color2
         { // Construct new position
           position with Placement = newPlacement
                         ActiveColor = newActiveColor
@@ -337,9 +338,9 @@ let ValidateMove move position =
                         CastlingAvailability = newCastlingAvailability
                         Observations = [] }
     
-    let assignResultPosition fPt color = 
+    let assignResultPosition() = 
         if errors.IsEmpty then 
-            let p = Some(setupResultPosition fPt color)
+            let p = Some(setupResultPosition())
             resultPosition <- p
     
     let validateFromTo() = 
@@ -348,7 +349,7 @@ let ValidateMove move position =
             pieceType <- Some(fPt)
             validateByPieceType color (toX88 f2) (toX88 t2)
             checkSideToMove color
-            assignResultPosition fPt color
+            assignResultPosition()
             assignMoveToCheckError()
             addObservations()
         | None -> emptyCell()
