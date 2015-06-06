@@ -105,7 +105,7 @@ let ValidateMove move position =
     let mutable errors = []
     let mutable observations = []
     let mutable warnings = []
-    let mutable _castling = None
+    let mutable castling = None
     let mutable piece = None
     let mutable resultPosition = None
     let doesNotCaptureThisWay() = errors <- DoesNotCaptureThisWay :: errors
@@ -138,8 +138,7 @@ let ValidateMove move position =
         
         let validatePush c = 
             if at toSquare <> None then doesNotCaptureThisWay()
-            else 
-                if fromSquare / 16 = c then promotion()
+            else if fromSquare / 16 = c then promotion()
         
         let validateCapture c2 looksEnPassanty = 
             if at toSquare = None then 
@@ -147,8 +146,7 @@ let ValidateMove move position =
                     if position.EnPassant = Some(toSquare % 16) then enPassant()
                     else hasNoEnPassant()
                 else onlyCapturesThisWay()
-            else 
-                if fromSquare / 16 = c2 then promotion()
+            else if fromSquare / 16 = c2 then promotion()
         
         let looksEnPassanty c1 c2 c3 color () = 
             fromSquare / 16 = c1 && at (fromSquare + c2) = None 
@@ -170,26 +168,24 @@ let ValidateMove move position =
         | _ -> doesNotMoveThisWay()
     
     let validateKingMove fromSquare toSquare = 
-        let castling opt = position.CastlingAvailability |> contains opt
-        let c x = _castling <- Some(x)
+        let avail opt = position.CastlingAvailability |> contains opt
+        let castle x = castling <- Some(x)
         
-        let long B C D E attacked available = 
+        let long B C D E attacked castlingOpt = 
             if at D <> None || at B <> None then doesNotJump()
             else if at C <> None then doesNotCaptureThisWay()
-            else if not (castling available) then hasNoCastling()
+            else if not (avail castlingOpt) then hasNoCastling()
             else if attacked E then castleFromCheck()
-            else 
-                if attacked D then castleThroughCheck()
-            c (available)
+            else if attacked D then castleThroughCheck()
+            castle (castlingOpt)
         
-        let short E F G attacked available = 
+        let short E F G attacked castlingOpt = 
             if at F <> None then doesNotJump()
             else if at G <> None then doesNotCaptureThisWay()
-            else if not (castling available) then hasNoCastling()
+            else if not (avail castlingOpt) then hasNoCastling()
             else if attacked E then castleFromCheck()
-            else 
-                if attacked F then castleThroughCheck()
-            c (available)
+            else if attacked F then castleThroughCheck()
+            castle (castlingOpt)
         
         let w = IsAttackedBy Black at
         let b = IsAttackedBy White at
@@ -291,7 +287,7 @@ let ValidateMove move position =
             let rook = newPlacement.[fromX88 f |> ToIndex]
             newPlacement.[f |> x88toIndex] <- None
             newPlacement.[t |> x88toIndex] <- rook
-        match _castling with
+        match castling with
         | Some(WK) -> moveCastlingRook H1 F1
         | Some(WQ) -> moveCastlingRook A1 D1
         | Some(BK) -> moveCastlingRook H8 F8
@@ -373,14 +369,14 @@ let ValidateMove move position =
                     OriginalPosition = position
                     ResultPosition = resultPosition.Value
                     Piece = piece.Value
-                    Castling = _castling
+                    Castling = castling
                     Observations = observations
                     Warnings = warnings }
     else 
         IllegalMove({ Move = move
                       OriginalPosition = position
                       Piece = piece
-                      Castling = _castling
+                      Castling = castling
                       Observations = observations
                       Warnings = warnings
                       Errors = errors })
