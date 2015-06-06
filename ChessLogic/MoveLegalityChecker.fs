@@ -108,24 +108,24 @@ let ValidateMove move position =
     let mutable _castling = None
     let mutable piece = None
     let mutable resultPosition = None
-    let doesNotCaptureThisWay() = errors <- DoesNotCaptureThisWay::errors
-    let doesNotMoveThisWay() = errors <- DoesNotMoveThisWay::errors
-    let doesNotJump() = errors <- DoesNotJump::errors
-    let promotion() = observations <- Promotion::observations
-    let doublePush() = observations <- DoublePush::observations
-    let onlyCapturesThisWay() = errors <- OnlyCapturesThisWay::errors 
-    let enPassant() = observations <- Capture::EnPassant::observations
-    let hasNoCastling() = errors <- HasNoCastling::errors
-    let castleThroughCheck() = errors <- CastleThroughCheck::errors
-    let castleFromCheck() = errors <- CastleFromCheck::errors
-    let toOccupiedCell() = errors <- ToOccupiedCell::errors
-    let wrongSideToMove() = errors <- WrongSideToMove::errors
-    let capture_() = observations <- Capture::observations
-    let emptyCell() = errors <- EmptyCell::errors
+    let doesNotCaptureThisWay() = errors <- DoesNotCaptureThisWay :: errors
+    let doesNotMoveThisWay() = errors <- DoesNotMoveThisWay :: errors
+    let doesNotJump() = errors <- DoesNotJump :: errors
+    let promotion() = observations <- Promotion :: observations
+    let doublePush() = observations <- DoublePush :: observations
+    let onlyCapturesThisWay() = errors <- OnlyCapturesThisWay :: errors
+    let enPassant() = observations <- Capture :: EnPassant :: observations
+    let hasNoCastling() = errors <- HasNoCastling :: errors
+    let castleThroughCheck() = errors <- CastleThroughCheck :: errors
+    let castleFromCheck() = errors <- CastleFromCheck :: errors
+    let toOccupiedCell() = errors <- ToOccupiedCell :: errors
+    let wrongSideToMove() = errors <- WrongSideToMove :: errors
+    let capture_() = observations <- Capture :: observations
+    let emptyCell() = errors <- EmptyCell :: errors
     
     let hasNoEnPassant() = 
-        errors <- HasNoEnPassant::errors
-        observations <- Capture::EnPassant::observations
+        errors <- HasNoEnPassant :: errors
+        observations <- Capture :: EnPassant :: observations
     
     let at i = position |> PieceAt(i % 16, i / 16)
     
@@ -138,7 +138,8 @@ let ValidateMove move position =
         
         let validatePush c = 
             if at toSquare <> None then doesNotCaptureThisWay()
-            else if fromSquare / 16 = c then promotion()
+            else 
+                if fromSquare / 16 = c then promotion()
         
         let validateCapture c2 looksEnPassanty = 
             if at toSquare = None then 
@@ -146,7 +147,8 @@ let ValidateMove move position =
                     if position.EnPassant = Some(toSquare % 16) then enPassant()
                     else hasNoEnPassant()
                 else onlyCapturesThisWay()
-            else if fromSquare / 16 = c2 then promotion()
+            else 
+                if fromSquare / 16 = c2 then promotion()
         
         let looksEnPassanty c1 c2 c3 color () = 
             fromSquare / 16 = c1 && at (fromSquare + c2) = None 
@@ -169,32 +171,36 @@ let ValidateMove move position =
     
     let validateKingMove fromSquare toSquare = 
         let castling opt = position.CastlingAvailability |> contains opt
+        let c x = _castling <- Some(x)
         
         let long B C D E attacked available = 
             if at D <> None || at B <> None then doesNotJump()
             else if at C <> None then doesNotCaptureThisWay()
             else if not (castling available) then hasNoCastling()
             else if attacked E then castleFromCheck()
-            else if attacked D then castleThroughCheck()
+            else 
+                if attacked D then castleThroughCheck()
+            c (available)
         
         let short E F G attacked available = 
             if at F <> None then doesNotJump()
             else if at G <> None then doesNotCaptureThisWay()
             else if not (castling available) then hasNoCastling()
             else if attacked E then castleFromCheck()
-            else if attacked F then castleThroughCheck()
+            else 
+                if attacked F then castleThroughCheck()
+            c (available)
         
         let w = IsAttackedBy Black at
         let b = IsAttackedBy White at
-        let c x = _castling <- Some(x) 
         match (toSquare - fromSquare) with
         | 1 | 15 | 16 | 17 | -1 | -15 | -16 | -17 -> ()
         | -2 | +2 -> 
             match (fromSquare, toSquare) with
-            | (E1, C1) -> long B1 C1 D1 E1 w WQ ; c(WQ) 
-            | (E8, C8) -> long B8 C8 D8 E8 b BQ ; c(BQ) 
-            | (E1, G1) -> short E1 F1 G1 w WK ;   c(WK) 
-            | (E8, G8) -> short E8 F8 G8 b BK ;   c(BK) 
+            | (E1, C1) -> long B1 C1 D1 E1 w WQ
+            | (E8, C8) -> long B8 C8 D8 E8 b BQ
+            | (E1, G1) -> short E1 F1 G1 w WK
+            | (E8, G8) -> short E8 F8 G8 b BK
             | _ -> doesNotMoveThisWay()
         | _ -> doesNotMoveThisWay()
     
@@ -225,25 +231,22 @@ let ValidateMove move position =
         | Rook -> validateRookMove
         | Queen -> validateQueenMove
     
-    let addPieceType pieceType = 
-        piece <- Some(pieceType) 
+    let addPieceType pieceType = piece <- Some(pieceType)
     
     let checkCapture capture = 
         if capture <> None then 
-            if (fst capture.Value) = position.ActiveColor then 
-                toOccupiedCell()
+            if (fst capture.Value) = position.ActiveColor then toOccupiedCell()
             else capture_()
     
     let checkSideToMove color = 
-        if position.ActiveColor <> color then 
-            wrongSideToMove()
+        if position.ActiveColor <> color then wrongSideToMove()
     
     let assignMoveToCheckError() = 
         match resultPosition with
         | Some(p) -> 
             let at c = PieceAt c p
             if IsInCheck (Color.oppositeOf p.ActiveColor) at then 
-                errors <- MoveToCheck::errors 
+                errors <- MoveToCheck :: errors
                 resultPosition <- None
         | None -> ()
     
@@ -251,7 +254,7 @@ let ValidateMove move position =
         if observations |> contains Promotion then 
             warnings <- MissingPromotionHint :: warnings
     
-    let assignPromotionHintIsNotNeededHint() =
+    let assignPromotionHintIsNotNeededHint() = 
         if not (observations |> contains Promotion) then 
             warnings <- PromotionHintIsNotNeeded :: warnings
     
@@ -264,7 +267,8 @@ let ValidateMove move position =
             let newObservations = 
                 [ if isInCheck then yield Check ]
             if not newObservations.IsEmpty then 
-                resultPosition <- Some({ p with Observations = newObservations })
+                resultPosition <- Some
+                                      ({ p with Observations = newObservations })
         | None -> ()
     
     let setupResultPosition f t promoteTo fPt color = 
@@ -299,8 +303,7 @@ let ValidateMove move position =
             else None
         
         let newHalfMoveClock = 
-            if piece = Some(Pawn) || observations |> contains Capture then 
-                0
+            if piece = Some(Pawn) || observations |> contains Capture then 0
             else position.HalfMoveClock + 1
         
         let newMoveNumber = 
@@ -337,7 +340,7 @@ let ValidateMove move position =
     let assignResultPosition f t promoteTo fPt color = 
         if errors.IsEmpty then 
             let p = Some(setupResultPosition f t promoteTo fPt color)
-            resultPosition <- p 
+            resultPosition <- p
     
     let at64 i64 = position |> PieceAt i64
     
@@ -352,15 +355,13 @@ let ValidateMove move position =
             assignMoveToCheckError()
             addObservations()
         | None -> emptyCell()
-    
     match move with
     | UsualMove(f, t) -> 
-        validateFromTo f t Queen 
+        validateFromTo f t Queen
         assignMissingPromotionHint()
     | PromotionMove({ Vector = (f, t); PromoteTo = promoteTo }) -> 
         validateFromTo f t promoteTo
         assignPromotionHintIsNotNeededHint()
-    
     if errors.IsEmpty then 
         let (f, t, p) = 
             match move with
@@ -382,7 +383,7 @@ let ValidateMove move position =
                       Castling = _castling
                       Observations = observations
                       Warnings = warnings
-                      Errors =errors })
+                      Errors = errors })
 
 let UnwrapLegal = 
     function 
