@@ -119,6 +119,11 @@ type IllegalMove =
       Warnings : WarningHint list
       Errors : ErrorHint list }
 
+type MoveInfo = 
+    | LegalMove of LegalMove
+    | IllegalMove of IllegalMove
+
+
 let ValidateMove move position = 
     let doesNotCaptureThisWay = { eh with Errors = [ DoesNotCaptureThisWay ] }
     let doesNotMoveThisWay = { eh with Errors = [ DoesNotMoveThisWay ] }
@@ -377,17 +382,7 @@ let ValidateMove move position =
             validateFromTo f t Queen |> assignMissingPromotionHint
         | PromotionMove({ Vector = (f, t); PromoteTo = promoteTo }) -> 
             validateFromTo f t promoteTo |> assignPromotionHintIsNotNeededHint
-    
-    { Position = position
-      Move = move
-      Hint = hint }
 
-type MoveInfo = 
-    | LegalMove of LegalMove
-    | IllegalMove of IllegalMove
-
-let ValidateMove2 move position : MoveInfo = 
-    let hint = (ValidateMove move position).Hint
     if hint.Errors |> List.isEmpty then 
         let (f, t, p) = 
             match move with

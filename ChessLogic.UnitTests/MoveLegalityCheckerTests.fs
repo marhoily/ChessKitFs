@@ -43,7 +43,7 @@ let check position move expectedHint =
     position
     |> ParseFen
     |> unwrap
-    |> ValidateMove2(_cn move)
+    |> ValidateMove(_cn move)
     |> MoveToString
     |> should equal expectedHint
 
@@ -1376,7 +1376,7 @@ module Queen =
                     fen
                     |> ParseFen
                     |> unwrap
-                    |> ValidateMove2(_cn move)
+                    |> ValidateMove(_cn move)
                     |> MoveToString
                 if expected <> actual then 
                     errCounter <- errCounter + 1

@@ -20,7 +20,7 @@ let FromSquare from position =
     
     let u i = UsualMove(i)
     let f = from |> toX88
-    let validate v t = position |> ValidateMove2(v (from, t |> fromX88))
+    let validate v t = position |> ValidateMove(v (from, t |> fromX88))
     let at88 i = position |> PieceAt(i |> fromX88)
     
     let gen v = 

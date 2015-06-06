@@ -27,7 +27,7 @@ let check from (expected : string list) position =
     let expected2 = 
         [ for i = 0 to 63 do
               let t = UsualMove(f, (i % 8, i / 8))
-              match ValidateMove2 t p with
+              match ValidateMove t p with
                   | LegalMove m -> yield m |> toString
                   | _ -> () ]
     actual |> should equal (expected2 |> List.sort)
@@ -47,7 +47,7 @@ let checkAll expected position =
         [ for i = 0 to 63 do
               for j = 0 to 63 do
                   let t = UsualMove((j % 8, j / 8), (i % 8, i / 8))
-                  match ValidateMove2 t p with
+                  match ValidateMove t p with
                   | LegalMove m -> yield m |> toString
                   | _ -> () ]
     actual |> should equal (expected2 |> List.sort)
