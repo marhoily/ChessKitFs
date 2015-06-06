@@ -9,14 +9,10 @@ open CoordinateNotation
 open Definitions
 open Dump
 
-// TODO: remove duplication from check and checkAll!
+let toString m = CoordinateToString m.End
+
 let check from (expected : string list) position = 
-    let toString m = CoordinateToString m.End
-    
-    let p = 
-        position
-        |> ParseFen
-        |> unwrap
+    let p = unwrap (position |> ParseFen)
     
     printf "%s" (Print p)
     let f = _c from
@@ -37,12 +33,7 @@ let check from (expected : string list) position =
     actual |> should equal (expected2 |> List.sort)
 
 let checkAll expected position = 
-    let toString m = CoordinateToString m.End
-    
-    let p = 
-        position
-        |> ParseFen
-        |> unwrap
+    let p = unwrap (position |> ParseFen)
     
     printf "%s" (Print p)
     let actual = 
