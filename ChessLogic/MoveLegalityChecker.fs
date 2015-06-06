@@ -263,10 +263,10 @@ let ValidateMove move position =
                 else -8
             newPlacement.[(moveTo |> ToIndex) + increment] <- None
         // Remove the piece from the old square and put it to the new square
-        let piece1 = 
+        let effectivePiece = 
             if observations |> contains Promotion then promoteTo
             else pieceType.Value
-        newPlacement.[moveTo |> ToIndex] <- Some((color, piece1))
+        newPlacement.[moveTo |> ToIndex] <- Some((color, effectivePiece))
         newPlacement.[moveFrom |> ToIndex] <- None
         // Move the rook if it was a castling
         let moveCastlingRook f t = 
@@ -328,10 +328,12 @@ let ValidateMove move position =
     if errors.IsEmpty then 
         let p = setupResultPosition()
         resultPosition <- Some(p)
+        // MoveToCheck
         let at c = PieceAt c p
         if IsInCheck (Color.oppositeOf p.ActiveColor) at then 
             errors <- MoveToCheck :: errors
             resultPosition <- None
+        // new position is Check
         let newAt coordinate = p.Placement.[coordinate |> ToIndex]
         let isInCheck = IsInCheck p.ActiveColor newAt
         
