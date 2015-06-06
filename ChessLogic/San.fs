@@ -5,7 +5,6 @@ open MoveLegalityChecker
 open System.Text
 open CoordinateNotation
 
-// TODO: refactor Legal vs illegal moves?
 let ToSanString (board : Position) (move : LegalMove) : string = 
     let typeToString = 
         function 

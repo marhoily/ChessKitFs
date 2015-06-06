@@ -45,11 +45,7 @@ let check from (expected : string list) position =
     actual |> should equal (expected2 |> List.sort)
 
 let checkAll expected position = 
-    let toString2 m = CoordinateToString m.End
-    let toString (m : ValidatedMove) = 
-        match m.Move with
-        | UsualMove(_, t) -> CoordinateToString t
-        | PromotionMove({ Vector = (_, t) }) -> CoordinateToString t
+    let toString m = CoordinateToString m.End
     
     let p = 
         position
@@ -60,7 +56,7 @@ let checkAll expected position =
     let actual = 
         p
         |> GetLegalMoves.All
-        |> List.map toString2
+        |> List.map toString
         |> List.sort
     actual |> should equal (expected |> List.sort)
     // Now do full search and make sure ValidateMove agrees
@@ -68,9 +64,9 @@ let checkAll expected position =
         [ for i = 0 to 63 do
               for j = 0 to 63 do
                   let t = UsualMove((j % 8, j / 8), (i % 8, i / 8))
-                  let m = ValidateMove t p
-                  let valid = m.Hint.Errors |> List.isEmpty
-                  if valid then yield m |> toString ]
+                  match ValidateMove2 t p with
+                  | LegalMove m -> yield m |> toString
+                  | _ -> () ]
     actual |> should equal (expected2 |> List.sort)
 
 [<Fact>]
