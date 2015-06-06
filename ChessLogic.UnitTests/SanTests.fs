@@ -17,7 +17,7 @@ let check move expectedSan position =
     p
     |> ValidateMove2(_cn move)
     |> UnwrapLegal
-    |> ToSanString p
+    |> ToSanString
     |> should equal expectedSan
 
 [<Fact>]

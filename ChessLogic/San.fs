@@ -5,7 +5,7 @@ open MoveLegalityChecker
 open System.Text
 open CoordinateNotation
 
-let ToSanString board (move : LegalMove) = 
+let ToSanString(move : LegalMove) = 
     let typeToString = 
         function 
         | Pawn -> 'P'
@@ -27,12 +27,12 @@ let ToSanString board (move : LegalMove) =
     let file, rank, fileAndRankStr = fst, snd, CoordinateToString
     let fileStr x = fileToStirng (x |> file)
     let rankStr x = rankToString (x |> rank)
-    let at x = board |> PieceAt x
+    let at x = move.OriginalPosition |> PieceAt x
     let isSimilarTo x y = 
         (x.Start <> y.Start) && (x.End = y.End) && (at x.Start = at y.Start)
     
     let disambiguationList = 
-        lazy ([ for m in board |> GetLegalMoves.All do
+        lazy ([ for m in move.OriginalPosition |> GetLegalMoves.All do
                     if m |> isSimilarTo move then yield m.Start ])
     
     let ambiguous() = not (disambiguationList.Value |> List.isEmpty)
