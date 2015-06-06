@@ -29,22 +29,6 @@ type Error =
     | DoesNotMoveThisWay
     | CastleFromCheck
 
-type private Hint = 
-    { Piece : PieceType option
-      Castling : CastlingHint option
-      Observations : Observation list
-      Errors : Error list
-      Warnings : Warning list
-      ResultPosition : Position option }
-
-let private eh = 
-    { Piece = None
-      Castling = None
-      Observations = []
-      Errors = []
-      Warnings = []
-      ResultPosition = None }
-
 [<Literal>]
 let A1 = 112
 
@@ -118,43 +102,51 @@ type MoveInfo =
     | IllegalMove of IllegalMove
 
 let ValidateMove move position = 
-    let doesNotCaptureThisWay = { eh with Errors = [ DoesNotCaptureThisWay ] }
-    let doesNotMoveThisWay = { eh with Errors = [ DoesNotMoveThisWay ] }
-    let doesNotJump = { eh with Errors = [ DoesNotJump ] }
-    let promotion = { eh with Observations = [ Promotion ] }
-    let doublePush = { eh with Observations = [ DoublePush ] }
-    let onlyCapturesThisWay = { eh with Errors = [ OnlyCapturesThisWay ] }
-    let enPassant = { eh with Observations = [ Capture; EnPassant ] }
-    let hasNoCastling = { eh with Errors = [ HasNoCastling ] }
-    let castleThroughCheck = { eh with Errors = [ CastleThroughCheck ] }
-    let castleFromCheck = { eh with Errors = [ CastleFromCheck ] }
+    let mutable errors = []
+    let mutable observations = []
+    let mutable warnings = []
+    let mutable _castling = None
+    let mutable piece = None
+    let mutable resultPosition = None
+    let doesNotCaptureThisWay() = errors <- DoesNotCaptureThisWay::errors
+    let doesNotMoveThisWay() = errors <- DoesNotMoveThisWay::errors
+    let doesNotJump() = errors <- DoesNotJump::errors
+    let promotion() = observations <- Promotion::observations
+    let doublePush() = observations <- DoublePush::observations
+    let onlyCapturesThisWay() = errors <- OnlyCapturesThisWay::errors 
+    let enPassant() = observations <- Capture::EnPassant::observations
+    let hasNoCastling() = errors <- HasNoCastling::errors
+    let castleThroughCheck() = errors <- CastleThroughCheck::errors
+    let castleFromCheck() = errors <- CastleFromCheck::errors
+    let toOccupiedCell() = errors <- ToOccupiedCell::errors
+    let wrongSideToMove() = errors <- WrongSideToMove::errors
+    let capture_() = observations <- Capture::observations
+    let emptyCell() = errors <- EmptyCell::errors
     
-    let hasNoEnPassant = 
-        { eh with Observations = [ Capture; EnPassant ]
-                  Errors = [ HasNoEnPassant ] }
+    let hasNoEnPassant() = 
+        errors <- HasNoEnPassant::errors
+        observations <- Capture::EnPassant::observations
     
     let at i = position |> PieceAt(i % 16, i / 16)
     
     let validatePawnMove sideToMove fromSquare toSquare = 
         let validateDoublePush v c = 
-            if fromSquare / 16 <> c then doesNotMoveThisWay
-            else if at toSquare <> None then doesNotCaptureThisWay
-            else if at (fromSquare + v) <> None then doesNotJump
-            else doublePush
+            if fromSquare / 16 <> c then doesNotMoveThisWay()
+            else if at toSquare <> None then doesNotCaptureThisWay()
+            else if at (fromSquare + v) <> None then doesNotJump()
+            else doublePush()
         
         let validatePush c = 
-            if at toSquare <> None then doesNotCaptureThisWay
-            else if fromSquare / 16 = c then promotion
-            else eh
+            if at toSquare <> None then doesNotCaptureThisWay()
+            else if fromSquare / 16 = c then promotion()
         
         let validateCapture c2 looksEnPassanty = 
             if at toSquare = None then 
                 if looksEnPassanty() then 
-                    if position.EnPassant = Some(toSquare % 16) then enPassant
-                    else hasNoEnPassant
-                else onlyCapturesThisWay
-            else if fromSquare / 16 = c2 then promotion
-            else eh
+                    if position.EnPassant = Some(toSquare % 16) then enPassant()
+                    else hasNoEnPassant()
+                else onlyCapturesThisWay()
+            else if fromSquare / 16 = c2 then promotion()
         
         let looksEnPassanty c1 c2 c3 color () = 
             fromSquare / 16 = c1 && at (fromSquare + c2) = None 
@@ -168,57 +160,56 @@ let ValidateMove move position =
         | (White, -17) -> validateCapture 1 (looksEnPassanty 3 -33 -1 Black)
         | (Black, +17) -> validateCapture 6 (looksEnPassanty 4 +33 +1 White)
         | (Black, +15) -> validateCapture 6 (looksEnPassanty 4 +31 -1 White)
-        | _ -> doesNotMoveThisWay
+        | _ -> doesNotMoveThisWay()
     
     let validateKnightMove f t = 
         match (t - f) with
-        | 33 | 31 | -33 | -31 | 18 | 14 | -18 | -14 -> eh
-        | _ -> doesNotMoveThisWay
+        | 33 | 31 | -33 | -31 | 18 | 14 | -18 | -14 -> ()
+        | _ -> doesNotMoveThisWay()
     
     let validateKingMove fromSquare toSquare = 
         let castling opt = position.CastlingAvailability |> contains opt
         
         let long B C D E attacked available = 
-            if at D <> None || at B <> None then doesNotJump
-            else if at C <> None then doesNotCaptureThisWay
-            else if not (castling available) then hasNoCastling
-            else if attacked E then castleFromCheck
-            else if attacked D then castleThroughCheck
-            else eh
+            if at D <> None || at B <> None then doesNotJump()
+            else if at C <> None then doesNotCaptureThisWay()
+            else if not (castling available) then hasNoCastling()
+            else if attacked E then castleFromCheck()
+            else if attacked D then castleThroughCheck()
         
         let short E F G attacked available = 
-            if at F <> None then doesNotJump
-            else if at G <> None then doesNotCaptureThisWay
-            else if not (castling available) then hasNoCastling
-            else if attacked E then castleFromCheck
-            else if attacked F then castleThroughCheck
-            else eh
+            if at F <> None then doesNotJump()
+            else if at G <> None then doesNotCaptureThisWay()
+            else if not (castling available) then hasNoCastling()
+            else if attacked E then castleFromCheck()
+            else if attacked F then castleThroughCheck()
         
         let w = IsAttackedBy Black at
         let b = IsAttackedBy White at
+        let c x = _castling <- Some(x) 
         match (toSquare - fromSquare) with
-        | 1 | 15 | 16 | 17 | -1 | -15 | -16 | -17 -> eh
+        | 1 | 15 | 16 | 17 | -1 | -15 | -16 | -17 -> ()
         | -2 | +2 -> 
             match (fromSquare, toSquare) with
-            | (E1, C1) -> { long B1 C1 D1 E1 w WQ with Castling = Some(WQ) }
-            | (E8, C8) -> { long B8 C8 D8 E8 b BQ with Castling = Some(BQ) }
-            | (E1, G1) -> { short E1 F1 G1 w WK with Castling = Some(WK) }
-            | (E8, G8) -> { short E8 F8 G8 b BK with Castling = Some(BK) }
-            | _ -> doesNotMoveThisWay
-        | _ -> doesNotMoveThisWay
+            | (E1, C1) -> long B1 C1 D1 E1 w WQ ; c(WQ) 
+            | (E8, C8) -> long B8 C8 D8 E8 b BQ ; c(BQ) 
+            | (E1, G1) -> short E1 F1 G1 w WK ;   c(WK) 
+            | (E8, G8) -> short E8 F8 G8 b BK ;   c(BK) 
+            | _ -> doesNotMoveThisWay()
+        | _ -> doesNotMoveThisWay()
     
     let validateSlidingMove offsets f t = 
         let rec iterate start stop increment = 
             let next = start + increment
-            if next &&& 0x88 <> 0 then doesNotMoveThisWay
-            else if next = stop then eh
-            else if (at next) <> None then doesNotJump
+            if next &&& 0x88 <> 0 then doesNotMoveThisWay()
+            else if next = stop then ()
+            else if (at next) <> None then doesNotJump()
             else iterate next stop increment
         
         let isMultipleOf n m = n % m = 0 && n / m < 8 && n / m >= 0
         match offsets |> Seq.tryFind (t - f |> isMultipleOf) with
         | Some(m) -> iterate f t m
-        | None -> doesNotMoveThisWay
+        | None -> doesNotMoveThisWay()
     
     let validateBishopMove = validateSlidingMove [ 15; -15; 17; -17 ]
     let validateRookMove = validateSlidingMove [ 16; -16; 01; -01 ]
@@ -234,43 +225,38 @@ let ValidateMove move position =
         | Rook -> validateRookMove
         | Queen -> validateQueenMove
     
-    let addPieceType pieceType (hint : Hint) = 
-        { hint with Piece = Some(pieceType) }
+    let addPieceType pieceType = 
+        piece <- Some(pieceType) 
     
-    let checkCapture capture (hint : Hint) = 
+    let checkCapture capture = 
         if capture <> None then 
             if (fst capture.Value) = position.ActiveColor then 
-                { hint with Errors = ToOccupiedCell :: hint.Errors }
-            else { hint with Observations = Capture :: hint.Observations }
-        else hint
+                toOccupiedCell()
+            else capture_()
     
-    let checkSideToMove color (hint : Hint) = 
+    let checkSideToMove color = 
         if position.ActiveColor <> color then 
-            { hint with Errors = WrongSideToMove :: hint.Errors }
-        else hint
+            wrongSideToMove()
     
-    let assignMoveToCheckError (hint : Hint) = 
-        match hint.ResultPosition with
+    let assignMoveToCheckError() = 
+        match resultPosition with
         | Some(p) -> 
             let at c = PieceAt c p
             if IsInCheck (Color.oppositeOf p.ActiveColor) at then 
-                { hint with Errors = MoveToCheck :: hint.Errors
-                            ResultPosition = None }
-            else hint
-        | None -> hint
+                errors <- MoveToCheck::errors 
+                resultPosition <- None
+        | None -> ()
     
-    let assignMissingPromotionHint (hint : Hint) = 
-        if hint.Observations |> contains Promotion then 
-            { hint with Warnings = MissingPromotionHint :: hint.Warnings }
-        else hint
+    let assignMissingPromotionHint() = 
+        if observations |> contains Promotion then 
+            warnings <- MissingPromotionHint :: warnings
     
-    let assignPromotionHintIsNotNeededHint (hint : Hint) = 
-        if not (hint.Observations |> contains Promotion) then 
-            { hint with Warnings = PromotionHintIsNotNeeded :: hint.Warnings }
-        else hint
+    let assignPromotionHintIsNotNeededHint() =
+        if not (observations |> contains Promotion) then 
+            warnings <- PromotionHintIsNotNeeded :: warnings
     
-    let addObservations (hint : Hint) = 
-        match hint.ResultPosition with
+    let addObservations() = 
+        match resultPosition with
         | Some(p) -> 
             let newAt coordinate = p.Placement.[coordinate |> ToIndex]
             let isInCheck = IsInCheck p.ActiveColor newAt
@@ -278,24 +264,22 @@ let ValidateMove move position =
             let newObservations = 
                 [ if isInCheck then yield Check ]
             if not newObservations.IsEmpty then 
-                { hint with ResultPosition = 
-                                Some({ p with Observations = newObservations }) }
-            else hint
-        | None -> hint
+                resultPosition <- Some({ p with Observations = newObservations })
+        | None -> ()
     
-    let setupResultPosition f t promoteTo fPt color (hint : Hint) = 
+    let setupResultPosition f t promoteTo fPt color = 
         let newPlacement = Array.copy position.Placement
         // Remove the pawn captured en-passant
-        if hint.Observations |> contains EnPassant then 
+        if observations |> contains EnPassant then 
             let capture = 
                 if color = White then +8
                 else -8
             newPlacement.[(t |> ToIndex) + capture] <- None
         // Remove the piece from the old square and put it to the new square
-        let piece = 
-            if hint.Observations |> contains Promotion then promoteTo
+        let piece1 = 
+            if observations |> contains Promotion then promoteTo
             else fPt
-        newPlacement.[t |> ToIndex] <- Some((color, piece))
+        newPlacement.[t |> ToIndex] <- Some((color, piece1))
         newPlacement.[f |> ToIndex] <- None
         // Move the rook if it was a castling
         let moveCastlingRook f t = 
@@ -303,7 +287,7 @@ let ValidateMove move position =
             let rook = newPlacement.[fromX88 f |> ToIndex]
             newPlacement.[f |> x88toIndex] <- None
             newPlacement.[t |> x88toIndex] <- rook
-        match hint.Castling with
+        match _castling with
         | Some(WK) -> moveCastlingRook H1 F1
         | Some(WQ) -> moveCastlingRook A1 D1
         | Some(BK) -> moveCastlingRook H8 F8
@@ -311,11 +295,11 @@ let ValidateMove move position =
         | None -> ()
         // Figure out new en-passant option, half-move clock, full-move number
         let newEnPassant = 
-            if hint.Observations |> contains DoublePush then Some(fst f)
+            if observations |> contains DoublePush then Some(fst f)
             else None
         
         let newHalfMoveClock = 
-            if hint.Piece = Some(Pawn) || hint.Observations |> contains Capture then 
+            if piece = Some(Pawn) || observations |> contains Capture then 
                 0
             else position.HalfMoveClock + 1
         
@@ -350,11 +334,10 @@ let ValidateMove move position =
                         CastlingAvailability = newCastlingAvailability
                         Observations = [] }
     
-    let assignResultPosition f t promoteTo fPt color (hint : Hint) = 
-        if hint.Errors.IsEmpty then 
-            let p = Some(setupResultPosition f t promoteTo fPt color hint)
-            { hint with ResultPosition = p }
-        else hint
+    let assignResultPosition f t promoteTo fPt color = 
+        if errors.IsEmpty then 
+            let p = Some(setupResultPosition f t promoteTo fPt color)
+            resultPosition <- p 
     
     let at64 i64 = position |> PieceAt i64
     
@@ -362,22 +345,23 @@ let ValidateMove move position =
         match at64 f with
         | Some(color, fPt) -> 
             validateByPieceType color fPt (toX88 f) (toX88 t)
-            |> addPieceType fPt
-            |> checkCapture (at64 t)
-            |> checkSideToMove color
-            |> assignResultPosition f t promoteTo fPt color
-            |> assignMoveToCheckError
-            |> addObservations
-        | None -> { eh with Errors = [ Error.EmptyCell ] }
+            addPieceType fPt
+            checkCapture (at64 t)
+            checkSideToMove color
+            assignResultPosition f t promoteTo fPt color
+            assignMoveToCheckError()
+            addObservations()
+        | None -> emptyCell()
     
-    let hint = 
-        match move with
-        | UsualMove(f, t) -> 
-            validateFromTo f t Queen |> assignMissingPromotionHint
-        | PromotionMove({ Vector = (f, t); PromoteTo = promoteTo }) -> 
-            validateFromTo f t promoteTo |> assignPromotionHintIsNotNeededHint
+    match move with
+    | UsualMove(f, t) -> 
+        validateFromTo f t Queen 
+        assignMissingPromotionHint()
+    | PromotionMove({ Vector = (f, t); PromoteTo = promoteTo }) -> 
+        validateFromTo f t promoteTo
+        assignPromotionHintIsNotNeededHint()
     
-    if hint.Errors |> List.isEmpty then 
+    if errors.IsEmpty then 
         let (f, t, p) = 
             match move with
             | UsualMove(f, t) -> (f, t, Queen)
@@ -386,19 +370,19 @@ let ValidateMove move position =
                     End = t
                     PromoteTo = p
                     OriginalPosition = position
-                    ResultPosition = hint.ResultPosition.Value
-                    Piece = hint.Piece.Value
-                    Castling = hint.Castling
-                    Observations = hint.Observations
-                    Warnings = hint.Warnings }
+                    ResultPosition = resultPosition.Value
+                    Piece = piece.Value
+                    Castling = _castling
+                    Observations = observations
+                    Warnings = warnings }
     else 
         IllegalMove({ Move = move
                       OriginalPosition = position
-                      Piece = hint.Piece
-                      Castling = hint.Castling
-                      Observations = hint.Observations
-                      Warnings = hint.Warnings
-                      Errors = hint.Errors })
+                      Piece = piece
+                      Castling = _castling
+                      Observations = observations
+                      Warnings = warnings
+                      Errors =errors })
 
 let UnwrapLegal = 
     function 
