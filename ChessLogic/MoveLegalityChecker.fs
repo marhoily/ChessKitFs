@@ -5,17 +5,17 @@ open Definitions
 open IsAttackedBy
 open MyList
 
-type ObservationHint = 
+type Observation = 
     | Capture
     | EnPassant
     | Promotion
     | DoublePush
 
-type WarningHint = 
+type Warning = 
     | MissingPromotionHint
     | PromotionHintIsNotNeeded
 
-type ErrorHint = 
+type Error = 
     | MoveToCheck
     | EmptyCell
     | WrongSideToMove
@@ -32,9 +32,9 @@ type ErrorHint =
 type private Hint = 
     { Piece : PieceType option
       Castling : CastlingHint option
-      Observations : ObservationHint list
-      Errors : ErrorHint list
-      Warnings : WarningHint list
+      Observations : Observation list
+      Errors : Error list
+      Warnings : Warning list
       ResultPosition : Position option }
 
 let private eh = 
@@ -101,17 +101,17 @@ type LegalMove =
       ResultPosition : Position
       Piece : PieceType
       Castling : CastlingHint option
-      Observations : ObservationHint list
-      Warnings : WarningHint list }
+      Observations : Observation list
+      Warnings : Warning list }
 
 type IllegalMove = 
     { Move : Move
       OriginalPosition : Position
       Piece : PieceType option
       Castling : CastlingHint option
-      Observations : ObservationHint list
-      Warnings : WarningHint list
-      Errors : ErrorHint list }
+      Observations : Observation list
+      Warnings : Warning list
+      Errors : Error list }
 
 type MoveInfo = 
     | LegalMove of LegalMove
@@ -368,7 +368,7 @@ let ValidateMove move position =
             |> assignResultPosition f t promoteTo fPt color
             |> assignMoveToCheckError
             |> addObservations
-        | None -> { eh with Errors = [ ErrorHint.EmptyCell ] }
+        | None -> { eh with Errors = [ Error.EmptyCell ] }
     
     let hint = 
         match move with
