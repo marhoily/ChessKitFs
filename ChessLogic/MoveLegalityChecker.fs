@@ -98,6 +98,27 @@ let G8 = 6
 [<Literal>]
 let H8 = 7
 
+
+type LegalMove = 
+    { Start : Coordinate
+      End : Coordinate
+      PromoteTo : PieceType
+      OriginalPosition : Position
+      ResultPosition : Position
+      Piece : PieceType
+      Castling : CastlingHint option
+      Observations : ObservationHint list
+      Warnings : WarningHint list }
+
+type IllegalMove = 
+    { Move : Move
+      OriginalPosition : Position
+      Piece : PieceType option
+      Castling : CastlingHint option
+      Observations : ObservationHint list
+      Warnings : WarningHint list
+      Errors : ErrorHint list }
+
 let ValidateMove move position = 
     let doesNotCaptureThisWay = { eh with Errors = [ DoesNotCaptureThisWay ] }
     let doesNotMoveThisWay = { eh with Errors = [ DoesNotMoveThisWay ] }
@@ -215,21 +236,21 @@ let ValidateMove move position =
         | Rook -> validateRookMove
         | Queen -> validateQueenMove
     
-    let addPieceType pieceType hint = { hint with Piece = Some(pieceType) }
+    let addPieceType pieceType (hint : Hint) = { hint with Piece = Some(pieceType) }
     
-    let checkCapture capture hint = 
+    let checkCapture capture (hint : Hint) = 
         if capture <> None then 
             if (fst capture.Value) = position.ActiveColor then 
                 { hint with Errors = ToOccupiedCell :: hint.Errors }
             else { hint with Observations = Capture :: hint.Observations }
         else hint
     
-    let checkSideToMove color hint = 
+    let checkSideToMove color (hint : Hint) = 
         if position.ActiveColor <> color then 
             { hint with Errors = WrongSideToMove :: hint.Errors }
         else hint
     
-    let assignMoveToCheckError hint = 
+    let assignMoveToCheckError (hint : Hint) = 
         match hint.ResultPosition with
         | Some(p) -> 
             let at c = PieceAt c p
@@ -239,17 +260,17 @@ let ValidateMove move position =
             else hint
         | None -> hint
     
-    let assignMissingPromotionHint hint = 
+    let assignMissingPromotionHint (hint : Hint) = 
         if hint.Observations |> contains Promotion then 
             { hint with Warnings = MissingPromotionHint :: hint.Warnings }
         else hint
     
-    let assignPromotionHintIsNotNeededHint hint = 
+    let assignPromotionHintIsNotNeededHint (hint : Hint) = 
         if not (hint.Observations |> contains Promotion) then 
             { hint with Warnings = PromotionHintIsNotNeeded :: hint.Warnings }
         else hint
     
-    let addObservations hint = 
+    let addObservations (hint : Hint) = 
         match hint.ResultPosition with
         | Some(p) -> 
             let newAt coordinate = p.Placement.[coordinate |> ToIndex]
@@ -263,7 +284,7 @@ let ValidateMove move position =
             else hint
         | None -> hint
     
-    let setupResultPosition f t promoteTo fPt color hint = 
+    let setupResultPosition f t promoteTo fPt color (hint : Hint) = 
         let newPlacement = Array.copy position.Placement
         // Remove the pawn captured en-passant
         if hint.Observations |> contains EnPassant then 
@@ -330,7 +351,7 @@ let ValidateMove move position =
                         CastlingAvailability = newCastlingAvailability
                         Observations = [] }
     
-    let assignResultPosition f t promoteTo fPt color hint = 
+    let assignResultPosition f t promoteTo fPt color (hint : Hint) = 
         if hint.Errors.IsEmpty then 
             let p = Some(setupResultPosition f t promoteTo fPt color hint)
             { hint with ResultPosition = p }
@@ -360,26 +381,6 @@ let ValidateMove move position =
     { Position = position
       Move = move
       Hint = hint }
-
-type LegalMove = 
-    { Start : Coordinate
-      End : Coordinate
-      PromoteTo : PieceType
-      OriginalPosition : Position
-      ResultPosition : Position
-      Piece : PieceType
-      Castling : CastlingHint option
-      Observations : ObservationHint list
-      Warnings : WarningHint list }
-
-type IllegalMove = 
-    { Move : Move
-      OriginalPosition : Position
-      Piece : PieceType option
-      Castling : CastlingHint option
-      Observations : ObservationHint list
-      Warnings : WarningHint list
-      Errors : ErrorHint list }
 
 type MoveInfo = 
     | LegalMove of LegalMove
