@@ -105,7 +105,7 @@ let ValidateMove move position =
     let hasNoCastling = { eh with Errors = [ HasNoCastling ] }
     let castleThroughCheck = { eh with Errors = [ CastleThroughCheck ] }
     let castleFromCheck = { eh with Errors = [ CastleFromCheck ] }
-
+    
     let hasNoEnPassant = 
         { eh with Observations = [ Capture; EnPassant ]
                   Errors = [ HasNoEnPassant ] }
@@ -230,7 +230,7 @@ let ValidateMove move position =
         | Some(p) -> 
             let at c = PieceAt c p
             if IsInCheck (Color.oppositeOf p.ActiveColor) at then 
-                { hint with Errors = MoveToCheck :: hint.Errors 
+                { hint with Errors = MoveToCheck :: hint.Errors
                             ResultPosition = None }
             else hint
         | None -> hint
@@ -250,10 +250,12 @@ let ValidateMove move position =
         | Some(p) -> 
             let newAt coordinate = p.Placement.[coordinate |> ToIndex]
             let isInCheck = IsInCheck p.ActiveColor newAt
-            let newObservations = [ if isInCheck then yield Check ]
-            if not newObservations.IsEmpty then
-                { hint with ResultPosition = Some(
-                    {p with Observations = newObservations })}
+            
+            let newObservations = 
+                [ if isInCheck then yield Check ]
+            if not newObservations.IsEmpty then 
+                { hint with ResultPosition = 
+                                Some({ p with Observations = newObservations }) }
             else hint
         | None -> hint
     
@@ -289,8 +291,8 @@ let ValidateMove move position =
             else None
         
         let newHalfMoveClock = 
-            if hint.Piece = Some(Pawn) 
-               || hint.Observations |> contains Capture then 0
+            if hint.Piece = Some(Pawn) || hint.Observations |> contains Capture then 
+                0
             else position.HalfMoveClock + 1
         
         let newMoveNumber = 
@@ -315,7 +317,6 @@ let ValidateMove move position =
         
         // Figure out new active color, and if the move gives check
         let newActiveColor = Color.oppositeOf position.ActiveColor
-        
         { // Construct new position
           position with Placement = newPlacement
                         ActiveColor = newActiveColor
