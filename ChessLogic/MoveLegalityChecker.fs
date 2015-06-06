@@ -349,7 +349,6 @@ let ValidateMove move position =
         | Some(color, fPt) -> 
             validateByPieceType color fPt (toX88 f2) (toX88 t2)
             addPieceType fPt
-           // checkCapture capturedPiece
             checkSideToMove color
             assignResultPosition fPt color
             assignMoveToCheckError()
