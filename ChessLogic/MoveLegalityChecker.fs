@@ -138,7 +138,7 @@ let ValidateMove move position =
     let color2 = position.ActiveColor
     let at i = position |> PieceAt(i % 16, i / 16)
     
-    let validatePawnMove sideToMove fromSquare toSquare = 
+    let validatePawnMove fromSquare toSquare = 
         let validateDoublePush v c = 
             if fromSquare / 16 <> c then doesNotMoveThisWay()
             else if at toSquare <> None then doesNotCaptureThisWay()
@@ -160,7 +160,7 @@ let ValidateMove move position =
         let looksEnPassanty c1 c2 c3 clr () = 
             fromSquare / 16 = c1 && at (fromSquare + c2) = None 
             && at (fromSquare + c3) = (Some(clr, Pawn))
-        match (sideToMove, (toSquare - fromSquare)) with
+        match (color2, (toSquare - fromSquare)) with
         | (White, -32) -> validateDoublePush -16 6
         | (Black, +32) -> validateDoublePush +16 1
         | (White, -16) -> validatePush 1
@@ -226,9 +226,9 @@ let ValidateMove move position =
     let validateQueenMove = 
         validateSlidingMove [ 16; -16; 01; -01; 15; -15; 17; -17 ]
     
-    let validateByPieceType sideToMove = 
+    let validateByPieceType() = 
         match pieceType.Value with
-        | Pawn -> validatePawnMove sideToMove
+        | Pawn -> validatePawnMove
         | Knight -> validateKnightMove
         | King -> validateKingMove
         | Bishop -> validateBishopMove
@@ -239,8 +239,11 @@ let ValidateMove move position =
         if (fst capturedPiece.Value) = color2 then toOccupiedCell()
         else capture()
     
-    let checkSideToMove clr = 
-        if color2 <> clr then wrongSideToMove()
+    //let checkSideToMove clr = 
+    match fP2 with
+    | Some(pieceColor, _) -> 
+        if color2 <> pieceColor then wrongSideToMove()
+    | None -> ()
     
     let assignMoveToCheckError() = 
         match resultPosition with
@@ -343,24 +346,19 @@ let ValidateMove move position =
             let p = Some(setupResultPosition())
             resultPosition <- p
     
-    let validateFromTo() = 
-        match fP2 with
-        | Some(color, fPt) -> 
-            pieceType <- Some(fPt)
-            validateByPieceType color (toX88 f2) (toX88 t2)
-            checkSideToMove color
+    match fP2 with
+    | Some(_, fPt) -> 
+        pieceType <- Some(fPt)
+        if errors.IsEmpty then
+            validateByPieceType() (toX88 f2) (toX88 t2)
             assignResultPosition()
             assignMoveToCheckError()
             addObservations()
-        | None -> emptyCell()
+    | None -> emptyCell()
 
     match move with
-    | UsualMove(_, _) -> 
-        validateFromTo()
-        assignMissingPromotionHint()
-    | PromotionMove(_) -> 
-        validateFromTo()
-        assignPromotionHintIsNotNeededHint()
+    | UsualMove(_, _) -> assignMissingPromotionHint()
+    | PromotionMove(_) -> assignPromotionHintIsNotNeededHint()
 
     if errors.IsEmpty then 
         LegalMove { Start = f2

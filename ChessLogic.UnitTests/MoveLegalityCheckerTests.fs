@@ -66,7 +66,7 @@ module ``Generic errors`` =
     [<Fact>]
     let ``Move where from and to is the same square means ToOccupiedCell``() = 
         check "rnbqk1nr/pppp1ppp/3bp3/8/4P3/7P/PPPP1PP1/RNBQKBNR w KQkq - 1 3" 
-            "a1-a1" "Rook | DoesNotMoveThisWay | ToOccupiedCell"
+            "a1-a1" "Rook | ToOccupiedCell"
     
     [<Fact>]
     let ``Wrong side to move``() = 
