@@ -403,3 +403,7 @@ let ValidateMove2 move position : MoveInfo =
                       Castling = hint.Castling
                       Observations = hint.Observations
                       Errors = hint.Errors })
+let UnwrapLegal =
+    function
+    | LegalMove(m) -> m
+    | IllegalMove(m) -> failwith "move is illegal"
