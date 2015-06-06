@@ -14,25 +14,28 @@ let MoveToString move =
         match FSharpValue.GetUnionFields(x, typeof<'a>) with
         | case, _ -> case.Name
     
-    let getStrings piece castling observations errors resultObservations = 
+    let getStrings piece castling observations warnings errors 
+        resultObservations = 
         seq { 
             if piece <> None then yield toString piece.Value
             if castling <> None then yield toString castling.Value
-            for err in observations do
-                yield toString err
-            for err in errors do
-                yield toString err
-            for err in resultObservations do
-                yield toString err
+            for x in observations do
+                yield toString x
+            for x in warnings do
+                yield toString x
+            for x in errors do
+                yield toString x
+            for x in resultObservations do
+                yield toString x
         }
     
     let strings = 
         match move with
         | LegalMove m -> 
-            getStrings (Some(m.Piece)) m.Castling m.Observations [] 
+            getStrings (Some(m.Piece)) m.Castling m.Observations m.Warnings [] 
                 m.ResultPosition.Observations
         | IllegalMove m -> 
-            getStrings m.Piece m.Castling m.Observations m.Errors []
+            getStrings m.Piece m.Castling m.Observations m.Warnings m.Errors []
     
     String.Join(" | ", strings)
 

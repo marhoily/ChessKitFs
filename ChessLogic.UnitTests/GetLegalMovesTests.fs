@@ -37,10 +37,7 @@ let check from (expected : string list) position =
               let t = UsualMove(f, (i % 8, i / 8))
               let m = ValidateMove t p
               
-              let valid = 
-                  m.Hint.Errors
-                  |> List.filter (fun err -> err <> MissingPromotionHint)
-                  |> List.isEmpty
+              let valid = m.Hint.Errors |> List.isEmpty
               if valid then yield m |> toString ]
     actual |> should equal (expected2 |> List.sort)
 

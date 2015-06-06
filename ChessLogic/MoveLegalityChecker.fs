@@ -11,6 +11,10 @@ type ObservationHint =
     | Promotion
     | DoublePush
 
+type WarningHint = 
+    | MissingPromotionHint
+    | PromotionHintIsNotNeeded
+
 type ErrorHint = 
     | MoveToCheck
     | EmptyCell
@@ -24,14 +28,13 @@ type ErrorHint =
     | CastleThroughCheck
     | DoesNotMoveThisWay
     | CastleFromCheck
-    | MissingPromotionHint
-    | PromotionHintIsNotNeeded
 
 type Hint = 
     { Piece : PieceType option
       Castling : CastlingHint option
       Observations : ObservationHint list
       Errors : ErrorHint list
+      Warnings : WarningHint list
       ResultPosition : Position option }
 
 type ValidatedMove = 
@@ -44,6 +47,7 @@ let eh =
       Castling = None
       Observations = []
       Errors = []
+      Warnings = []
       ResultPosition = None }
 
 [<Literal>]
@@ -237,12 +241,12 @@ let ValidateMove move position =
     
     let assignMissingPromotionHint hint = 
         if hint.Observations |> contains Promotion then 
-            { hint with Errors = MissingPromotionHint :: hint.Errors }
+            { hint with Warnings = MissingPromotionHint :: hint.Warnings }
         else hint
     
     let assignPromotionHintIsNotNeededHint hint = 
         if not (hint.Observations |> contains Promotion) then 
-            { hint with Errors = PromotionHintIsNotNeeded :: hint.Errors }
+            { hint with Warnings = PromotionHintIsNotNeeded :: hint.Warnings }
         else hint
     
     let addObservations hint = 
@@ -366,7 +370,7 @@ type LegalMove =
       Piece : PieceType
       Castling : CastlingHint option
       Observations : ObservationHint list
-      Warnings : ErrorHint list }
+      Warnings : WarningHint list }
 
 type IllegalMove = 
     { Move : Move
@@ -374,6 +378,7 @@ type IllegalMove =
       Piece : PieceType option
       Castling : CastlingHint option
       Observations : ObservationHint list
+      Warnings : WarningHint list
       Errors : ErrorHint list }
 
 type MoveInfo = 
@@ -395,15 +400,16 @@ let ValidateMove2 move position : MoveInfo =
                     Piece = hint.Piece.Value
                     Castling = hint.Castling
                     Observations = hint.Observations
-                    Warnings = [] } 
+                    Warnings = hint.Warnings } 
     else
         IllegalMove({ Move = move
                       OriginalPosition = position
                       Piece = hint.Piece
                       Castling = hint.Castling
                       Observations = hint.Observations
+                      Warnings = hint.Warnings
                       Errors = hint.Errors })
 let UnwrapLegal =
     function
     | LegalMove(m) -> m
-    | IllegalMove(m) -> failwith "move is illegal"
+    | IllegalMove(_) -> failwith "move is illegal"
