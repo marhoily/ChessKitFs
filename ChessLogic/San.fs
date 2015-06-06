@@ -16,11 +16,9 @@ let ToSanString (board : Position) (move : LegalMove) : string =
         | Queen -> 'Q'
         | King -> 'K'
     
-    let decompose m = (m.Start, m.End, m.PromoteTo)
     let piece = move.Piece
     let sb = new StringBuilder(6)
     let castling = move.Castling
-    //let (f, t, p) = (move.Start, move.End, move.PromoteTo)
     let file x = fileToStirng (x |> fst)
     let rank x = rankToString (x |> snd)
     let fileAndRank = CoordinateToString
@@ -33,10 +31,11 @@ let ToSanString (board : Position) (move : LegalMove) : string =
     
     let disambiguationList = 
         lazy ([ for move2 in board |> GetLegalMoves.All do
-                    let (f2, t2, _) = decompose move2
                     let at x = board |> PieceAt x
-                    if move.Start <> f2 && move.End = t2 
-                       && at move.Start = at f2 then yield f2 ])
+                    if move.Start <> move2.Start then 
+                        if move.End = move2.End then 
+                            if at move.Start = at move2.Start then 
+                                yield move2.Start ])
     
     let ambiguous() = not (disambiguationList.Value |> List.isEmpty)
     let unique fn = 
