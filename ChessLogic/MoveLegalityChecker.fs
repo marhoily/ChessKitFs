@@ -132,7 +132,9 @@ let ValidateMove move position =
         match move with
         | UsualMove(f, t) -> (f, t, Queen)
         | PromotionMove({ Vector = (f, t); PromoteTo = p }) -> (f, t, p)
-
+    let at64 i64 = position |> PieceAt i64
+    let fP2 = at64 f2
+    let capturedPiece = at64 t2
     let at i = position |> PieceAt(i % 16, i / 16)
     
     let validatePawnMove sideToMove fromSquare toSquare = 
@@ -234,10 +236,9 @@ let ValidateMove move position =
     
     let addPieceType pieceType = piece <- Some(pieceType)
     
-    let checkCapture capturedPiece = 
-        if capturedPiece <> None then 
-            if (fst capturedPiece.Value) = position.ActiveColor then toOccupiedCell()
-            else capture()
+    if capturedPiece <> None then 
+        if (fst capturedPiece.Value) = position.ActiveColor then toOccupiedCell()
+        else capture()
     
     let checkSideToMove color = 
         if position.ActiveColor <> color then wrongSideToMove()
@@ -343,14 +344,12 @@ let ValidateMove move position =
             let p = Some(setupResultPosition fPt color)
             resultPosition <- p
     
-    let at64 i64 = position |> PieceAt i64
-    
     let validateFromTo() = 
-        match at64 f2 with
+        match fP2 with
         | Some(color, fPt) -> 
             validateByPieceType color fPt (toX88 f2) (toX88 t2)
             addPieceType fPt
-            checkCapture (at64 t2)
+           // checkCapture capturedPiece
             checkSideToMove color
             assignResultPosition fPt color
             assignMoveToCheckError()

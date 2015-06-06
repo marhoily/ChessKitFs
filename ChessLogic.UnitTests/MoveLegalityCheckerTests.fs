@@ -51,7 +51,7 @@ module ``Generic errors`` =
     [<Fact>]
     let ``Cannot move from empty cell2``() = 
         check "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq - 1 1" 
-            "f6-g8" "EmptyCell"
+            "f6-g8" "EmptyCell | ToOccupiedCell"
     
     [<Fact>]
     let ``Cannot move from empty cell``() = 
@@ -66,7 +66,7 @@ module ``Generic errors`` =
     [<Fact>]
     let ``Move where from and to is the same square means ToOccupiedCell``() = 
         check "rnbqk1nr/pppp1ppp/3bp3/8/4P3/7P/PPPP1PP1/RNBQKBNR w KQkq - 1 3" 
-            "a1-a1" "Rook | ToOccupiedCell | DoesNotMoveThisWay"
+            "a1-a1" "Rook | DoesNotMoveThisWay | ToOccupiedCell"
     
     [<Fact>]
     let ``Wrong side to move``() = 
@@ -262,7 +262,7 @@ module ``White pawn`` =
     [<Fact>]
     let ``captures with promotion``() = 
         check "1q6/P7/8/8/8/8/8/8 w - - 0 1" "a7-b8=N" 
-            "Pawn | Capture | Promotion"
+            "Pawn | Promotion | Capture"
     
     [<Fact>]
     let captures() = 
@@ -342,7 +342,7 @@ module ``Black pawn`` =
     [<Fact>]
     let ``captures with promotion``() = 
         check "8/8/8/8/8/8/p7/1Q6 b - - 0 1" "a2-b1" 
-            "Pawn | Capture | Promotion | MissingPromotionHint"
+            "Pawn | Promotion | Capture | MissingPromotionHint"
     
     [<Fact>]
     let captures() = 
@@ -1137,11 +1137,11 @@ module Queen =
             "g2-f3", "Pawn | ToOccupiedCell")
            
            (219, "8/8/p2P4/B7/P1B2p2/4k1P1/K4p2/4R3 b - - 1 61", "f2-e1=Q", 
-            "Pawn | Capture | Promotion")
+            "Pawn | Promotion | Capture")
            
            (220, 
             "rnbqk1nr/2pp4/4pp2/ppP3p1/7p/5PPN/PPPBP2P/RN1QKB1R w KQkq b6 0 10", 
-            "b7-b5", "EmptyCell")
+            "b7-b5", "Capture | EmptyCell")
            
            (221, 
             "3b1rrk/pp3N2/P1pN2p1/P7/4p1b1/B2PPp1P/RQP2P1q/3B1K2 b - - 5 37", 
@@ -1205,7 +1205,7 @@ module Queen =
             "EmptyCell")
            
            (241, "3k4/4n3/1p4pr/5B2/7n/3qR1P1/2P1P2P/R4K2 w - - 15 51", "d2-d3", 
-            "EmptyCell")
+            "Capture | EmptyCell")
            
            (242, "4k3/8/8/2p5/2P4P/p5K1/2N2B2/4q3 w - - 16 134", "h1-h2", 
             "EmptyCell")
