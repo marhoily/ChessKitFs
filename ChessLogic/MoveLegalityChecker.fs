@@ -242,7 +242,6 @@ let ValidateMove move position =
     if capturedPiece <> None then 
         if (fst capturedPiece.Value) = color then toOccupiedCell()
         else capture()
-    //let checkSideToMove clr = 
     match piece with
     | Some(pieceColor, _) -> 
         if color <> pieceColor then wrongSideToMove()
@@ -343,17 +342,13 @@ let ValidateMove move position =
                         CastlingAvailability = newCastlingAvailability
                         Observations = [] }
     
-    let assignResultPosition() = 
-        if errors.IsEmpty then 
-            let p = Some(setupResultPosition())
-            resultPosition <- p
-    
     match piece with
     | Some(_, fPt) -> pieceType <- Some(fPt)
     | None -> emptyCell()
     if errors.IsEmpty then 
         validateByPieceType () (toX88 moveFrom) (toX88 moveTo)
-        assignResultPosition()
+    if errors.IsEmpty then 
+        resultPosition <- Some(setupResultPosition())
         assignMoveToCheckError()
         addObservations()
     match move with
