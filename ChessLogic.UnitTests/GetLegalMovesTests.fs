@@ -10,7 +10,7 @@ open Definitions
 open Dump
 
 let check from (expected : string list) position = 
-    let toString m = 
+    let toString (m : ValidatedMove) = 
         match m.Move with
         | UsualMove(_, t) -> CoordinateToString t
         | PromotionMove({ Vector = (_, t) }) -> CoordinateToString t
@@ -43,7 +43,7 @@ let check from (expected : string list) position =
     actual |> should equal (expected2 |> List.sort)
 
 let checkAll expected position = 
-    let toString m = 
+    let toString (m : ValidatedMove) = 
         match m.Move with
         | UsualMove(_, t) -> CoordinateToString t
         | PromotionMove({ Vector = (_, t) }) -> CoordinateToString t

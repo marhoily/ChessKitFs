@@ -16,7 +16,7 @@ let ToSanString (board : Position) (move : ValidatedMove) : string =
         | Queen -> 'Q'
         | King -> 'K'
     
-    let decompose m = 
+    let decompose (m : ValidatedMove) = 
         match m.Move with
         | UsualMove(f, t) -> (f, t, Queen)
         | PromotionMove({ Vector = (f, t); PromoteTo = p }) -> (f, t, p)

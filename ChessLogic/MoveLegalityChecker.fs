@@ -356,3 +356,50 @@ let ValidateMove move position =
     { Position = position
       Move = move
       Hint = hint }
+
+type LegalMove = 
+    { Start : Coordinate
+      End : Coordinate
+      PromoteTo : PieceType
+      OriginalPosition : Position
+      ResultPosition : Position
+      Piece : PieceType
+      Castling : CastlingHint option
+      Observations : ObservationHint list
+      Warnings : ErrorHint list }
+
+type IllegalMove = 
+    { Move : Move
+      OriginalPosition : Position
+      Piece : PieceType option
+      Castling : CastlingHint option
+      Observations : ObservationHint list
+      Errors : ErrorHint list }
+
+type MoveInfo = 
+    | LegalMove of LegalMove
+    | IllegalMove of IllegalMove
+
+let ValidateMove2 move position : MoveInfo = 
+    let hint = (ValidateMove move position).Hint
+    if hint.Errors |> List.isEmpty then 
+        let (f, t, p) = 
+            match move with
+            | UsualMove(f, t) -> (f, t, Queen)
+            | PromotionMove({ Vector = (f, t); PromoteTo = p }) -> (f, t, p)
+        LegalMove { Start = f
+                    End = t
+                    PromoteTo = p
+                    OriginalPosition = position
+                    ResultPosition = hint.ResultPosition.Value
+                    Piece = hint.Piece.Value
+                    Castling = hint.Castling
+                    Observations = hint.Observations
+                    Warnings = [] } 
+    else
+        IllegalMove({ Move = move
+                      OriginalPosition = position
+                      Piece = hint.Piece
+                      Castling = hint.Castling
+                      Observations = hint.Observations
+                      Errors = hint.Errors })
