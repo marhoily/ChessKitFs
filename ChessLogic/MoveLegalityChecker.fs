@@ -246,15 +246,6 @@ let ValidateMove move position =
     | Some(pieceColor, _) -> 
         if color <> pieceColor then wrongSideToMove()
     | None -> ()
-    let assignMoveToCheckError() = 
-        match resultPosition with
-        | Some(p) -> 
-            let at c = PieceAt c p
-            if IsInCheck (Color.oppositeOf p.ActiveColor) at then 
-                errors <- MoveToCheck :: errors
-                resultPosition <- None
-        | None -> ()
-    
     let assignMissingPromotionHint() = 
         if observations |> contains Promotion then 
             warnings <- MissingPromotionHint :: warnings
@@ -262,19 +253,6 @@ let ValidateMove move position =
     let assignPromotionHintIsNotNeededHint() = 
         if not (observations |> contains Promotion) then 
             warnings <- PromotionHintIsNotNeeded :: warnings
-    
-    let addObservations() = 
-        match resultPosition with
-        | Some(p) -> 
-            let newAt coordinate = p.Placement.[coordinate |> ToIndex]
-            let isInCheck = IsInCheck p.ActiveColor newAt
-            
-            let newObservations = 
-                [ if isInCheck then yield Check ]
-            if not newObservations.IsEmpty then 
-                resultPosition <- Some
-                                      ({ p with Observations = newObservations })
-        | None -> ()
     
     let setupResultPosition() = 
         let newPlacement = Array.copy position.Placement
@@ -348,9 +326,19 @@ let ValidateMove move position =
     if errors.IsEmpty then 
         validateByPieceType () (toX88 moveFrom) (toX88 moveTo)
     if errors.IsEmpty then 
-        resultPosition <- Some(setupResultPosition())
-        assignMoveToCheckError()
-        addObservations()
+        let p = setupResultPosition()
+        resultPosition <- Some(p)
+        let at c = PieceAt c p
+        if IsInCheck (Color.oppositeOf p.ActiveColor) at then 
+            errors <- MoveToCheck :: errors
+            resultPosition <- None
+        let newAt coordinate = p.Placement.[coordinate |> ToIndex]
+        let isInCheck = IsInCheck p.ActiveColor newAt
+        
+        let newObservations = 
+            [ if isInCheck then yield Check ]
+        if not newObservations.IsEmpty then 
+            resultPosition <- Some({ p with Observations = newObservations })
     match move with
     | UsualMove(_, _) -> assignMissingPromotionHint()
     | PromotionMove(_) -> assignPromotionHintIsNotNeededHint()
