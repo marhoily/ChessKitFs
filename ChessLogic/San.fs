@@ -29,12 +29,12 @@ let ToSanString (board : Position) (move : LegalMove) : string =
     let rank x = rankToString (x |> snd)
     let fileAndRank = CoordinateToString
     let at x = board |> PieceAt x
+    let isSimilarTo x y = 
+        (x.Start <> y.Start) && (x.End = y.End) && (at x.Start = at y.Start)
     
     let disambiguationList = 
         lazy ([ for m in board |> GetLegalMoves.All do
-                    if move.Start <> m.Start then 
-                        if move.End = m.End then 
-                            if at move.Start = at m.Start then yield m.Start ])
+                    if m |> isSimilarTo move then yield m.Start ])
     
     let ambiguous() = not (disambiguationList.Value |> List.isEmpty)
     let unique fn = 
