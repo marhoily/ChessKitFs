@@ -109,14 +109,14 @@ let ParseSanString str =
     let pawn = square .>>. opt promotion
     let pawnPush = pawn |>> PawnPush
     let pawnCapture = attempt (file .>> capture .>>. pawn) |>> PawnCapture
-    let target = attempt (opt capture .>>. square)
-    
-    let hint = 
-        choice [ attempt square |>> SquareHint
-                 file |>> FileHint
-                 rank |>> RankHint]
-    let hinted = attempt (hint .>>. target) <|> (preturn NoHint .>>. target)
-    let move = (piece .>>. hinted) |>> Usual
+    let target = opt capture .>>. square
+    let squareHint = attempt square |>> SquareHint
+    let fileHint = file |>> FileHint
+    let rankHint = rank |>> RankHint
+    let hint = choice [ squareHint; fileHint; rankHint ]
+    let hinted = attempt (hint .>>. target)
+    let hintless = preturn NoHint .>>. target
+    let move = piece .>>. (hinted <|> hintless) |>> Usual
     let moves = choice [ long; short; move; pawnCapture; pawnPush ]
     let san = moves .>>. opt ending
     run san str
