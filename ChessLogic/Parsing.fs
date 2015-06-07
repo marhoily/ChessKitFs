@@ -35,7 +35,6 @@ let parsePieceLetter = function
     | _ -> failwith ("unknown piece letter")
     
 let parsePromotionHint = function 
-    | 'P' -> Pawn
     | 'N' -> Knight
     | 'B' -> Bishop
     | 'R' -> Rook

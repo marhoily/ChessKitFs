@@ -37,5 +37,7 @@ open System.Runtime.InteropServices
 [<assembly: AssemblyVersion("0.5.0.7")>]
 [<assembly: AssemblyFileVersion("0.5.0.7")>]
 
+[<assembly: InternalsVisibleToAttribute("ChessLogic.UnitTests")>]
+
 do
     ()

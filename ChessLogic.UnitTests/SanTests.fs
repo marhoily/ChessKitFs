@@ -68,6 +68,22 @@ let ``N7c6``() =
 let Ne5c6() = 
     "2kr4/pp2n1p1/6qr/n3n3/2pP1p2/2PN1B2/PQ3B1P/R4K2 b - - 0 29" 
     |> check "e5-c6" "Ne5c6"
+
+// ParseSanString
+let parse str expected = 
+    ParseSanString str
+    |> wrap
+    |> unwrap
+    |> sprintf "%A"
+    |> should equal expected
+
+[<Fact>]
+let ``parse O-O-O``() = 
+    parse "O-O-O" "(LongCastling, null)"
+    
+[<Fact>]
+let ``parse O-O``() = 
+    parse "O-O" "(ShortCastling, null)"
     
 
 
