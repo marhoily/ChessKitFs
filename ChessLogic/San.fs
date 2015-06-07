@@ -80,7 +80,7 @@ type Moves =
     | LongCastling
     | PawnPush of Coordinate * PieceType option
     | PawnCapture of File * (Coordinate * PieceType option)
-    | Usual of (PieceType * Hint) * (Capture option * Coordinate)
+    | Usual of (PieceType * (Hint * (Capture option * Coordinate)))
 
 let ParseSanString str = 
     let parseFile = LetterToFileNoCheck
@@ -106,18 +106,17 @@ let ParseSanString str =
     let promotion = skipChar '=' >>. anyOf "NBRQ" |>> parsePiece
     let ending = check <|> mate
     let square = file .>>. rank
-    let pawn = square .>>. (opt promotion)
+    let pawn = square .>>. opt promotion
     let pawnPush = pawn |>> PawnPush
-    let pawnCapture = file .>> capture .>>. pawn |>> PawnCapture
-    let target = (opt capture) .>>. square
+    let pawnCapture = attempt (file .>> capture .>>. pawn) |>> PawnCapture
+    let target = attempt (opt capture .>>. square)
     
     let hint = 
         choice [ attempt square |>> SquareHint
                  file |>> FileHint
-                 rank |>> RankHint
-                 preturn NoHint ]
-    
-    let move = piece .>>. hint .>>. target |>> Usual
-    let moves = choice [ long; short; move; pawnPush; pawnCapture ]
-    let san = moves .>>. (opt ending)
+                 rank |>> RankHint]
+    let hinted = attempt (hint .>>. target) <|> (preturn NoHint .>>. target)
+    let move = (piece .>>. hinted) |>> Usual
+    let moves = choice [ long; short; move; pawnCapture; pawnPush ]
+    let san = moves .>>. opt ending
     run san str

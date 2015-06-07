@@ -86,25 +86,49 @@ let ``parse O-O``() =
     parse "O-O" "(ShortCastling, null)"    
 
 [<Fact>]
+let ``parse Bg5``() = 
+    parse "Bg5" "(Usual (Bishop, (NoHint, (null, (6, 3)))), null)"
+
+[<Fact>]
 let ``parse Nec6``() = 
-    parse "Nec6" "(Usual ((Knight, FileHint 4),(null, (2, 2))), null)"
+    parse "Nec6" "(Usual (Knight, (FileHint 4, (null, (2, 2)))), null)"
 
 [<Fact>]
 let ``parse K5c6``() = 
-    parse "N5c6" "(Usual ((Knight, RankHint 3),(null, (2, 2))), null)"
+    parse "N5c6" "(Usual (Knight, (RankHint 3, (null, (2, 2)))), null)"
 
 [<Fact>]
 let ``parse Qe1f8``() = 
-    parse "Qe1f8" "(Usual ((Queen, SquareHint (4, 7)),(null, (5, 0))), null)"
+    parse "Qe1f8" "(Usual (Queen, (SquareHint (4, 7), (null, (5, 0)))), null)"
 
 [<Fact>]
 let ``parse Ne:c6``() = 
-    parse "Ne:c6" "(Usual ((Knight, FileHint 4),(Some Capture, (2, 2))), null)"
+    parse "Ne:c6" "(Usual (Knight, (FileHint 4, (Some Capture, (2, 2)))), null)"
 
 [<Fact>]
 let ``parse K5:c6``() = 
-    parse "N5:c6" "(Usual ((Knight, RankHint 3),(Some Capture, (2, 2))), null)"
+    parse "N5:c6" "(Usual (Knight, (RankHint 3, (Some Capture, (2, 2)))), null)"
 
 [<Fact>]
 let ``parse Qe1xf8``() = 
-    parse "Qe1xf8" "(Usual ((Queen, SquareHint (4, 7)),(Some Capture, (5, 0))), null)"
+    parse "Qe1xf8" "(Usual (Queen, (SquareHint (4, 7), (Some Capture, (5, 0)))), null)"
+
+[<Fact>]
+let ``parse e4``() = 
+    parse "e4" "(PawnPush ((4, 4),null), null)"
+
+[<Fact>]
+let ``parse f8=Q``() = 
+    parse "f8=Q" "(PawnPush ((5, 0),Some Queen), null)"
+
+[<Fact>]
+let ``parse c1=N+``() = 
+    parse "c1=N+" "(PawnPush ((2, 7),Some Knight), Some Check)"
+
+[<Fact>]
+let ``parse a2#``() = 
+    parse "a2#" "(PawnPush ((0, 6),null), Some Mate)"
+
+[<Fact>]
+let ``parse gxe4``() = 
+    parse "gxe4" "(PawnCapture (6,((4, 4), null)), null)"
