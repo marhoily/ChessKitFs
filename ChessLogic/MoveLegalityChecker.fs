@@ -141,9 +141,10 @@ let ValidateMove move position =
     | Some(_) -> observations <- Capture :: observations
     | None -> ()
     match piece with
-    | Some(pieceColor, _) -> 
+    | Some(pieceColor, fPt) -> 
         if color <> pieceColor then wrongSideToMove()
-    | None -> ()
+        pieceType <- Some(fPt)
+    | None -> emptyCell()
     
     let validatePawnMove fromSquare toSquare = 
         let validateDoublePush v c = 
@@ -320,9 +321,6 @@ let ValidateMove move position =
                         CastlingAvailability = newCastlingAvailability
                         Observations = [] }
     
-    match piece with
-    | Some(_, fPt) -> pieceType <- Some(fPt)
-    | None -> emptyCell()
     if errors.IsEmpty then 
         validateByPieceType () (toX88 moveFrom) (toX88 moveTo)
     if errors.IsEmpty then 
