@@ -60,6 +60,7 @@ let ValidateMove move position =
     let mutable castling = None
     let mutable resultPosition = None
     let err e = errors <- e :: errors
+    let warn w = warnings <- w :: warnings
     let info i = observations <- i :: observations
     let enPassant() = observations <- Capture :: EnPassant :: observations
     let castle x = castling <- Some(x)
@@ -91,8 +92,8 @@ let ValidateMove move position =
             err EmptyCell
             None
     
-    //   ___________
-    //__/ Functions \_____________________________________________________
+    //   _______________________
+    //__/ Validateion functions \_________________________________________
     let validatePawnMove fromSquare toSquare = 
         let validateDoublePush v c = 
             if fromSquare / 16 <> c then err DoesNotMoveThisWay
@@ -194,14 +195,8 @@ let ValidateMove move position =
         | Rook -> validateRookMove
         | Queen -> validateQueenMove
     
-    let assignMissingPromotionHint() = 
-        if observations |> contains Promotion then 
-            warnings <- MissingPromotionHint :: warnings
-    
-    let assignPromotionHintIsNotNeededHint() = 
-        if not (observations |> contains Promotion) then 
-            warnings <- PromotionHintIsNotNeeded :: warnings
-    
+    //   ______________
+    //__/ NEW Position \__________________________________________________
     let setupResultPosition() = 
         let newPlacement = Array.copy position.Placement
         // Remove the pawn captured en-passant
@@ -275,12 +270,12 @@ let ValidateMove move position =
     if errors.IsEmpty then 
         let resPos = setupResultPosition()
         resultPosition <- Some(resPos)
-        // MoveToCheck
+        // ---- MoveToCheck
         let at c = PieceAt c resPos
         if IsInCheck (Color.oppositeOf resPos.ActiveColor) at then 
             err MoveToCheck
             resultPosition <- None
-        // new position is Check
+        // ---- new position is Check
         let newAt coordinate = resPos.Placement.[coordinate |> ToIndex]
         let isInCheck = IsInCheck resPos.ActiveColor newAt
         
@@ -289,9 +284,13 @@ let ValidateMove move position =
         if not newObservations.IsEmpty then 
             resultPosition <- Some
                                   ({ resPos with Observations = newObservations })
+    // ---- requiresPromotion
+    let requiresPromotion = observations |> contains Promotion
     match move with
-    | UsualMove(_, _) -> assignMissingPromotionHint()
-    | PromotionMove(_) -> assignPromotionHintIsNotNeededHint()
+    | UsualMove(_, _) -> 
+        if requiresPromotion then warn MissingPromotionHint
+    | PromotionMove(_) -> 
+        if not requiresPromotion then warn PromotionHintIsNotNeeded
     if errors.IsEmpty then 
         LegalMove { Start = moveFrom
                     End = moveTo
