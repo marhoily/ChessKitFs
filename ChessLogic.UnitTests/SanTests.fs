@@ -83,8 +83,12 @@ let ``parse O-O-O``() =
     
 [<Fact>]
 let ``parse O-O``() = 
-    parse "O-O" "(ShortCastling, null)"
-    
+    parse "O-O" "(ShortCastling, null)"    
 
+[<Fact>]
+let ``parse Nec6``() = 
+    parse "Nec6" "(Usual (Knight, (FileHint 4, (null, (2, 2)))), null)"
 
-    
+[<Fact>]
+let ``parse K5c6``() = 
+    parse "N5c6" "(Usual (Knight, (RankHint 3, (null, (2, 2)))), null)"

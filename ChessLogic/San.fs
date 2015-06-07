@@ -87,7 +87,6 @@ let ParseSanString str =
     let parseRank (c : char) : Rank = (int '8') - (int c)
     let parsePiece = 
         function 
-        | 'P' -> Pawn
         | 'N' -> Knight
         | 'B' -> Bishop
         | 'R' -> Rook
@@ -101,7 +100,7 @@ let ParseSanString str =
     let mate = charReturn '#' Mate
     let file = anyOf "abcdefgh" |>> parseFile
     let rank = anyOf "12345678" |>> parseRank
-    let piece = anyOf "PNBRQK" |>> parsePiece
+    let piece = anyOf "NBRQK" |>> parsePiece
     let capture = anyOf "x:" >>% Capture
     let promotion = skipChar '=' >>. anyOf "NBRQ" |>> parsePiece
     let ending = check <|> mate
@@ -114,6 +113,6 @@ let ParseSanString str =
     let noHint = preturn NoHint
     let hintedTarget = (hint .>>. target) <|> (noHint .>>. target)
     let move = piece .>>. hintedTarget |>> Usual
-    let moves = choice [long; short; pawnPush; pawnCapture; move]
+    let moves = choice [long; short; move; pawnPush; pawnCapture]
     let san = moves .>>. (opt ending)
     run san str
