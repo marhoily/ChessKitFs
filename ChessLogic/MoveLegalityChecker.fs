@@ -54,16 +54,16 @@ type MoveInfo =
     | IllegalMove of IllegalMove
 
 let ValidateMove move position = 
-    let mutable errors = []
-    let mutable observations = []
-    let mutable warnings = []
-    let mutable castling = None
-    let mutable newPosition = None
-    let err e = errors <- e :: errors
-    let warn w = warnings <- w :: warnings
-    let info i = observations <- i :: observations
-    let enPassant() = observations <- Capture :: EnPassant :: observations
-    let castle x = castling <- Some(x)
+    let errors = ref []
+    let observations = ref []
+    let warnings = ref  []
+    let castling = ref None
+    let newPosition = ref None
+    let err e = errors := e :: !errors
+    let warn w = warnings := w :: !warnings
+    let info i = observations := i :: !observations
+    let enPassant() = observations := Capture :: EnPassant :: !observations
+    let castle x = castling := Some(x)
     
     let hasNoEnPassant() = 
         err HasNoEnPassant
@@ -202,14 +202,14 @@ let ValidateMove move position =
     let setupResultPosition() = 
         let newPlacement = Array.copy position.Placement
         // Remove the pawn captured en-passant
-        if observations |> contains EnPassant then 
+        if !observations |> contains EnPassant then 
             let increment = 
                 if color = White then +8
                 else -8
             newPlacement.[(moveTo |> ToIndex) + increment] <- None
         // Remove the piece from the old square and put it to the new square
         let effectivePiece = 
-            if observations |> contains Promotion then promoteTo
+            if !observations |> contains Promotion then promoteTo
             else pieceType.Value
         newPlacement.[moveTo |> ToIndex] <- Some((color, effectivePiece))
         newPlacement.[moveFrom |> ToIndex] <- None
@@ -219,7 +219,7 @@ let ValidateMove move position =
             let rook = newPlacement.[fromX88 f |> ToIndex]
             newPlacement.[f |> x88toIndex] <- None
             newPlacement.[t |> x88toIndex] <- rook
-        match castling with
+        match !castling with
         | Some(WK) -> moveCastlingRook H1 F1
         | Some(WQ) -> moveCastlingRook A1 D1
         | Some(BK) -> moveCastlingRook H8 F8
@@ -227,11 +227,11 @@ let ValidateMove move position =
         | None -> ()
         // Figure out new en-passant option, half-move clock, full-move number
         let newEnPassant = 
-            if observations |> contains DoublePush then Some(fst moveFrom)
+            if !observations |> contains DoublePush then Some(fst moveFrom)
             else None
         
         let newHalfMoveClock = 
-            if pieceType.Value = Pawn || observations |> contains Capture then 0
+            if pieceType.Value = Pawn || !observations |> contains Capture then 0
             else position.HalfMoveClock + 1
         
         let newMoveNumber = 
@@ -266,23 +266,23 @@ let ValidateMove move position =
                             FullMoveNumber = newMoveNumber
                             CastlingAvailability = newCastlingAvailability
                             Observations = [] }
-        newPosition <- Some(updatedPosition)
+        newPosition := Some(updatedPosition)
     
     let setMoveToCheck() = 
-        let at c = PieceAt c newPosition.Value
-        if IsInCheck (Color.oppositeOf newPosition.Value.ActiveColor) at then 
+        let at c = PieceAt c (!newPosition).Value
+        if IsInCheck (Color.oppositeOf (!newPosition).Value.ActiveColor) at then 
             err MoveToCheck
-            newPosition <- None
+            newPosition := None
     
     let setNewPositionIsCheck() = 
-        let old = newPosition.Value
+        let old = (!newPosition).Value
         let newAt x = old.Placement.[x |> ToIndex]
         let isInCheck = IsInCheck old.ActiveColor newAt
         if isInCheck then 
-            newPosition <- Some({ old with Observations = [ Check ] })
+            newPosition := Some({ old with Observations = [ Check ] })
     
     let setRequiresPromotion() = 
-        let requiresPromotion = observations |> contains Promotion
+        let requiresPromotion = !observations |> contains Promotion
         match move with
         | UsualMove(_, _) -> 
             if requiresPromotion then warn MissingPromotionHint
@@ -292,27 +292,27 @@ let ValidateMove move position =
     //   __________
     //__/ Do steps \______________________________________________________    
     List.iter (fun f -> 
-        if errors.IsEmpty then f()) 
+        if (!errors).IsEmpty then f()) 
         [ validate; setupResultPosition; setMoveToCheck; setNewPositionIsCheck; 
           setRequiresPromotion ]
-    if errors.IsEmpty then 
+    if (!errors).IsEmpty then 
         LegalMove { Start = moveFrom
                     End = moveTo
                     PromoteTo = promoteTo
                     OriginalPosition = position
-                    ResultPosition = newPosition.Value
+                    ResultPosition = (!newPosition).Value
                     Piece = pieceType.Value
-                    Castling = castling
-                    Observations = observations
-                    Warnings = warnings }
+                    Castling = !castling
+                    Observations = !observations
+                    Warnings = !warnings }
     else 
         IllegalMove({ Move = move
                       OriginalPosition = position
                       Piece = pieceType
-                      Castling = castling
-                      Observations = observations
-                      Warnings = warnings
-                      Errors = errors })
+                      Castling = !castling
+                      Observations = !observations
+                      Warnings = !warnings
+                      Errors = !errors })
 
 let ValidateLegalMove move position = 
     match ValidateMove move position with
