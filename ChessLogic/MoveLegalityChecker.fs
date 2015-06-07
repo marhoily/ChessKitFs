@@ -120,7 +120,6 @@ let ValidateMove move position =
     let castleFromCheck() = errors <- CastleFromCheck :: errors
     let toOccupiedCell() = errors <- ToOccupiedCell :: errors
     let wrongSideToMove() = errors <- WrongSideToMove :: errors
-    let capture() = observations <- Capture :: observations
     let emptyCell() = errors <- EmptyCell :: errors
     let castle x = castling <- Some(x)
     
@@ -135,9 +134,16 @@ let ValidateMove move position =
     
     let at64 i64 = position |> PieceAt i64
     let piece = at64 moveFrom
-    let capturedPiece = at64 moveTo
     let color = position.ActiveColor
     let at i = position |> PieceAt(i % 16, i / 16)
+    match at64 moveTo with 
+    | Some(clr, _) when clr = color -> toOccupiedCell()
+    | Some(_) -> observations <- Capture :: observations
+    | None -> ()
+    match piece with
+    | Some(pieceColor, _) -> 
+        if color <> pieceColor then wrongSideToMove()
+    | None -> ()
     
     let validatePawnMove fromSquare toSquare = 
         let validateDoublePush v c = 
@@ -239,13 +245,7 @@ let ValidateMove move position =
         | Bishop -> validateBishopMove
         | Rook -> validateRookMove
         | Queen -> validateQueenMove
-    if capturedPiece <> None then 
-        if (fst capturedPiece.Value) = color then toOccupiedCell()
-        else capture()
-    match piece with
-    | Some(pieceColor, _) -> 
-        if color <> pieceColor then wrongSideToMove()
-    | None -> ()
+
     let assignMissingPromotionHint() = 
         if observations |> contains Promotion then 
             warnings <- MissingPromotionHint :: warnings
@@ -326,21 +326,21 @@ let ValidateMove move position =
     if errors.IsEmpty then 
         validateByPieceType () (toX88 moveFrom) (toX88 moveTo)
     if errors.IsEmpty then 
-        let p = setupResultPosition()
-        resultPosition <- Some(p)
+        let resPos = setupResultPosition()
+        resultPosition <- Some(resPos)
         // MoveToCheck
-        let at c = PieceAt c p
-        if IsInCheck (Color.oppositeOf p.ActiveColor) at then 
+        let at c = PieceAt c resPos
+        if IsInCheck (Color.oppositeOf resPos.ActiveColor) at then 
             errors <- MoveToCheck :: errors
             resultPosition <- None
         // new position is Check
-        let newAt coordinate = p.Placement.[coordinate |> ToIndex]
-        let isInCheck = IsInCheck p.ActiveColor newAt
+        let newAt coordinate = resPos.Placement.[coordinate |> ToIndex]
+        let isInCheck = IsInCheck resPos.ActiveColor newAt
         
         let newObservations = 
             [ if isInCheck then yield Check ]
         if not newObservations.IsEmpty then 
-            resultPosition <- Some({ p with Observations = newObservations })
+            resultPosition <- Some({ resPos with Observations = newObservations })
     match move with
     | UsualMove(_, _) -> assignMissingPromotionHint()
     | PromotionMove(_) -> assignPromotionHintIsNotNeededHint()

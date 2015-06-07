@@ -123,14 +123,14 @@ let ``King move should kill castling1``() =
 
 [<Fact>]
 let ``Rook move should kill castling2``() = 
-    "rnbqkbnr/p1ppp1p1/1p3p2/1N5Q/4P3/P6p/1PPP1PPP/1RB1KBNR b Kkq - 1 6 "
+    "rnbqkbnr/p1ppp1p1/1p3p2/1N5Q/4P3/P6p/1PPP1PPP/1RB1KBNR b Kkq - 1 6"
     |> after "h8-h5"
     |> should equal 
            "rnbqkbn1/p1ppp1p1/1p3p2/1N5r/4P3/P6p/1PPP1PPP/1RB1KBNR w Kq - 0 7"
 
 [<Fact>]
 let ``Promotion with take. This test fails on Valil``() = 
-    "rnbqk1nr/1p1p1pPp/p7/2p1p3/8/NPb2P2/P1PPP1PR/R1BQKBN1 w Qkq - 1 9 "
+    "rnbqk1nr/1p1p1pPp/p7/2p1p3/8/NPb2P2/P1PPP1PR/R1BQKBN1 w Qkq - 1 9"
     |> after "g7-h8=R"
     |> should equal 
            "rnbqk1nR/1p1p1p1p/p7/2p1p3/8/NPb2P2/P1PPP1PR/R1BQKBN1 b Qq - 0 9"
