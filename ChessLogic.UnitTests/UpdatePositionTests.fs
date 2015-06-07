@@ -12,8 +12,7 @@ let after move position =
     position
     |> ParseFen
     |> unwrap
-    |> ValidateMove(_cn move)
-    |> UnwrapLegal
+    |> ValidateLegalMove(_cn move)
     |> fun vm -> vm.ResultPosition
     |> ToFen
 

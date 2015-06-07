@@ -314,7 +314,7 @@ let ValidateMove move position =
                       Warnings = warnings
                       Errors = errors })
 
-let UnwrapLegal = 
-    function 
+let ValidateLegalMove move position = 
+    match ValidateMove move position with
     | LegalMove(m) -> m
     | IllegalMove(_) -> failwith "move is illegal"
