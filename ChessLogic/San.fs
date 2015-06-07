@@ -122,15 +122,46 @@ let ParseSanString str =
     let san = moves .>>. opt ending
     run san str
 
-let FromSanString str = 
-    let convert =
-        function
-        | ShortCastling, notes -> ()
-        | LongCastling, notes -> ()
-        | PawnPush(toSquare, promoteTo), notes -> ()
-        | PawnCapture(fromFile, (toSquare, promoteTo)), notes -> ()
-        | Usual(piece, (hint, (capture, toSquare))), notes -> ()
+type SanError = 
+    | PieceNotFound of PieceType
+    | DisambiguationIsMissing of Coordinate list
 
+type SanWarning = 
+    | IsCapture
+    | IsNotCapture
+    | IsCheck
+    | IsNotCheck
+    | IsMate
+    | IsNotMate
+    | PromotionHintIsMissing
+    | PromotionHintIsExcessive
+    | DisambiguationIsExcessive
+
+type SanMove = 
+    | Interpreted of MoveInfo * SanWarning list
+    | Nonsense of SanError
+    | Unparsable of string
+
+let FromSanString str board = 
+    let castling opt = 
+        let proto = 
+            match board.ActiveColor, opt with
+            | White, ShortCastling -> "e1-g1"
+            | White, LongCastling -> "e1-c1"
+            | Black, ShortCastling -> "e8-g8"
+            | Black, LongCastling -> "e8-c8"
+            | _ -> failwith "unexpected"
+        Interpreted(board |> ValidateMove(_cn (proto)), [])
+    
+    let convert = 
+        function 
+        | ShortCastling, notes -> castling ShortCastling
+        | LongCastling, notes -> castling LongCastling
+        | PawnPush(toSquare, promoteTo), notes -> Unparsable("blah")
+        | PawnCapture(fromFile, (toSquare, promoteTo)), notes -> 
+            Unparsable("blah")
+        | Usual(piece, (hint, (capture, toSquare))), notes -> Unparsable("blah")
+    
     match ParseSanString str with
     | Success(p, _, _) -> Result.Ok(convert p)
     | Failure(e, _, _) -> Result.Error(e)
