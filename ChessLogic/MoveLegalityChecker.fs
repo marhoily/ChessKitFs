@@ -68,6 +68,8 @@ let ValidateMove move position =
         err HasNoEnPassant
         enPassant()
     
+    //   ___________
+    //__/ Shortcats \_____________________________________________________
     let moveFrom, moveTo, promoteTo = 
         match move with
         | UsualMove(f, t) -> (f, t, Queen)
@@ -78,7 +80,7 @@ let ValidateMove move position =
     let color = position.ActiveColor
     match at64 moveTo with
     | Some(clr, _) when clr = color -> err ToOccupiedCell
-    | Some(_) -> info Capture 
+    | Some(_) -> info Capture
     | None -> ()
     let pieceType = 
         match at64 moveFrom with
@@ -89,6 +91,8 @@ let ValidateMove move position =
             err EmptyCell
             None
     
+    //   ___________
+    //__/ Functions \_____________________________________________________
     let validatePawnMove fromSquare toSquare = 
         let validateDoublePush v c = 
             if fromSquare / 16 <> c then err DoesNotMoveThisWay
@@ -264,6 +268,8 @@ let ValidateMove move position =
                         CastlingAvailability = newCastlingAvailability
                         Observations = [] }
     
+    //   ______________
+    //__/ Calculations \__________________________________________________
     if errors.IsEmpty then 
         validateByPieceType () (toX88 moveFrom) (toX88 moveTo)
     if errors.IsEmpty then 
