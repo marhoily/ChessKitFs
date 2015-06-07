@@ -2,6 +2,7 @@
 
 open Definitions
 open MoveLegalityChecker
+open Parsing
 open System.Text
 open CoordinateNotation
 open FParsec
@@ -120,3 +121,16 @@ let ParseSanString str =
     let moves = choice [ long; short; move; pawnCapture; pawnPush ]
     let san = moves .>>. opt ending
     run san str
+
+let FromSanString str = 
+    let convert =
+        function
+        | ShortCastling, notes -> ()
+        | LongCastling, notes -> ()
+        | PawnPush(toSquare, promoteTo), notes -> ()
+        | PawnCapture(fromFile, (toSquare, promoteTo)), notes -> ()
+        | Usual(piece, (hint, (capture, toSquare))), notes -> ()
+
+    match ParseSanString str with
+    | Success(p, _, _) -> Result.Ok(convert p)
+    | Failure(e, _, _) -> Result.Error(e)
