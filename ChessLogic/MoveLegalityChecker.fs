@@ -58,7 +58,7 @@ let ValidateMove move position =
     let mutable observations = []
     let mutable warnings = []
     let mutable castling = None
-    let mutable resultPosition = None
+    let mutable newPosition = None
     let err e = errors <- e :: errors
     let warn w = warnings <- w :: warnings
     let info i = observations <- i :: observations
@@ -256,33 +256,30 @@ let ValidateMove move position =
         
         // Figure out new active color, and if the move gives check
         let newActiveColor = Color.oppositeOf color
+        
         // Construct new position
-        resultPosition <- Some({ position with Placement = newPlacement
-                                               ActiveColor = newActiveColor
-                                               EnPassant = newEnPassant
-                                               HalfMoveClock = newHalfMoveClock
-                                               FullMoveNumber = newMoveNumber
-                                               CastlingAvailability = 
-                                                   newCastlingAvailability
-                                               Observations = [] })
+        let updatedPosition = 
+            { position with Placement = newPlacement
+                            ActiveColor = newActiveColor
+                            EnPassant = newEnPassant
+                            HalfMoveClock = newHalfMoveClock
+                            FullMoveNumber = newMoveNumber
+                            CastlingAvailability = newCastlingAvailability
+                            Observations = [] }
+        newPosition <- Some(updatedPosition)
     
     let setMoveToCheck() = 
-        let at c = PieceAt c resultPosition.Value
-        if IsInCheck (Color.oppositeOf resultPosition.Value.ActiveColor) at then 
+        let at c = PieceAt c newPosition.Value
+        if IsInCheck (Color.oppositeOf newPosition.Value.ActiveColor) at then 
             err MoveToCheck
-            resultPosition <- None
+            newPosition <- None
     
     let setNewPositionIsCheck() = 
-        let newAt coordinate = 
-            resultPosition.Value.Placement.[coordinate |> ToIndex]
-        let isInCheck = IsInCheck resultPosition.Value.ActiveColor newAt
-        
-        let newObservations = 
-            [ if isInCheck then yield Check ]
-        if not newObservations.IsEmpty then 
-            resultPosition <- Some
-                                  ({ resultPosition.Value with Observations = 
-                                                                   newObservations })
+        let old = newPosition.Value
+        let newAt x = old.Placement.[x |> ToIndex]
+        let isInCheck = IsInCheck old.ActiveColor newAt
+        if isInCheck then 
+            newPosition <- Some({ old with Observations = [ Check ] })
     
     let setRequiresPromotion() = 
         let requiresPromotion = observations |> contains Promotion
@@ -291,20 +288,19 @@ let ValidateMove move position =
             if requiresPromotion then warn MissingPromotionHint
         | PromotionMove(_) -> 
             if not requiresPromotion then warn PromotionHintIsNotNeeded
-
+    
     //   __________
     //__/ Do steps \______________________________________________________    
     List.iter (fun f -> 
         if errors.IsEmpty then f()) 
-        [ validate; setupResultPosition; setMoveToCheck; 
-            setNewPositionIsCheck; setRequiresPromotion ]
-    
+        [ validate; setupResultPosition; setMoveToCheck; setNewPositionIsCheck; 
+          setRequiresPromotion ]
     if errors.IsEmpty then 
         LegalMove { Start = moveFrom
                     End = moveTo
                     PromoteTo = promoteTo
                     OriginalPosition = position
-                    ResultPosition = resultPosition.Value
+                    ResultPosition = newPosition.Value
                     Piece = pieceType.Value
                     Castling = castling
                     Observations = observations
