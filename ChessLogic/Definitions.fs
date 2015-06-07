@@ -9,7 +9,7 @@ let LetterToFileNoCheck(p : char) : File = int (p) - int ('a')
 
 type Rank = int
 
-let rankToString (rank : Rank) = (8 - rank).ToString()
+let rankToString (rank : Rank) = string (8 - rank)
 
 type Coordinate = File * Rank
 
