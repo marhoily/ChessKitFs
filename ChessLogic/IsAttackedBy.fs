@@ -14,17 +14,17 @@ let IsAttackedBy side at88 square =
         if square &&& 0x88 <> 0 then false
         else at88 square = Some((side, pieceType))
     
-    let one pieceType = 
+    let step pieceType = 
         Seq.map (fun increment () -> check (square + increment) pieceType)
     let many pieceType = 
         Seq.map (fun increment () -> iterate square increment pieceType)
 
-    [ (one Pawn (if side = Black then [ -15; -17 ] else [ +15; +17 ]))
-      (one Knight [ -33; -31; -18; -14; +33; +31; +18; +14 ])
-      (many Queen [ +15; +17; -15; -17; +16; +01; -16; -01 ])
-      (many Rook [ +16; +01; -16; -01 ])
-      (many Bishop [ +15; +17; -15; -17 ])
-      (one King [ +15; +17; -15; -17; +16; +01; -16; -01 ]) ]
+    [ step Pawn (if side = Black then [ -15; -17 ] else [ +15; +17 ])
+      step Knight [ -33; -31; -18; -14; +33; +31; +18; +14 ]
+      many Queen [ +15; +17; -15; -17; +16; +01; -16; -01 ]
+      many Rook [ +16; +01; -16; -01 ]
+      many Bishop [ +15; +17; -15; -17 ]
+      step King [ +15; +17; -15; -17; +16; +01; -16; -01 ] ]
     |> Seq.concat
     |> Seq.toArray
     |> Seq.exists (fun f -> f())
