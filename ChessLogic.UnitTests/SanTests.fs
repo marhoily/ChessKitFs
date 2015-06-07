@@ -87,8 +87,24 @@ let ``parse O-O``() =
 
 [<Fact>]
 let ``parse Nec6``() = 
-    parse "Nec6" "(Usual (Knight, (FileHint 4, (null, (2, 2)))), null)"
+    parse "Nec6" "(Usual ((Knight, FileHint 4),(null, (2, 2))), null)"
 
 [<Fact>]
 let ``parse K5c6``() = 
-    parse "N5c6" "(Usual (Knight, (RankHint 3, (null, (2, 2)))), null)"
+    parse "N5c6" "(Usual ((Knight, RankHint 3),(null, (2, 2))), null)"
+
+[<Fact>]
+let ``parse Qe1f8``() = 
+    parse "Qe1f8" "(Usual ((Queen, SquareHint (4, 7)),(null, (5, 0))), null)"
+
+[<Fact>]
+let ``parse Ne:c6``() = 
+    parse "Ne:c6" "(Usual ((Knight, FileHint 4),(Some Capture, (2, 2))), null)"
+
+[<Fact>]
+let ``parse K5:c6``() = 
+    parse "N5:c6" "(Usual ((Knight, RankHint 3),(Some Capture, (2, 2))), null)"
+
+[<Fact>]
+let ``parse Qe1xf8``() = 
+    parse "Qe1xf8" "(Usual ((Queen, SquareHint (4, 7)),(Some Capture, (5, 0))), null)"

@@ -78,13 +78,14 @@ type Hint =
 type Moves = 
     | ShortCastling
     | LongCastling
-    | PawnPush of Coordinate*PieceType option
-    | PawnCapture of File*(Coordinate*PieceType option)
-    | Usual of (PieceType*(Hint*(Capture option*Coordinate)))
+    | PawnPush of Coordinate * PieceType option
+    | PawnCapture of File * (Coordinate * PieceType option)
+    | Usual of (PieceType * Hint) * (Capture option * Coordinate)
 
 let ParseSanString str = 
     let parseFile = LetterToFileNoCheck
     let parseRank (c : char) : Rank = (int '8') - (int c)
+    
     let parsePiece = 
         function 
         | 'N' -> Knight
@@ -104,15 +105,19 @@ let ParseSanString str =
     let capture = anyOf "x:" >>% Capture
     let promotion = skipChar '=' >>. anyOf "NBRQ" |>> parsePiece
     let ending = check <|> mate
-    let square = file .>>. rank 
+    let square = file .>>. rank
     let pawn = square .>>. (opt promotion)
     let pawnPush = pawn |>> PawnPush
     let pawnCapture = file .>> capture .>>. pawn |>> PawnCapture
     let target = (opt capture) .>>. square
-    let hint = (file |>> FileHint) <|> (rank |>> RankHint) <|> (square |>> SquareHint)
-    let noHint = preturn NoHint
-    let hintedTarget = (hint .>>. target) <|> (noHint .>>. target)
-    let move = piece .>>. hintedTarget |>> Usual
-    let moves = choice [long; short; move; pawnPush; pawnCapture]
+    
+    let hint = 
+        choice [ attempt square |>> SquareHint
+                 file |>> FileHint
+                 rank |>> RankHint
+                 preturn NoHint ]
+    
+    let move = piece .>>. hint .>>. target |>> Usual
+    let moves = choice [ long; short; move; pawnPush; pawnCapture ]
     let san = moves .>>. (opt ending)
     run san str
