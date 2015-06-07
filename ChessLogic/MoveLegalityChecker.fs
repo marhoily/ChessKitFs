@@ -195,8 +195,10 @@ let ValidateMove move position =
         | Rook -> validateRookMove
         | Queen -> validateQueenMove
     
-    //   ______________
-    //__/ NEW Position \__________________________________________________
+    //   _______
+    //__/ Steps \_________________________________________________________
+    let validate() = validateByPieceType () (toX88 moveFrom) (toX88 moveTo)
+    
     let setupResultPosition() = 
         let newPlacement = Array.copy position.Placement
         // Remove the pawn captured en-passant
@@ -254,43 +256,49 @@ let ValidateMove move position =
         
         // Figure out new active color, and if the move gives check
         let newActiveColor = Color.oppositeOf color
-        { // Construct new position
-          position with Placement = newPlacement
-                        ActiveColor = newActiveColor
-                        EnPassant = newEnPassant
-                        HalfMoveClock = newHalfMoveClock
-                        FullMoveNumber = newMoveNumber
-                        CastlingAvailability = newCastlingAvailability
-                        Observations = [] }
+        // Construct new position
+        resultPosition <- Some({ position with Placement = newPlacement
+                                               ActiveColor = newActiveColor
+                                               EnPassant = newEnPassant
+                                               HalfMoveClock = newHalfMoveClock
+                                               FullMoveNumber = newMoveNumber
+                                               CastlingAvailability = 
+                                                   newCastlingAvailability
+                                               Observations = [] })
     
-    //   ______________
-    //__/ Calculations \__________________________________________________
-    if errors.IsEmpty then 
-        validateByPieceType () (toX88 moveFrom) (toX88 moveTo)
-    if errors.IsEmpty then 
-        let resPos = setupResultPosition()
-        resultPosition <- Some(resPos)
-        // ---- MoveToCheck
-        let at c = PieceAt c resPos
-        if IsInCheck (Color.oppositeOf resPos.ActiveColor) at then 
+    let setMoveToCheck() = 
+        let at c = PieceAt c resultPosition.Value
+        if IsInCheck (Color.oppositeOf resultPosition.Value.ActiveColor) at then 
             err MoveToCheck
             resultPosition <- None
-        // ---- new position is Check
-        let newAt coordinate = resPos.Placement.[coordinate |> ToIndex]
-        let isInCheck = IsInCheck resPos.ActiveColor newAt
+    
+    let setNewPositionIsCheck() = 
+        let newAt coordinate = 
+            resultPosition.Value.Placement.[coordinate |> ToIndex]
+        let isInCheck = IsInCheck resultPosition.Value.ActiveColor newAt
         
         let newObservations = 
             [ if isInCheck then yield Check ]
         if not newObservations.IsEmpty then 
             resultPosition <- Some
-                                  ({ resPos with Observations = newObservations })
-    // ---- requiresPromotion
-    let requiresPromotion = observations |> contains Promotion
-    match move with
-    | UsualMove(_, _) -> 
-        if requiresPromotion then warn MissingPromotionHint
-    | PromotionMove(_) -> 
-        if not requiresPromotion then warn PromotionHintIsNotNeeded
+                                  ({ resultPosition.Value with Observations = 
+                                                                   newObservations })
+    
+    let setRequiresPromotion() = 
+        let requiresPromotion = observations |> contains Promotion
+        match move with
+        | UsualMove(_, _) -> 
+            if requiresPromotion then warn MissingPromotionHint
+        | PromotionMove(_) -> 
+            if not requiresPromotion then warn PromotionHintIsNotNeeded
+
+    //   __________
+    //__/ Do steps \______________________________________________________    
+    List.iter (fun f -> 
+        if errors.IsEmpty then f()) 
+        [ validate; setupResultPosition; setMoveToCheck; 
+            setNewPositionIsCheck; setRequiresPromotion ]
+    
     if errors.IsEmpty then 
         LegalMove { Start = moveFrom
                     End = moveTo
