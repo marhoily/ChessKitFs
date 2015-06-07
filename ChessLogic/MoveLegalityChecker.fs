@@ -106,7 +106,7 @@ let ValidateMove move position =
     let mutable observations = []
     let mutable warnings = []
     let mutable castling = None
-    let mutable pieceType = None
+//    let mutable pieceType = None
     let mutable resultPosition = None
     let doesNotCaptureThisWay() = errors <- DoesNotCaptureThisWay :: errors
     let doesNotMoveThisWay() = errors <- DoesNotMoveThisWay :: errors
@@ -133,18 +133,20 @@ let ValidateMove move position =
         | PromotionMove({ Vector = (f, t); PromoteTo = p }) -> (f, t, p)
     
     let at64 i64 = position |> PieceAt i64
-    let piece = at64 moveFrom
-    let color = position.ActiveColor
     let at i = position |> PieceAt(i % 16, i / 16)
+    let color = position.ActiveColor
     match at64 moveTo with 
     | Some(clr, _) when clr = color -> toOccupiedCell()
     | Some(_) -> observations <- Capture :: observations
     | None -> ()
-    match piece with
-    | Some(pieceColor, fPt) -> 
-        if color <> pieceColor then wrongSideToMove()
-        pieceType <- Some(fPt)
-    | None -> emptyCell()
+    let pieceType = 
+        match at64 moveFrom with
+        | Some(pieceColor, fPt) -> 
+            if color <> pieceColor then wrongSideToMove()
+            Some(fPt)
+        | None -> 
+            emptyCell()
+            None
     
     let validatePawnMove fromSquare toSquare = 
         let validateDoublePush v c = 
