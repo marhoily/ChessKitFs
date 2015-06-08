@@ -140,13 +140,40 @@ let findPushingPawns square (expected : string list) board =
     |> should equal expected
 
 [<Fact>]
-let ``push pawn: b6-b5``() = 
+let ``push black pawn: b6-b5``() = 
     "8/1p6/1p6/8/8/8/8/8 b - - 0 1" |> findPushingPawns "b5" [ "b6" ]
 
 [<Fact>]
-let ``push pawn: b7-b1 (as if pawns slid)``() = 
+let ``push black pawn: b7-b1 (as if pawns slid)``() = 
     "8/1p6/8/8/8/8/8/8 b - - 0 1" |> findPushingPawns "b1" [ "b7" ]
 
 [<Fact>]
-let ``pawns don't push back: b7-b8``() = 
+let ``black pawns don't push back: b7-b8``() = 
     "8/1p6/8/8/8/8/8/8 b - - 0 1" |> findPushingPawns "b8" [ ]
+
+
+[<Fact>]
+let ``push white pawn: e2-e4``() = 
+    "8/8/8/8/8/8/4P3/8 w - - 0 1" |> findPushingPawns "e4" [ "e2" ]
+
+let findCapturingPawns square (expected : string list) board = 
+    let _, scan, _ = sanScanners (ParseFen board |> unwrap)
+    scan (_c square |> toX88)
+    |> List.map CoordinateToString
+    |> should equal expected
+
+[<Fact>]
+let ``white pawn captures: e2-d3``() = 
+    "8/8/8/8/8/8/4P3/8 w - - 0 1" |> findCapturingPawns "d3" [ "e2" ]
+
+[<Fact>]
+let ``white pawn does not capture: e2-e3``() = 
+    "8/8/8/8/8/8/4P3/8 w - - 0 1" |> findCapturingPawns "e3" [ ]
+
+[<Fact>]
+let ``white pawn does not capture backwards: e2-f1``() = 
+    "8/8/8/8/8/8/4P3/8 w - - 0 1" |> findCapturingPawns "f1" [ ]
+
+[<Fact>]
+let ``2 black pawns can capture``() = 
+    "8/8/8/8/8/8/2p1p3/8 b - - 0 1" |> findCapturingPawns "d1" [ "e2"; "c2" ]
