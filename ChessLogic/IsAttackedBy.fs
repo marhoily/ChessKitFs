@@ -16,8 +16,8 @@ let inline getScanners side at88 square =
         else if at88 next = Some(side, pieceType) then next
         else -1
     
-    let toScanner fn pieceType = Seq.map (fn square pieceType)
-    (toScanner check, toScanner iterate)
+    let scan fn pieceType = Seq.map (fn square pieceType)
+    (scan check, scan iterate)
 
 let IsAttackedBy side at88 square = 
     let one, scan = getScanners side at88 square
