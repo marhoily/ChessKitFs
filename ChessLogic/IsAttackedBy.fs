@@ -20,14 +20,14 @@ let inline getScanners side at88 square =
     (scan jump, scan slide)
 
 let IsAttackedBy side at88 square = 
-    let one, scan = getScanners side at88 square
-    [ one Pawn (if side = Black then [ -15; -17 ]
+    let jump, slide = getScanners side at88 square
+    [ jump Pawn (if side = Black then [ -15; -17 ]
                 else [ +15; +17 ])
-      one Knight [ -33; -31; -18; -14; +33; +31; +18; +14 ]
-      scan Queen [ +15; +17; -15; -17; +16; +01; -16; -01 ]
-      scan Rook [ +16; +01; -16; -01 ]
-      scan Bishop [ +15; +17; -15; -17 ]
-      one King [ +15; +17; -15; -17; +16; +01; -16; -01 ] ]
+      jump Knight [ -33; -31; -18; -14; +33; +31; +18; +14 ]
+      slide Queen [ +15; +17; -15; -17; +16; +01; -16; -01 ]
+      slide Rook [ +16; +01; -16; -01 ]
+      slide Bishop [ +15; +17; -15; -17 ]
+      jump King [ +15; +17; -15; -17; +16; +01; -16; -01 ] ]
     |> Seq.concat
     |> Seq.exists (fun f -> f() <> -1)
 

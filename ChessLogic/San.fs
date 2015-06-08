@@ -158,20 +158,20 @@ let sanScanners board =
         |> project
 
     let findCapturingPawns square = 
-        let one, _ = getScanners color at88 square
+        let jump, _ = getScanners color at88 square
         match color with
-        | Black -> one Pawn [ -15; -17 ]
-        | White -> one Pawn [ +15; +17 ]
+        | Black -> jump Pawn [ -15; -17 ]
+        | White -> jump Pawn [ +15; +17 ]
         |> project
 
     let findNonPawnPieces ofType square = 
-        let one, scan = getScanners color at88 square
+        let jump, slide = getScanners color at88 square
         match ofType with
-        | Knight -> one Knight [ -33; -31; -18; -14; +33; +31; +18; +14 ]
-        | Queen -> scan Queen [ +15; +17; -15; -17; +16; +01; -16; -01 ]
-        | Rook -> scan Rook [ +16; +01; -16; -01 ]
-        | Bishop -> scan Bishop [ +15; +17; -15; -17 ]
-        | King -> one King [ +15; +17; -15; -17; +16; +01; -16; -01 ]
+        | Knight -> jump Knight [ -33; -31; -18; -14; +33; +31; +18; +14 ]
+        | Queen -> slide Queen [ +15; +17; -15; -17; +16; +01; -16; -01 ]
+        | Rook -> slide Rook [ +16; +01; -16; -01 ]
+        | Bishop -> slide Bishop [ +15; +17; -15; -17 ]
+        | King -> jump King [ +15; +17; -15; -17; +16; +01; -16; -01 ]
         | Pawn -> failwith "unexpected"
         |> project
     (findPushingPawns, findCapturingPawns, findNonPawnPieces)
