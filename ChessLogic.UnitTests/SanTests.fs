@@ -103,15 +103,15 @@ let ``parse Qe1f8``() =
 
 [<Fact>]
 let ``parse Ne:c6``() = 
-    parse "Ne:c6" "(Usual (Knight, (FileHint 4, (Some Capture, (2, 2)))), null)"
+    parse "Ne:c6" "(Usual (Knight, (FileHint 4, (Some SanCapture, (2, 2)))), null)"
 
 [<Fact>]
 let ``parse K5:c6``() = 
-    parse "N5:c6" "(Usual (Knight, (RankHint 3, (Some Capture, (2, 2)))), null)"
+    parse "N5:c6" "(Usual (Knight, (RankHint 3, (Some SanCapture, (2, 2)))), null)"
 
 [<Fact>]
 let ``parse Qe1xf8``() = 
-    parse "Qe1xf8" "(Usual (Queen, (SquareHint (4, 7), (Some Capture, (5, 0)))), null)"
+    parse "Qe1xf8" "(Usual (Queen, (SquareHint (4, 7), (Some SanCapture, (5, 0)))), null)"
 
 [<Fact>]
 let ``parse e4``() = 
@@ -123,11 +123,11 @@ let ``parse f8=Q``() =
 
 [<Fact>]
 let ``parse c1=N+``() = 
-    parse "c1=N+" "(PawnPush ((2, 7),Some Knight), Some Check)"
+    parse "c1=N+" "(PawnPush ((2, 7),Some Knight), Some SanCheck)"
 
 [<Fact>]
 let ``parse a2#``() = 
-    parse "a2#" "(PawnPush ((0, 6),null), Some Mate)"
+    parse "a2#" "(PawnPush ((0, 6),null), Some SanMate)"
 
 [<Fact>]
 let ``parse gxe4``() = 
