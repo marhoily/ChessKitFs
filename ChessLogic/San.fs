@@ -179,17 +179,25 @@ let FromSanString str board =
         |> Seq.toList
     
     let castling opt = 
-        let proto = 
+        let move = 
             match color, opt with
             | White, ShortCastling -> "e1-g1"
             | White, LongCastling -> "e1-c1"
             | Black, ShortCastling -> "e8-g8"
             | Black, LongCastling -> "e8-c8"
             | _ -> failwith "unexpected"
-        board |> ValidateMove(_cn (proto))
+        board |> ValidateMove(_cn (move))
     
     let disambiguate hint (candidates: int list) = 
-        candidates |> List.map fromX88
+        let disambiguator = 
+            match hint with
+            | FileHint f -> (fun coord -> coord |> fst = f)
+            | RankHint r -> (fun coord -> coord |> snd = r)
+            | SquareHint s -> (fun coord -> coord = s)
+            | NoHint -> (fun _ -> true)
+        candidates 
+        |> List.map fromX88
+        |> List.filter disambiguator
 
     let addNotes (notes: Ending option) (capture: SanCapture option) moveInfo : SanMove =
         match moveInfo with
