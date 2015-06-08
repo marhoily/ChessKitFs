@@ -190,11 +190,11 @@ let FromSanString str board =
             | NoHint -> (fun _ -> true)
         candidates |> List.filter disambiguator
 
-    let addNotes (notes: Ending option) (capture: SanCapture option) warnings moveInfo : SanMove =
+    let addNotes (notes: Ending option) (capture: SanCapture option) warningsBefore moveInfo : SanMove =
         match moveInfo with
         | LegalMove m ->
-            let mutable warnings = warnings
-            let warn w = warnings <- w :: warnings
+            let warnings = ref warningsBefore
+            let warn w = warnings := w :: !warnings
 
             let checkNote = notes = Some(SanCheck)
             let checkReal = m.ResultPosition.Observations |> MyList.contains Check
@@ -211,7 +211,7 @@ let FromSanString str board =
             if not captureNote && captureReal then warn IsCapture
             else if captureNote && not captureReal then warn IsNotCapture
             
-            Interpreted(moveInfo, warnings)
+            Interpreted(moveInfo, !warnings)
         | IllegalMove _ -> Interpreted(moveInfo, [])
 
     let castling opt notes = 
