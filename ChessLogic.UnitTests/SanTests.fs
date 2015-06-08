@@ -175,5 +175,9 @@ let ``white pawn does not capture backwards: e2-f1``() =
     "8/8/8/8/8/8/4P3/8 w - - 0 1" |> findCapturingPawns "f1" [ ]
 
 [<Fact>]
+let ``white pawn captures, while black does not: e2-f3``() = 
+    "8/8/8/8/8/5Q2/4P1p1/8 w - - 0 1" |> findCapturingPawns "f3" [ "e2" ]
+
+[<Fact>]
 let ``2 black pawns can capture``() = 
     "8/8/8/8/8/8/2p1p3/8 b - - 0 1" |> findCapturingPawns "d1" [ "e2"; "c2" ]
