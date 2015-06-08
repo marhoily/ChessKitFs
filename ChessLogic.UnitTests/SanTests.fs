@@ -7,7 +7,9 @@ open MoveLegalityChecker
 open FenParser
 open CoordinateNotation
 open San
+open Definitions
 
+// ----- ToSanString --------
 let check move expectedSan position = 
     let p = 
         position
@@ -69,7 +71,7 @@ let Ne5c6() =
     "2kr4/pp2n1p1/6qr/n3n3/2pP1p2/2PN1B2/PQ3B1P/R4K2 b - - 0 29" 
     |> check "e5-c6" "Ne5c6"
 
-// ParseSanString
+// ----- ParseSanString --------
 let parse str expected = 
     ParseSanString str
     |> wrap
@@ -132,3 +134,17 @@ let ``parse a2#``() =
 [<Fact>]
 let ``parse gxe4``() = 
     parse "gxe4" "(PawnCapture (6,((4, 4), null)), null)"
+
+// ----- Scanners --------
+
+let findPushingPawns square (expected : string list) board = 
+    let scan, _, _ = sanScanners (ParseFen board |> unwrap)
+    scan (_c square |> toX88) 
+    |> List.map CoordinateToString
+    |> should equal expected
+
+[<Fact>]
+let ``b6 can by occupied by black pawn on b7``() = 
+    "8/1p6/8/8/8/8/8/8 w - - 0 1"
+    |> findPushingPawns "b6" ["b7"]
+

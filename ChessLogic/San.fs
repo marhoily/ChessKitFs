@@ -141,29 +141,28 @@ type SanMove =
     | Nonsense of SanError
     | Unparsable of string
 
-let FromSanString str board = 
+let sanScanners board = 
     let at88 i = board |> PieceAt(i |> fromX88)
     let color = board.ActiveColor
+    let project = 
+        Seq.map (fun f -> f())
+        >> Seq.filter (fun x -> x <> -1)
+        >> Seq.map fromX88
+        >> Seq.toList
 
     let findPushingPawns square = 
         let one, _ = getScanners color at88 square
         match color with
         | Black -> one Pawn [ -16; -32 ]
         | White -> one Pawn [ +16; +32 ]
-        |> Seq.map (fun f -> f())
-        |> Seq.filter (fun x -> x <> -1)
-        |> Seq.map fromX88
-        |> Seq.toList
+        |> project
 
     let findCapturingPawns square = 
         let one, _ = getScanners color at88 square
         match color with
         | Black -> one Pawn [ -15; -17 ]
         | White -> one Pawn [ +15; +17 ]
-        |> Seq.map (fun f -> f())
-        |> Seq.filter (fun x -> x <> -1)
-        |> Seq.map fromX88
-        |> Seq.toList
+        |> project
 
     let findNonPawnPieces ofType square = 
         let one, scan = getScanners color at88 square
@@ -174,10 +173,13 @@ let FromSanString str board =
         | Bishop -> scan Bishop [ +15; +17; -15; -17 ]
         | King -> one King [ +15; +17; -15; -17; +16; +01; -16; -01 ]
         | Pawn -> failwith "unexpected"
-        |> Seq.map (fun f -> f())
-        |> Seq.filter (fun x -> x <> -1)
-        |> Seq.map fromX88
-        |> Seq.toList
+        |> project
+    (findPushingPawns, findCapturingPawns, findNonPawnPieces)
+
+let FromSanString str board = 
+    let color = board.ActiveColor
+    let findPushingPawns, findCapturingPawns, findNonPawnPieces = 
+        sanScanners board
     
     let disambiguate hint candidates = 
         let disambiguator = 
@@ -197,17 +199,17 @@ let FromSanString str board =
             let checkNote = notes = Some(SanCheck)
             let checkReal = m.ResultPosition.Observations |> MyList.contains Check
             if not checkNote && checkReal then warn IsCheck
-            if checkNote && not checkReal then warn IsNotCheck
+            else if checkNote && not checkReal then warn IsNotCheck
                     
             let mateNote = notes = Some(SanMate)
             let mateReal = m.ResultPosition.Observations |> MyList.contains Mate
             if not mateNote && mateReal then warn IsMate
-            if mateNote && not mateReal then warn IsNotMate
+            else if mateNote && not mateReal then warn IsNotMate
                     
             let captureNote = capture = Some(SanCapture)
             let captureReal = m.Observations |> MyList.contains Capture
             if not captureNote && captureReal then warn IsCapture
-            if captureNote && not captureReal then warn IsNotCapture
+            else if captureNote && not captureReal then warn IsNotCapture
             
             Interpreted(moveInfo, warnings)
         | IllegalMove _ -> Interpreted(moveInfo, [])
