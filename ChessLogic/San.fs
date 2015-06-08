@@ -188,10 +188,10 @@ let FromSanString str board =
             | NoHint -> (fun _ -> true)
         candidates |> List.filter disambiguator
 
-    let addNotes (notes: Ending option) (capture: SanCapture option) moveInfo : SanMove =
+    let addNotes (notes: Ending option) (capture: SanCapture option) warnings moveInfo : SanMove =
         match moveInfo with
         | LegalMove m ->
-            let mutable warnings = []
+            let mutable warnings = warnings
             let warn w = warnings <- w :: warnings
 
             let checkNote = notes = Some(SanCheck)
@@ -222,7 +222,7 @@ let FromSanString str board =
             | _ -> failwith "unexpected"
         board 
         |> ValidateMove(_cn (move))
-        |> addNotes notes None
+        |> addNotes notes None []
     
     let validateUsual fromSquare toSquare = 
         ValidateMove (UsualMove (fromSquare, toSquare))
@@ -235,16 +235,21 @@ let FromSanString str board =
             ValidateMove (PromotionMove m)
         | None -> validateUsual fromSquare toSquare
 
-    let interpret validate fromSquare toSquare notes capture = 
+    let interpret validate fromSquare toSquare notes capture warnings = 
         board 
         |> validate fromSquare toSquare
-        |> addNotes notes capture
-    
+        |> addNotes notes capture warnings
+
     let toSanMove find validate hint pieceType toSquare notes capture = 
         let candidates = find (toSquare |> toX88)
         match candidates |> disambiguate hint with
         | [] -> Nonsense (PieceNotFound (color, pieceType))
-        | fromSquare::[] -> interpret validate fromSquare toSquare notes capture
+        | fromSquare::[] -> 
+            let warnings = 
+                if candidates.Length = 1 && hint <> NoHint then 
+                    [ DisambiguationIsExcessive ]
+                else []
+            interpret validate fromSquare toSquare notes capture warnings
         | filtered -> Nonsense (AmbiguousChoice filtered)
 
     let convert = function 
