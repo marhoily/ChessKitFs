@@ -134,8 +134,6 @@ type SanWarning =
     | IsNotCheck
     | IsMate
     | IsNotMate
-    | PromotionHintIsMissing
-    | PromotionHintIsExcessive
     | DisambiguationIsExcessive
 
 type SanMove = 
@@ -154,6 +152,7 @@ let FromSanString str board =
         | White -> one Pawn [ +16; +32 ]
         |> Seq.map (fun f -> f())
         |> Seq.filter (fun x -> x <> -1)
+        |> Seq.map fromX88
         |> Seq.toList
 
     let findCapturingPawns square = 
@@ -163,6 +162,7 @@ let FromSanString str board =
         | White -> one Pawn [ +15; +17 ]
         |> Seq.map (fun f -> f())
         |> Seq.filter (fun x -> x <> -1)
+        |> Seq.map fromX88
         |> Seq.toList
 
     let findNonPawnPieces ofType square = 
@@ -176,28 +176,17 @@ let FromSanString str board =
         | Pawn -> failwith "unexpected"
         |> Seq.map (fun f -> f())
         |> Seq.filter (fun x -> x <> -1)
+        |> Seq.map fromX88
         |> Seq.toList
     
-    let castling opt = 
-        let move = 
-            match color, opt with
-            | White, ShortCastling -> "e1-g1"
-            | White, LongCastling -> "e1-c1"
-            | Black, ShortCastling -> "e8-g8"
-            | Black, LongCastling -> "e8-c8"
-            | _ -> failwith "unexpected"
-        board |> ValidateMove(_cn (move))
-    
-    let disambiguate hint (candidates: int list) = 
+    let disambiguate hint candidates = 
         let disambiguator = 
             match hint with
             | FileHint f -> (fun coord -> coord |> fst = f)
             | RankHint r -> (fun coord -> coord |> snd = r)
             | SquareHint s -> (fun coord -> coord = s)
             | NoHint -> (fun _ -> true)
-        candidates 
-        |> List.map fromX88
-        |> List.filter disambiguator
+        candidates |> List.filter disambiguator
 
     let addNotes (notes: Ending option) (capture: SanCapture option) moveInfo : SanMove =
         match moveInfo with
@@ -223,53 +212,54 @@ let FromSanString str board =
             Interpreted(moveInfo, warnings)
         | IllegalMove _ -> Interpreted(moveInfo, [])
 
-//    let validate1 fromSquare toSquare= 
-//        ValidateMove (UsualMove (fromSquare, toSquare))
-//
-//    let validate2 promoteTo fromSquare toSquare = 
-//        match promoteTo with
-//        | Some p -> ValidateMove (PromotionMove { Vector = (fromSquare, toSquare); PromoteTo = p})
-//        | None -> validate1 fromSquare toSquare
-
-    let convert = 
-        function 
-        | ShortCastling, notes -> 
-            castling ShortCastling
-            |> addNotes notes None
-        | LongCastling, notes -> 
-            castling LongCastling
-            |> addNotes notes None
-        | PawnPush(toSquare, promoteTo), notes -> 
-            let candidates = findPushingPawns (toSquare |> toX88)
-            if candidates.IsEmpty then Nonsense (PieceNotFound (color, Pawn))
-            else match candidates |> disambiguate NoHint with
-                 | fromSquare::[] -> 
-                    match promoteTo with
-                    | Some p -> board |> ValidateMove (PromotionMove { Vector = (fromSquare, toSquare); PromoteTo = p})
-                    | None -> board |> ValidateMove (UsualMove (fromSquare, toSquare))
-                    |> addNotes notes None
-                 | filtered -> Nonsense (AmbiguousChoice filtered)
-
-        | PawnCapture(fromFile, (toSquare, promoteTo)), notes -> 
-            let candidates = findCapturingPawns (toSquare |> toX88)
-            if candidates.IsEmpty then Nonsense(PieceNotFound (color, Pawn))
-            else match candidates |> disambiguate (FileHint fromFile) with
-                 | fromSquare::[] -> 
-                    match promoteTo with
-                    | Some p -> board |> ValidateMove (PromotionMove { Vector = (fromSquare, toSquare); PromoteTo = p})
-                    | None -> board |> ValidateMove (UsualMove (fromSquare, toSquare))
-                    |> addNotes notes (Some(SanCapture))
-                 | filtered -> Nonsense (AmbiguousChoice filtered)
-
-        | Usual(pieceType, (hint, (capture, toSquare))), notes -> 
-            let candidates = findNonPawnPieces pieceType (toSquare |> toX88)
-            if candidates.IsEmpty then Nonsense (PieceNotFound (color, pieceType))
-            else match candidates |> disambiguate hint with
-                 | fromSquare::[] -> 
-                    board |> ValidateMove (UsualMove (fromSquare, toSquare))
-                    |> addNotes notes capture
-                 | filtered -> Nonsense (AmbiguousChoice filtered)
+    let castling opt notes = 
+        let move = 
+            match color, opt with
+            | White, ShortCastling -> "e1-g1"
+            | White, LongCastling -> "e1-c1"
+            | Black, ShortCastling -> "e8-g8"
+            | Black, LongCastling -> "e8-c8"
+            | _ -> failwith "unexpected"
+        board 
+        |> ValidateMove(_cn (move))
+        |> addNotes notes None
     
+    let validateUsual fromSquare toSquare = 
+        ValidateMove (UsualMove (fromSquare, toSquare))
+
+    let validate promoteTo fromSquare toSquare = 
+        match promoteTo with
+        | Some p -> 
+            let m = { Vector = (fromSquare, toSquare)
+                      PromoteTo = p }
+            ValidateMove (PromotionMove m)
+        | None -> validateUsual fromSquare toSquare
+
+    let interpret validate fromSquare toSquare notes capture = 
+        board 
+        |> validate fromSquare toSquare
+        |> addNotes notes capture
+    
+    let toSanMove find validate hint pieceType toSquare notes capture = 
+        let candidates = find (toSquare |> toX88)
+        match candidates |> disambiguate hint with
+        | [] -> Nonsense (PieceNotFound (color, pieceType))
+        | fromSquare::[] -> interpret validate fromSquare toSquare notes capture
+        | filtered -> Nonsense (AmbiguousChoice filtered)
+
+    let convert = function 
+        | ShortCastling, notes -> castling ShortCastling notes
+        | LongCastling, notes -> castling LongCastling notes
+        | PawnPush(toSquare, promoteTo), notes -> 
+            toSanMove findPushingPawns (validate promoteTo) 
+                NoHint Pawn toSquare notes None
+        | PawnCapture(fromFile, (toSquare, promoteTo)), notes -> 
+            toSanMove findCapturingPawns (validate promoteTo) 
+                (FileHint fromFile) Pawn toSquare notes (Some(SanCapture))
+        | Usual(pieceType, (hint, (capture, toSquare))), notes -> 
+            toSanMove (findNonPawnPieces pieceType) validateUsual 
+                hint pieceType toSquare notes capture
+           
     match ParseSanString str with
     | Success(p, _, _) -> Result.Ok(convert p)
     | Failure(e, _, _) -> Result.Error(e)
