@@ -42,30 +42,30 @@ let ``Pawn push``() =
     |> check "f7-f5" "f5"
 
 [<Fact>]
-let ``Knight``() = 
+let Knight() = 
     "r1b1kb1r/pp1n2pp/1q2p3/n2pPp2/2pP1P2/2P1BN2/PP1QB1PP/RN3RK1 w kq f6 0 11" 
     |> check "f3-g5" "Ng5"
 
 [<Fact>]
-let ``Check``() = 
+let Check() = 
     "2kr4/pp2n1p1/6qr/n3P3/1NpP1p2/2P2B2/PQ3B1P/Rb3K2 b - - 0 28" 
     |> check "b1-d3" "Bd3+"
 
 [<Fact>]
-let ``Promotion``() = 
+let Promotion() = 
     "5r2/ppkP2p1/4P3/n2n1q2/1Np2p2/2P2Q2/P4B1r/R3K3 w - - 0 36" 
     |> check "d7-d8=N" "d8=N"
 
 [<Fact>]
-let ``Nec6``() = 
+let Nec6() = 
     "2kr4/pp2n1p1/6qr/n3P3/1NpP1p2/2P2B2/PQ3B1P/Rb3K2 b - - 0 28" 
     |> check "e7-c6" "Nec6"
 
 [<Fact>]
-let ``N7c6``() = 
+let N7c6() = 
     "2kr4/pp2n1p1/6qr/4n3/2pP1p2/2PN1B2/PQ3B1P/R4K2 b - - 0 29" 
     |> check "e7-c6" "N7c6"
-    
+
 [<Fact>]
 let Ne5c6() = 
     "2kr4/pp2n1p1/6qr/n3n3/2pP1p2/2PN1B2/PQ3B1P/R4K2 b - - 0 29" 
@@ -80,12 +80,10 @@ let parse str expected =
     |> should equal expected
 
 [<Fact>]
-let ``parse O-O-O``() = 
-    parse "O-O-O" "(LongCastling, null)"
-    
+let ``parse O-O-O``() = parse "O-O-O" "(LongCastling, null)"
+
 [<Fact>]
-let ``parse O-O``() = 
-    parse "O-O" "(ShortCastling, null)"    
+let ``parse O-O``() = parse "O-O" "(ShortCastling, null)"
 
 [<Fact>]
 let ``parse Bg5``() = 
@@ -105,46 +103,50 @@ let ``parse Qe1f8``() =
 
 [<Fact>]
 let ``parse Ne:c6``() = 
-    parse "Ne:c6" "(Usual (Knight, (FileHint 4, (Some SanCapture, (2, 2)))), null)"
+    parse "Ne:c6" 
+        "(Usual (Knight, (FileHint 4, (Some SanCapture, (2, 2)))), null)"
 
 [<Fact>]
 let ``parse K5:c6``() = 
-    parse "N5:c6" "(Usual (Knight, (RankHint 3, (Some SanCapture, (2, 2)))), null)"
+    parse "N5:c6" 
+        "(Usual (Knight, (RankHint 3, (Some SanCapture, (2, 2)))), null)"
 
 [<Fact>]
 let ``parse Qe1xf8``() = 
-    parse "Qe1xf8" "(Usual (Queen, (SquareHint (4, 7), (Some SanCapture, (5, 0)))), null)"
+    parse "Qe1xf8" 
+        "(Usual (Queen, (SquareHint (4, 7), (Some SanCapture, (5, 0)))), null)"
 
 [<Fact>]
-let ``parse e4``() = 
-    parse "e4" "(PawnPush ((4, 4),null), null)"
+let ``parse e4``() = parse "e4" "(PawnPush ((4, 4),null), null)"
 
 [<Fact>]
-let ``parse f8=Q``() = 
-    parse "f8=Q" "(PawnPush ((5, 0),Some Queen), null)"
+let ``parse f8=Q``() = parse "f8=Q" "(PawnPush ((5, 0),Some Queen), null)"
 
 [<Fact>]
 let ``parse c1=N+``() = 
     parse "c1=N+" "(PawnPush ((2, 7),Some Knight), Some SanCheck)"
 
 [<Fact>]
-let ``parse a2#``() = 
-    parse "a2#" "(PawnPush ((0, 6),null), Some SanMate)"
+let ``parse a2#``() = parse "a2#" "(PawnPush ((0, 6),null), Some SanMate)"
 
 [<Fact>]
-let ``parse gxe4``() = 
-    parse "gxe4" "(PawnCapture (6,((4, 4), null)), null)"
+let ``parse gxe4``() = parse "gxe4" "(PawnCapture (6,((4, 4), null)), null)"
 
 // ----- Scanners --------
-
 let findPushingPawns square (expected : string list) board = 
     let scan, _, _ = sanScanners (ParseFen board |> unwrap)
-    scan (_c square |> toX88) 
+    scan (_c square |> toX88)
     |> List.map CoordinateToString
     |> should equal expected
 
 [<Fact>]
-let ``b6 can by occupied by black pawn on b7``() = 
-    "8/1p6/8/8/8/8/8/8 w - - 0 1"
-    |> findPushingPawns "b6" ["b7"]
+let ``push pawn: b6-b5``() = 
+    "8/1p6/1p6/8/8/8/8/8 b - - 0 1" |> findPushingPawns "b5" [ "b6" ]
 
+[<Fact>]
+let ``push pawn: b7-b1 (as if pawns slid)``() = 
+    "8/1p6/8/8/8/8/8/8 b - - 0 1" |> findPushingPawns "b1" [ "b7" ]
+
+[<Fact>]
+let ``pawns don't push back: b7-b8``() = 
+    "8/1p6/8/8/8/8/8/8 b - - 0 1" |> findPushingPawns "b8" [ ]

@@ -151,10 +151,10 @@ let sanScanners board =
         >> Seq.toList
 
     let findPushingPawns square = 
-        let one, _ = getScanners color at88 square
+        let _, slide = getScanners color at88 square
         match color with
-        | Black -> one Pawn [ -16; -32 ]
-        | White -> one Pawn [ +16; +32 ]
+        | Black -> slide Pawn [ -16; ]
+        | White -> slide Pawn [ +16; ]
         |> project
 
     let findCapturingPawns square = 

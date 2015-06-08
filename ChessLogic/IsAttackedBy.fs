@@ -3,21 +3,21 @@
 open Definitions
 
 let inline getScanners side at88 square = 
-    let rec iterate square pieceType increment () = 
+    let rec slide square pieceType increment () = 
         let next = square + increment
         if next &&& 0x88 <> 0 then -1
         else if at88 next = Some(side, pieceType) then next
         else if at88 next <> None then -1
-        else iterate next pieceType increment ()
+        else slide next pieceType increment ()
     
-    let check square pieceType increment () = 
+    let jump square pieceType increment () = 
         let next = square + increment
         if next &&& 0x88 <> 0 then -1
         else if at88 next = Some(side, pieceType) then next
         else -1
     
     let scan fn pieceType = Seq.map (fn square pieceType)
-    (scan check, scan iterate)
+    (scan jump, scan slide)
 
 let IsAttackedBy side at88 square = 
     let one, scan = getScanners side at88 square
