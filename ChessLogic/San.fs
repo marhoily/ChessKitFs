@@ -6,6 +6,7 @@ open Parsing
 open System.Text
 open CoordinateNotation
 open FParsec
+open IsAttackedBy
 
 let ToSanString(move : LegalMove) = 
     let typeToString = 
@@ -143,6 +144,20 @@ type SanMove =
     | Unparsable of string
 
 let FromSanString str board = 
+    let at88 i = board |> PieceAt(i |> fromX88)
+    
+    let findCandidates ofType square = 
+        let one, scan = getScanners board.ActiveColor at88 square
+        match board.ActiveColor, ofType with
+        | Black, Pawn -> one Pawn [ -15; -16; -17 ]
+        | White, Pawn -> one Pawn [ +15; +16; +17 ]
+        | _, Knight -> one Knight [ -33; -31; -18; -14; +33; +31; +18; +14 ]
+        | _, Queen -> scan Queen [ +15; +17; -15; -17; +16; +01; -16; -01 ]
+        | _, Rook -> scan Rook [ +16; +01; -16; -01 ]
+        | _, Bishop -> scan Bishop [ +15; +17; -15; -17 ]
+        | _, King -> one King [ +15; +17; -15; -17; +16; +01; -16; -01 ]
+        |> Seq.filter (fun f -> f() <> -1)
+    
     let castling opt = 
         let proto = 
             match board.ActiveColor, opt with
