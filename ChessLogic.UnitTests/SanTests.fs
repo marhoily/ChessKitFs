@@ -149,8 +149,7 @@ let ``push black pawn: b7-b1 (as if pawns slid)``() =
 
 [<Fact>]
 let ``black pawns don't push back: b7-b8``() = 
-    "8/1p6/8/8/8/8/8/8 b - - 0 1" |> findPushingPawns "b8" [ ]
-
+    "8/1p6/8/8/8/8/8/8 b - - 0 1" |> findPushingPawns "b8" []
 
 [<Fact>]
 let ``push white pawn: e2-e4``() = 
@@ -168,11 +167,11 @@ let ``white pawn captures: e2-d3``() =
 
 [<Fact>]
 let ``white pawn does not capture: e2-e3``() = 
-    "8/8/8/8/8/8/4P3/8 w - - 0 1" |> findCapturingPawns "e3" [ ]
+    "8/8/8/8/8/8/4P3/8 w - - 0 1" |> findCapturingPawns "e3" []
 
 [<Fact>]
 let ``white pawn does not capture backwards: e2-f1``() = 
-    "8/8/8/8/8/8/4P3/8 w - - 0 1" |> findCapturingPawns "f1" [ ]
+    "8/8/8/8/8/8/4P3/8 w - - 0 1" |> findCapturingPawns "f1" []
 
 [<Fact>]
 let ``white pawn captures, while black does not: e2-f3``() = 
@@ -213,4 +212,18 @@ let ``white knight can capture e5``() =
     "2k1r3/pp3ppp/2n3n1/1p1rP3/6b1/1NP2NB1/PPK3PP/R3R3 w - - 0 19" 
     |> findNonPawnPieces Knight "e5" [ "f3" ]
 
+[<Fact>]
+let ``black queen can capture d1``() = 
+    "rn1qk1nr/pp2Pppp/8/1p2P3/6b1/2P2N2/PP4PP/RNBQK2R b KQkq - 0 12" 
+    |> findNonPawnPieces Queen "d1" [ "d8" ]
 
+[<Fact>]
+let ``white king can capture d1``() = 
+    "rn1qk1nr/pp2Pppp/8/1p2P3/6b1/2P2N2/PP4PP/RNBQK2R w KQkq - 0 12" 
+    |> findNonPawnPieces King "d1" [ "e1" ]
+
+[<Fact>]
+let ``findNonPawnPieces throws when given pawn``() = 
+    let board = "8/8/8/8/8/8/8/8 w KQkq - 0 12"
+    (fun () -> board |> findNonPawnPieces Pawn "d1" []) 
+    |> should throw typeof<System.Exception>
