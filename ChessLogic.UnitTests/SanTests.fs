@@ -241,14 +241,14 @@ let interpretIllegal move expected errors board =
     (ParseFen board |> unwrap)
     |> FromSanString move
     |> function 
-    | Result.Ok(Interpreted(m, _)) -> 
+    | Interpreted(m, _) -> 
         match m with
         | IllegalMove il -> il.Move.AsString |> should equal expected
-        | x -> failwithf "%A" x
+        | x -> (sprintf "%A" x) |> should equal expected
         m
         |> MoveToString
         |> should equal errors
-    | x -> failwithf "%A" x
+    | x -> (sprintf "%A" x) |> should equal expected
 
 [<Fact>]
 let ``San: pawn push``() = "8/8/8/8/8/8/P7/8 w - - 0 12" |> san "a3" "a2-a3"
@@ -269,3 +269,8 @@ let ``San: pawn captures``() =
 [<Fact>]
 let ``San: 2 pawns can capture``() = 
     "8/8/8/8/8/1p6/P1P5/8 w - - 0 12" |> san "cxb3" "c2-b3"
+
+[<Fact>]
+let ``San: pawn move does not make sense``() = 
+    "8/8/8/8/8/8/P7/8 w - - 0 12" 
+    |> interpretIllegal "axb4" "c2-b3" "Nonsense (PieceNotFound (White, Pawn))"

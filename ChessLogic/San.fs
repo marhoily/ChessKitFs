@@ -268,10 +268,10 @@ let FromSanString str board =
                 hint pieceType toSquare notes capture
            
     match ParseSanString str with
-    | Success(p, _, _) -> Result.Ok(dispatch p)
-    | Failure(e, _, _) -> Result.Error(e)
+    | Success(p, _, _) -> dispatch p
+    | Failure(e, _, _) -> Unparsable e
 
 let FromLegalSanString str board = 
     match FromSanString str board with
-    | Result.Ok(Interpreted (LegalMove move, _)) -> move
+    | Interpreted (LegalMove move, _) -> move
     | x -> failwithf "%A" x
