@@ -243,8 +243,7 @@ let interpretIllegal move expected errors board =
     |> function 
     | Result.Ok(Interpreted(m, _)) -> 
         match m with
-        | IllegalMove il ->
-            il.Move.AsString |> should equal expected
+        | IllegalMove il -> il.Move.AsString |> should equal expected
         | x -> failwithf "%A" x
         m
         |> MoveToString
@@ -262,3 +261,11 @@ let ``San: pawn double push``() =
 let ``San: pawn 3 squares push``() = 
     "8/8/8/8/8/8/P7/8 w - - 0 12" 
     |> interpretIllegal "a5" "a2-a5" "Pawn | DoesNotMoveThisWay"
+
+[<Fact>]
+let ``San: pawn captures``() = 
+    "8/8/8/8/8/1p6/P7/8 w - - 0 12" |> san "axb3" "a2-b3"
+
+[<Fact>]
+let ``San: 2 pawns can capture``() = 
+    "8/8/8/8/8/1p6/P1P5/8 w - - 0 12" |> san "cxb3" "c2-b3"
