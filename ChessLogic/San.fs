@@ -214,7 +214,7 @@ let FromSanString str board =
             Interpreted(moveInfo, !warnings)
         | IllegalMove _ -> Interpreted(moveInfo, [])
 
-    let castling opt notes = 
+    let castlingToSanMove opt notes = 
         let move = 
             match color, opt with
             | White, ShortCastling -> "e1-g1"
@@ -254,9 +254,9 @@ let FromSanString str board =
             interpret validate fromSquare toSquare notes capture warnings
         | filtered -> Nonsense (AmbiguousChoice filtered)
 
-    let convert = function 
-        | ShortCastling, notes -> castling ShortCastling notes
-        | LongCastling, notes -> castling LongCastling notes
+    let dispatch = function 
+        | ShortCastling, notes -> castlingToSanMove ShortCastling notes
+        | LongCastling, notes -> castlingToSanMove LongCastling notes
         | PawnPush(toSquare, promoteTo), notes -> 
             toSanMove findPushingPawns (validate promoteTo) 
                 NoHint Pawn toSquare notes None
@@ -268,5 +268,10 @@ let FromSanString str board =
                 hint pieceType toSquare notes capture
            
     match ParseSanString str with
-    | Success(p, _, _) -> Result.Ok(convert p)
+    | Success(p, _, _) -> Result.Ok(dispatch p)
     | Failure(e, _, _) -> Result.Error(e)
+
+let FromLegalSanString str board = 
+    match FromSanString str board with
+    | Result.Ok(Interpreted (LegalMove move, _)) -> move
+    | x -> failwithf "%A" x

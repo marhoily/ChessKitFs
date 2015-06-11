@@ -227,3 +227,17 @@ let ``findNonPawnPieces throws when given pawn``() =
     let board = "8/8/8/8/8/8/8/8 w KQkq - 0 12"
     (fun () -> board |> findNonPawnPieces Pawn "d1" []) 
     |> should throw typeof<System.Exception>
+
+// ----- toSanMove --------
+
+let san move (expected : string) board = 
+    (ParseFen board |> unwrap)
+    |> FromLegalSanString move 
+    |> (fun x -> sprintf "%s-%s" (CoordinateToString x.Start) (CoordinateToString x.End))
+    |> should equal expected
+
+[<Fact>]
+let ``San: pawn push``() = 
+    "8/8/8/8/8/8/P7/8 w - - 0 12"
+    |> san "a3" "a2-a3" 
+
