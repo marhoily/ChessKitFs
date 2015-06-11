@@ -42,7 +42,7 @@ let ``Pawn push``() =
     |> check "f7-f5" "f5"
 
 [<Fact>]
-let Knight() = 
+let ``Knight f3-g5``() = 
     "r1b1kb1r/pp1n2pp/1q2p3/n2pPp2/2pP1P2/2P1BN2/PP1QB1PP/RN3RK1 w kq f6 0 11" 
     |> check "f3-g5" "Ng5"
 
@@ -181,3 +181,36 @@ let ``white pawn captures, while black does not: e2-f3``() =
 [<Fact>]
 let ``2 black pawns can capture``() = 
     "8/8/8/8/8/8/2p1p3/8 b - - 0 1" |> findCapturingPawns "d1" [ "e2"; "c2" ]
+
+let findNonPawnPieces pieceType square (expected : string list) board = 
+    let _, _, scan = sanScanners (ParseFen board |> unwrap)
+    scan pieceType (_c square |> toX88)
+    |> List.map CoordinateToString
+    |> should equal expected
+
+[<Fact>]
+let ``2 black knights can capture e5``() = 
+    "2k1r3/pp3ppp/2n3n1/1p1rP3/6b1/1NP2NB1/PPK3PP/R3R3 b - - 0 19" 
+    |> findNonPawnPieces Knight "e5" [ "c6"; "g6" ]
+
+[<Fact>]
+let ``2 black rooks can capture e5``() = 
+    "2k1r3/pp3ppp/2n3n1/1p1rP3/6b1/1NP2NB1/PPK3PP/R3R3 b - - 0 19" 
+    |> findNonPawnPieces Rook "e5" [ "e8"; "d5" ]
+
+[<Fact>]
+let ``white rook can capture e5``() = 
+    "2k1r3/pp3ppp/2n3n1/1p1rP3/6b1/1NP2NB1/PPK3PP/R3R3 w - - 0 19" 
+    |> findNonPawnPieces Rook "e5" [ "e1" ]
+
+[<Fact>]
+let ``white bishop can capture e5``() = 
+    "2k1r3/pp3ppp/2n3n1/1p1rP3/6b1/1NP2NB1/PPK3PP/R3R3 w - - 0 19" 
+    |> findNonPawnPieces Bishop "e5" [ "g3" ]
+
+[<Fact>]
+let ``white knight can capture e5``() = 
+    "2k1r3/pp3ppp/2n3n1/1p1rP3/6b1/1NP2NB1/PPK3PP/R3R3 w - - 0 19" 
+    |> findNonPawnPieces Knight "e5" [ "f3" ]
+
+
