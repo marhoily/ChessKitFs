@@ -8,6 +8,7 @@ open FenParser
 open CoordinateNotation
 open San
 open Definitions
+open MoveLegalityCheckerTests
 
 // ----- ToSanString --------
 let check move expectedSan position = 
@@ -229,15 +230,35 @@ let ``findNonPawnPieces throws when given pawn``() =
     |> should throw typeof<System.Exception>
 
 // ----- toSanMove --------
-
 let san move (expected : string) board = 
     (ParseFen board |> unwrap)
-    |> FromLegalSanString move 
-    |> (fun x -> sprintf "%s-%s" (CoordinateToString x.Start) (CoordinateToString x.End))
+    |> FromLegalSanString move
+    |> (fun x -> 
+    sprintf "%s-%s" (CoordinateToString x.Start) (CoordinateToString x.End))
     |> should equal expected
 
-[<Fact>]
-let ``San: pawn push``() = 
-    "8/8/8/8/8/8/P7/8 w - - 0 12"
-    |> san "a3" "a2-a3" 
+let interpretIllegal move expected errors board = 
+    (ParseFen board |> unwrap)
+    |> FromSanString move
+    |> function 
+    | Result.Ok(Interpreted(m, _)) -> 
+        match m with
+        | IllegalMove il ->
+            il.Move.AsString |> should equal expected
+        | x -> failwithf "%A" x
+        m
+        |> MoveToString
+        |> should equal errors
+    | x -> failwithf "%A" x
 
+[<Fact>]
+let ``San: pawn push``() = "8/8/8/8/8/8/P7/8 w - - 0 12" |> san "a3" "a2-a3"
+
+[<Fact>]
+let ``San: pawn double push``() = 
+    "8/8/8/8/8/8/P7/8 w - - 0 12" |> san "a4" "a2-a4"
+
+[<Fact>]
+let ``San: pawn 3 squares push``() = 
+    "8/8/8/8/8/8/P7/8 w - - 0 12" 
+    |> interpretIllegal "a5" "a2-a5" "Pawn | DoesNotMoveThisWay"
