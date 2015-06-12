@@ -5,18 +5,19 @@ open Parsing
 open FParsec
 
 type private Code = 
-    | Piece of char
+    | Piece of Piece
     | Gap of int
 
 let ParseFen str = 
-    let square = (anyOf "pnbrqkPNBRQK" |>> Piece) <|> (pint32 |>> Gap)
+    let piece = anyOf "pnbrqkPNBRQK" |>> (fun c -> Piece(parsePieceLetter c)) <?> "piece symbol"
+    let gap = anyOf "12345678" |>> (fun c -> Gap(int c - int '0')) <?> "number 1..8"
+    let square = piece <|> gap
     let rank = many1 square
     let piecePlacement = sepBy rank (pchar '/')
     
-    let activeColor = 
-        anyOf "bw" |>> (function 
-        | 'b' -> Black
-        | _ -> White)
+    let black = pchar 'b' >>% Black
+    let white = pchar 'w' >>% White
+    let activeColor = white <|> black
     
     let ws = pchar ' '
     let castlingAvailability = 
@@ -33,7 +34,7 @@ let ParseFen str =
         [| for rank in p do
                for code in rank do
                    match code with
-                   | Piece(p) -> yield Some(parsePieceLetter (p))
+                   | Piece(p) -> yield Some(p)
                    | Gap(n) -> 
                        for i = 1 to n do
                            yield None |]
