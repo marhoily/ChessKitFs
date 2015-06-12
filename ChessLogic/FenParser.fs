@@ -11,9 +11,8 @@ type private Code =
 let ParseFen str = 
     let piece = anyOf "pnbrqkPNBRQK" |>> (fun c -> Piece(parsePieceLetter c)) <?> "piece symbol"
     let gap = anyOf "12345678" |>> (fun c -> Gap(int c - int '0')) <?> "number 1..8"
-    let square = piece <|> gap
-    let rank = many1 square
-    let piecePlacement = sepBy rank (pchar '/')
+    let rank = many1 (piece <|> gap)
+    let piecePlacement = sepBy1 rank (pchar '/')
     
     let black = pchar 'b' >>% Black
     let white = pchar 'w' >>% White
@@ -21,10 +20,11 @@ let ParseFen str =
     
     let ws = pchar ' '
     let castlingAvailability = 
-        (pchar '-' |>> (fun _ -> [])) <|> (many (anyOf "KQkq") |>> id)
+        (pchar '-' >>% []) <|> (many (anyOf "KQkq") |>> id)
+    let file = anyOf "abcdefgh" |>> LetterToFileNoCheck
     let enPassant = 
-        (pchar '-' |>> (fun _ -> None)) 
-        <|> ((anyOf "abcdefgh" .>>. anyOf "36") |>> Some)
+        (pchar '-' >>% None)
+        <|> ((file .>>. anyOf "36") |>> Some)
     let n = pint32
     let theRest = 
         tuple5 (activeColor .>> ws) (castlingAvailability .>> ws) 
@@ -35,13 +35,11 @@ let ParseFen str =
                for code in rank do
                    match code with
                    | Piece(p) -> yield Some(p)
-                   | Gap(n) -> 
-                       for i = 1 to n do
-                           yield None |]
+                   | Gap(n) -> for _ in 1..n -> None |]
     
     let parseEnPassant = 
         function 
-        | Some(p, _) -> Some(LetterToFileNoCheck p)
+        | Some(p, _) -> Some(p)
         | None -> None
     
     let fenParser = 

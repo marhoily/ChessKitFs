@@ -33,7 +33,7 @@ let ``works with en-passant for black``() =
 let ``fails nicely with invalid input``() = negative "x w - e3 0 1" "Error in Ln: 1 Col: 1
 x w - e3 0 1
 ^
-Expecting: number 1..8, piece symbol or ' '
+Expecting: number 1..8 or piece symbol
 "
 
 [<Fact>]
