@@ -137,7 +137,8 @@ type SanWarning =
     | DisambiguationIsExcessive
 
 type SanMove = 
-    | Interpreted of MoveInfo * SanWarning list
+    | LegalSan of LegalMove * SanWarning list
+    | IllegalSan of IllegalMove 
     | Nonsense of SanError
     | Unparsable of string
 
@@ -211,8 +212,8 @@ let FromSanString str board =
             if not captureNote && captureReal then warn IsCapture
             else if captureNote && not captureReal then warn IsNotCapture
             
-            Interpreted(moveInfo, !warnings)
-        | IllegalMove _ -> Interpreted(moveInfo, [])
+            LegalSan(m, !warnings)
+        | IllegalMove m -> IllegalSan m
 
     let castlingToSanMove opt notes = 
         let move = 
@@ -273,5 +274,5 @@ let FromSanString str board =
 
 let FromLegalSanString str board = 
     match FromSanString str board with
-    | Interpreted (LegalMove move, _) -> move
+    | LegalSan (move, _) -> move
     | x -> failwithf "%A" x

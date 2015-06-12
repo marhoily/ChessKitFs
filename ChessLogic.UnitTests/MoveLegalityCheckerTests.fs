@@ -19,8 +19,7 @@ let MoveToString move =
         seq { 
             if piece <> None then yield toString piece.Value
             if castling <> None then yield toString castling.Value
-            for x in observations do
-                yield toString x
+            for x in observations -> toString x
             for x in warnings do
                 yield toString x
             for x in errors do

@@ -8,7 +8,7 @@ open FenParser
 open CoordinateNotation
 open San
 open Definitions
-open MoveLegalityCheckerTests
+open Microsoft.FSharp.Reflection
 
 // ----- ToSanString --------
 let check move expectedSan position = 
@@ -238,17 +238,32 @@ let san move (expected : string) board =
     |> should equal expected
 
 let interpretIllegal move expected errors board = 
+    let MoveToString m = 
+        let toString (x : 'a) = 
+            match FSharpValue.GetUnionFields(x, typeof<'a>) with
+            | case, _ -> case.Name
+    
+        let getStrings piece castling observations warnings errors 
+            resultObservations = 
+            seq { 
+                if piece <> None then yield toString piece.Value
+                if castling <> None then yield toString castling.Value
+                for x in observations -> toString x
+                for x in warnings -> toString x
+                for x in errors -> toString x
+                for x in resultObservations -> toString x
+            }
+    
+        getStrings m.Piece m.Castling m.Observations m.Warnings m.Errors []
+        |> String.concat " | "
+
     (ParseFen board |> unwrap)
     |> FromSanString move
     |> function 
-    | Interpreted(m, _) -> 
-        match m with
-        | IllegalMove il -> il.Move.AsString |> should equal expected
-        | x -> (sprintf "%A" x) |> should equal expected
-        m
-        |> MoveToString
-        |> should equal errors
-    | x -> (sprintf "%A" x) |> should equal expected
+    | IllegalSan il -> 
+        il.Move.AsString |> should equal expected
+        il |> MoveToString |> should equal errors
+    | x -> (sprintf "%A" x) |> should equal errors
 
 [<Fact>]
 let ``San: pawn push``() = "8/8/8/8/8/8/P7/8 w - - 0 12" |> san "a3" "a2-a3"
