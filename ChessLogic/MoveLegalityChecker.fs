@@ -75,6 +75,10 @@ type IllegalMove =
 type MoveInfo = 
     | LegalMove of LegalMove
     | IllegalMove of IllegalMove
+    interface IMoveSource with
+        member x.Move : Move = (x :> IMoveSource).Move
+        member x.OriginalPosition : Position = 
+            (x :> IMoveSource).OriginalPosition
 
 type ValidatedMove = 
     { Move : Move

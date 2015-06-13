@@ -252,68 +252,48 @@ let FromSanString str board =
             | IllegalMove m -> yield m
             | _ -> ()]
         
-   (* let toSanMove2 find validate hint pieceType toSquare notes capture = 
-        let addExcessive candidates = 
-            if candidates |> List.length = 1 && hint <> NoHint then 
-                [ DisambiguationIsExcessive ]
-            else []
-
-        let validate2 fromSquare = validate fromSquare toSquare board 
-        let isValid = function | LegalMove _ -> true | _ -> false
-        let getStart = function 
-            | LegalMove m -> m.Start
-            | IllegalMove m -> m.Start
-        let candidates = 
-            find (toSquare |> toX88)
-            |> List.map validate2
-            |> List.partition isValid
-        let disambiguate moves = 
-            let disambiguator = 
-                match hint with
-                | FileHint f -> (fun coord -> coord |> fst = f)
-                | RankHint r -> (fun coord -> coord |> snd = r)
-                | SquareHint s -> (fun coord -> coord = s)
-                | NoHint -> (fun _ -> true)
-            candidates |> List.filter disambiguator
-    
-
-        match candidates |> disambiguate hint with
-        | [] -> Nonsense (PieceNotFound (color, pieceType))
-        | fromSquare::[] -> 
-            let warnings = addExcessive candidates
-            interpret validate fromSquare toSquare notes capture warnings
-        | filtered ->
-            match filterValid validate filtered toSquare with
-            | [] -> 
-                let choice = filterInvalid validate filtered toSquare
-                Nonsense (ChoiceOfIllegalMoves choice)
-            | validMove::[] -> 
-                let warnings = []//addExcessive candidates 
-                validMove |> addNotesToALegalMove notes capture warnings
-            | tooMany -> Nonsense (AmbiguousChoice tooMany)
-*)
     let toSanMove find validate hint pieceType toSquare notes capture = 
         let addExcessive candidates = 
             if candidates |> List.length = 1 && hint <> NoHint then 
                 [ DisambiguationIsExcessive ]
             else []
+        let myPartition l =
+            let mutable valid = []
+            let mutable invalid = []
+            for i in l do
+                match i with
+                | LegalMove m -> valid <- m::valid
+                | IllegalMove m -> invalid <- m::invalid
+            (valid, invalid)
+        let validate2 fromSquare = validate fromSquare toSquare board 
+        let isValid = function | LegalMove _ -> true | _ -> false
+        let getStart (m : IMoveSource) = m.Move.Start
+        let validCandidates, invalidCandidates = 
+            find (toSquare |> toX88)
+            |> List.map validate2
+            |> myPartition
+        let disambiguate moves = 
+            let disambiguator m = 
+                let start = getStart m
+                match hint with
+                | FileHint f -> start |> fst = f
+                | RankHint r -> start |> snd = r
+                | SquareHint s -> start = s
+                | NoHint -> true
+            moves 
+            |> List.filter disambiguator
+        let valid, invalid = (disambiguate validCandidates, disambiguate invalidCandidates)
+    
 
-        let candidates = find (toSquare |> toX88)
-        match candidates |> disambiguate hint with
-        | [] -> Nonsense (PieceNotFound (color, pieceType))
-        | fromSquare::[] -> 
-            let warnings = addExcessive candidates
-            interpret validate fromSquare toSquare notes capture warnings
-        | filtered ->
-            match filterValid validate filtered toSquare with
-            | [] -> 
-                let choice = filterInvalid validate filtered toSquare
-                Nonsense (ChoiceOfIllegalMoves choice)
-            | validMove::[] -> 
-                let warnings = []//addExcessive candidates 
-                validMove |> addNotesToALegalMove notes capture warnings
-            | tooMany -> Nonsense (AmbiguousChoice tooMany)
-
+        let warnings = addExcessive validCandidates 
+        match valid, invalid with
+        | [], _::_::[] -> Nonsense (ChoiceOfIllegalMoves invalid)
+        | [], m::[] -> IllegalSan m
+        | [], [] -> Nonsense (PieceNotFound (color, pieceType))
+        | validMove::[], _ -> 
+            validMove |> addNotesToALegalMove notes capture warnings
+        | tooMany, _ -> Nonsense (AmbiguousChoice tooMany)
+ 
     let dispatch = function 
         | ShortCastling, notes -> castlingToSanMove ShortCastling notes
         | LongCastling, notes -> castlingToSanMove LongCastling notes

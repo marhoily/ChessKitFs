@@ -378,7 +378,7 @@ let ``San: over-disambiguate N1f3``() =
 [<Fact>]
 let ``San: under-disambiguate Nf3``() = 
     "8/8/8/6N1/8/8/8/6N1 w - - 0 12" 
-    |> nonsense "Nf3" "AmbiguousChoice [g5-f3; g1-f3]"
+    |> nonsense "Nf3" "AmbiguousChoice [g1-f3; g5-f3]"
 
 [<Fact>]
 let ``San: disambiguate N1f3``() = 
@@ -428,12 +428,12 @@ let ``San: it not marked capture when it should be``() =
 [<Fact>]
 let ``San: 2 candidates, 0 valid moves``() = 
     "8/8/2B3B1/3n1n2/4k3/8/8/8 b - - 0 2" 
-    |> nonsense "Ne7" "ChoiceOfIllegalMoves [f5-e7 (MoveToCheck); d5-e7 (MoveToCheck)]"
+    |> nonsense "Ne7" "ChoiceOfIllegalMoves [d5-e7 (MoveToCheck); f5-e7 (MoveToCheck)]"
 
 [<Fact>]
 let ``San: disambiguation is excessive only after validation``() = 
     "4b3/5N2/8/6nK/8/5N1N/8/2k4r w - - 0 2" 
-    |> san "Nf3xg5" "f3-g51"
+    |> warn "Nf3xg5" "f3-g5" "DisambiguationIsExcessive"
 
 
     
