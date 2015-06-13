@@ -368,7 +368,7 @@ let ``San: over-disambiguate N1f3``() =
 [<Fact>]
 let ``San: under-disambiguate Nf3``() = 
     "8/8/8/6N1/8/8/8/6N1 w - - 0 12" 
-    |> nonsense "Nf3" "AmbiguousChoice [(6, 3); (6, 7)]"
+    |> nonsense "Nf3" "AmbiguousChoice [g5-f3; g1-f3]"
 
 [<Fact>]
 let ``San: disambiguate N1f3``() = 
@@ -384,3 +384,9 @@ let ``San: no candidates found Nf3``() =
 let ``San: wrong disambiguation N1f3``() = 
     "8/8/8/6N1/8/8/8/8 w - - 0 12" 
     |> nonsense "N1f3" "PieceNotFound (White, Knight)"
+
+[<Fact>]
+let ``San: one of the knights is pinned``() = 
+    "8/6K1/8/4N3/8/2b5/8/2k1N3 w - f6 0 1" 
+    |> san "Nd3+" "e1-d3"
+

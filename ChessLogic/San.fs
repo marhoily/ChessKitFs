@@ -124,7 +124,7 @@ let ParseSanString str =
 
 type SanError = 
     | PieceNotFound of Piece
-    | AmbiguousChoice of Coordinate list
+    | AmbiguousChoice of LegalMove list
 
 type SanWarning = 
     | IsCapture
@@ -189,29 +189,31 @@ let FromSanString str board =
             | SquareHint s -> (fun coord -> coord = s)
             | NoHint -> (fun _ -> true)
         candidates |> List.filter disambiguator
+    
+    let addNotesToALegalMove (notes: Ending option) (capture: SanCapture option) warningsBefore m : SanMove =
+        let warnings = ref warningsBefore
+        let warn w = warnings := w :: !warnings
+
+        let checkNote = notes = Some(SanCheck)
+        let checkReal = m.ResultPosition.Observations |> MyList.contains Check
+        if not checkNote && checkReal then warn IsCheck
+        else if checkNote && not checkReal then warn IsNotCheck
+                    
+        let mateNote = notes = Some(SanMate)
+        let mateReal = m.ResultPosition.Observations |> MyList.contains Mate
+        if not mateNote && mateReal then warn IsMate
+        else if mateNote && not mateReal then warn IsNotMate
+                    
+        let captureNote = capture = Some(SanCapture)
+        let captureReal = m.Observations |> MyList.contains Capture
+        if not captureNote && captureReal then warn IsCapture
+        else if captureNote && not captureReal then warn IsNotCapture
+            
+        LegalSan(m, !warnings)
 
     let addNotes (notes: Ending option) (capture: SanCapture option) warningsBefore moveInfo : SanMove =
         match moveInfo with
-        | LegalMove m ->
-            let warnings = ref warningsBefore
-            let warn w = warnings := w :: !warnings
-
-            let checkNote = notes = Some(SanCheck)
-            let checkReal = m.ResultPosition.Observations |> MyList.contains Check
-            if not checkNote && checkReal then warn IsCheck
-            else if checkNote && not checkReal then warn IsNotCheck
-                    
-            let mateNote = notes = Some(SanMate)
-            let mateReal = m.ResultPosition.Observations |> MyList.contains Mate
-            if not mateNote && mateReal then warn IsMate
-            else if mateNote && not mateReal then warn IsNotMate
-                    
-            let captureNote = capture = Some(SanCapture)
-            let captureReal = m.Observations |> MyList.contains Capture
-            if not captureNote && captureReal then warn IsCapture
-            else if captureNote && not captureReal then warn IsNotCapture
-            
-            LegalSan(m, !warnings)
+        | LegalMove m -> addNotesToALegalMove notes capture warningsBefore m
         | IllegalMove m -> IllegalSan m
 
     let castlingToSanMove opt notes = 
@@ -241,7 +243,13 @@ let FromSanString str board =
         board 
         |> validate fromSquare toSquare
         |> addNotes notes capture warnings
-
+    
+    let filterValid validate fromSquares toSquare =
+        [for fromSquare in fromSquares do
+            match board |> validate fromSquare toSquare with
+            | LegalMove m -> yield m
+            | _ -> ()]
+        
     let toSanMove find validate hint pieceType toSquare notes capture = 
         let candidates = find (toSquare |> toX88)
         match candidates |> disambiguate hint with
@@ -252,7 +260,16 @@ let FromSanString str board =
                     [ DisambiguationIsExcessive ]
                 else []
             interpret validate fromSquare toSquare notes capture warnings
-        | filtered -> Nonsense (AmbiguousChoice filtered)
+        | filtered ->
+            match filterValid validate filtered toSquare with
+            | [] -> Nonsense (PieceNotFound (color, pieceType))
+            | validMove::[] -> 
+                let warnings = 
+                    if candidates.Length = 1 && hint <> NoHint then 
+                        [ DisambiguationIsExcessive ]
+                    else []
+                validMove |> addNotesToALegalMove notes capture warnings
+            | tooMany -> Nonsense (AmbiguousChoice tooMany)
 
     let dispatch = function 
         | ShortCastling, notes -> castlingToSanMove ShortCastling notes
