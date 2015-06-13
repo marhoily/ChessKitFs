@@ -9,25 +9,25 @@ type private Code =
     | Gap of int
 
 let ParseFen str = 
-    let piece = anyOf "pnbrqkPNBRQK" |>> (fun c -> Piece(parsePieceLetter c)) <?> "piece symbol"
-    let gap = anyOf "12345678" |>> (fun c -> Gap(int c - int '0')) <?> "number 1..8"
+    let parseGap c = Gap(int c - int '0')
+    let parsePiece c = Piece(parsePieceLetter c)
+    let piece = anyOf "pnbrqkPNBRQK" |>> parsePiece <?> "piece symbol"
+    let gap = anyOf "12345678" |>> parseGap <?> "number 1..8"
     let rank = many1 (piece <|> gap)
     let piecePlacement = sepBy1 rank (pchar '/')
     
-    let black = pchar 'b' >>% Black
-    let white = pchar 'w' >>% White
-    let activeColor = white <|> black
+    let color = (pchar 'b' >>% Black) <|> (pchar 'w' >>% White)
     
     let ws = pchar ' '
     let castlingAvailability = 
         (pchar '-' >>% []) <|> (many (anyOf "KQkq") |>> id)
     let file = anyOf "abcdefgh" |>> LetterToFileNoCheck
-    let enPassant = 
-        (pchar '-' >>% None)
-        <|> ((file .>>. anyOf "36") |>> Some)
+    let enColor = (pchar '3' >>% Black) <|> (pchar '6' >>% White)
+    let en = (file .>>. enColor) |>> Some
+    let enPassant = (pchar '-' >>% None) <|> en
     let n = pint32
     let theRest = 
-        tuple5 (activeColor .>> ws) (castlingAvailability .>> ws) 
+        tuple5 (color .>> ws) (castlingAvailability .>> ws) 
             (enPassant .>> ws) (n .>> ws) n
     
     let parsePlacement p = 
