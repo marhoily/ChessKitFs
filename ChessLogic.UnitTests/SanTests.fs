@@ -358,6 +358,11 @@ let ``San: pawn move does not make sense``() =
     |> nonsense "axb4" "PieceNotFound (White, Pawn)"
 
 [<Fact>]
+let ``San: can't push pawn cause it's pinned``() = 
+    "8/8/8/3rP1K1/8/8/8/8 w - f6 0 1" 
+    |> illegal "e6" "MoveToCheck"
+    
+[<Fact>]
 let ``San: Nf3``() = "8/8/8/8/8/8/8/6N1 w - - 0 12" |> san "Nf3" "g1-f3"
 
 [<Fact>]
