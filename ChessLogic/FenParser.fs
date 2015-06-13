@@ -15,27 +15,25 @@ let ParseFen str =
     let gap = anyOf "12345678" |>> parseGap <?> "number 1..8"
     let rank = many1 (piece <|> gap)
     let piecePlacement = sepBy1 rank (pchar '/')
-    
     let color = (pchar 'b' >>% Black) <|> (pchar 'w' >>% White)
-    
+    let castlingHint = anyOf "KQkq" |>> CastlingHint.parse
     let ws = pchar ' '
-    let castlingAvailability = 
-        (pchar '-' >>% []) <|> (many (anyOf "KQkq") |>> id)
+    let ca = (pchar '-' >>% []) <|> (many1 castlingHint)
     let file = anyOf "abcdefgh" |>> LetterToFileNoCheck
     let enColor = (pchar '3' >>% Black) <|> (pchar '6' >>% White)
     let en = (file .>>. enColor) |>> Some
     let enPassant = (pchar '-' >>% None) <|> en
     let n = pint32
     let theRest = 
-        tuple5 (color .>> ws) (castlingAvailability .>> ws) 
-            (enPassant .>> ws) (n .>> ws) n
+        tuple5 (color .>> ws) (ca .>> ws) (enPassant .>> ws) (n .>> ws) n
     
     let parsePlacement p = 
         [| for rank in p do
                for code in rank do
                    match code with
                    | Piece(p) -> yield Some(p)
-                   | Gap(n) -> for _ in 1..n -> None |]
+                   | Gap(n) -> 
+                       for _ in 1..n -> None |]
     
     let parseEnPassant = 
         function 
@@ -46,12 +44,11 @@ let ParseFen str =
         pipe2 (piecePlacement .>> ws) theRest (fun placement (activeColor, castlingAvailability, enPassant, halfMoveClock, fullMoveNumber) -> 
             { Placement = parsePlacement (placement)
               ActiveColor = activeColor
-              CastlingAvailability = 
-                  castlingAvailability |> List.map CastlingHint.parse
+              CastlingAvailability = castlingAvailability
               EnPassant = parseEnPassant (enPassant)
               HalfMoveClock = halfMoveClock
-              FullMoveNumber = fullMoveNumber 
-              Observations = []})
+              FullMoveNumber = fullMoveNumber
+              Observations = [] })
     
     wrap (run fenParser str)
 
