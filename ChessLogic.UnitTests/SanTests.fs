@@ -435,5 +435,11 @@ let ``San: disambiguation is excessive only after validation``() =
     "4b3/5N2/8/6nK/8/5N1N/8/2k4r w - - 0 2" 
     |> warn "Nf3xg5" "f3-g5" "DisambiguationIsExcessive"
 
+[<Fact>]
+let ``San: invalid castling``() = 
+    "rn2k2r/ppp2ppp/3B1n2/8/3P2b1/6P1/PPP1N2P/RN1QKB1q b Qkq - 0 9" 
+    |> illegal "O-O" "e8-g8" "King | BK | CastleThroughCheck"
 
+
+    
     
