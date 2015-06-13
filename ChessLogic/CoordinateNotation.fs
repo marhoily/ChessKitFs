@@ -3,7 +3,6 @@
 open Definitions
 open FParsec
 open Parsing
-open System
 
 let ToIndex = function 
     | (file, rank) -> rank * 8 + file
@@ -11,21 +10,22 @@ let PieceAt coordinate position = position.Placement.[ToIndex coordinate]
 let vectorToString = function 
     | (f, t) -> CoordinateToString f + "-" + CoordinateToString t
 
-type PromotionMove = 
-    { Vector : Coordinate * Coordinate
-      PromoteTo : PieceType }
-
 [<StructuredFormatDisplay("{AsString}")>]
 type Move = 
-    | UsualMove of Coordinate * Coordinate
-    | PromotionMove of PromotionMove
+    { Start : Coordinate
+      End : Coordinate
+      PromoteTo : PieceType option }
     member this.AsString = 
-        match this with
-        | UsualMove(f, t) -> vectorToString (f, t)
-        | PromotionMove move -> 
-            String.Format
-                ("{0}={1}", vectorToString move.Vector, 
-                 PieceToString(White, move.PromoteTo))
+        let vector = vectorToString (this.Start, this.End)
+        if this.PromoteTo = None then vector
+        else
+            let p = PieceToString(White, this.PromoteTo.Value) 
+            sprintf "%s=%c" vector p
+    static member Create f t p =
+        { Start = f
+          End = t
+          PromoteTo = p }
+
 
 let ToCoordinateNotation (m:Move) = m.AsString
 
@@ -36,16 +36,10 @@ let ParseCoordinate str = wrap (run coordinate str)
 let _c = ParseCoordinate >> unwrap
 
 let ParseCoordinateNotation str = 
-    let factory c1 c2 promotion = 
-        match promotion with
-        | Some(pieceType) -> 
-            PromotionMove({ Vector = (c1, c2)
-                            PromoteTo = parsePromotionHint pieceType})
-        | None -> UsualMove(c1, c2)
-    
-    let c1 = coordinate .>> ((pchar '-') <|> (pchar 'x'))
-    let p = opt ((pchar '=') >>. (anyOf "NBRQK"))
-    let notation = pipe3 c1 coordinate p factory
+    let f = coordinate .>> ((pchar '-') <|> (pchar 'x'))
+    let hint = anyOf "NBRQK" |>> parsePromotionHint
+    let p = opt ((pchar '=') >>. hint) 
+    let notation = pipe3 f coordinate p (Move.Create)
     wrap (run notation str)
 
 let _cn = ParseCoordinateNotation >> unwrap

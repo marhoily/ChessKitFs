@@ -14,11 +14,9 @@ let FromSquare from position =
     let rank7 = 1
     let rank2 = 6
     
-    let p i = 
-        PromotionMove({ Vector = i
-                        PromoteTo = Queen })
+    let p (f,t) = Move.Create f t (Some(Queen))
     
-    let u i = UsualMove(i)
+    let u (f,t) = Move.Create f t None
     let f = from |> toX88
     let validate v t = position |> ValidateMove(v (from, t |> fromX88))
     let at88 i = position |> PieceAt(i |> fromX88)

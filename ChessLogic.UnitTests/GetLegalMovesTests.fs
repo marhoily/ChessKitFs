@@ -9,7 +9,7 @@ open CoordinateNotation
 open Definitions
 open Dump
 
-let toString m = CoordinateToString m.End
+let toString (m:LegalMove) = CoordinateToString m.End
 
 let check from (expected : string list) position = 
     let p = unwrap (position |> ParseFen)
@@ -26,7 +26,7 @@ let check from (expected : string list) position =
     // Now do full search and make sure ValidateMove agrees
     let expected2 = 
         [ for i = 0 to 63 do
-              let t = UsualMove(f, (i % 8, i / 8))
+              let t = Move.Create f (i % 8, i / 8) None
               match ValidateMove t p with
                   | LegalMove m -> yield m |> toString
                   | _ -> () ]
@@ -46,7 +46,7 @@ let checkAll expected position =
     let expected2 = 
         [ for i = 0 to 63 do
               for j = 0 to 63 do
-                  let t = UsualMove((j % 8, j / 8), (i % 8, i / 8))
+                  let t = Move.Create (j % 8, j / 8) (i % 8, i / 8) None
                   match ValidateMove t p with
                   | LegalMove m -> yield m |> toString
                   | _ -> () ]

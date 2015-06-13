@@ -162,3 +162,8 @@ let internal G8 = 6
 
 [<Literal>]
 let internal H8 = 7
+
+let inline (?|?) a b = 
+    match a with
+    | Some(x) -> x
+    | None -> b

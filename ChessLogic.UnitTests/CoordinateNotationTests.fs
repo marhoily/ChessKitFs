@@ -12,14 +12,13 @@ let negative = ErrorMessageShouldMatch ParseCoordinateNotation
 
 [<Fact>]
 let ``(4,6) -> (4,4) should read "e2-e4"``() = 
-    UsualMove((4, 6), (4, 4))
+    Move.Create (4, 6) (4, 4) None
     |> ToCoordinateNotation
     |> should equal "e2-e4"
 
 [<Fact>]
 let ``Promotion move should read correctly``() = 
-    PromotionMove({ Vector = ((4, 6), (4, 4))
-                    PromoteTo = Queen })
+    Move.Create (4, 6) (4, 4) (Some(Queen))
     |> ToCoordinateNotation
     |> should equal "e2-e4=Q"
 

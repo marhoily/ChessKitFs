@@ -430,4 +430,10 @@ let ``San: 2 candidates, 0 valid moves``() =
     "8/8/2B3B1/3n1n2/4k3/8/8/8 b - - 0 2" 
     |> nonsense "Ne7" "ChoiceOfIllegalMoves [f5-e7 (MoveToCheck); d5-e7 (MoveToCheck)]"
 
+[<Fact>]
+let ``San: disambiguation is excessive only after validation``() = 
+    "4b3/5N2/8/6nK/8/5N1N/8/2k4r w - - 0 2" 
+    |> san "Nf3xg5" "f3-g51"
+
+
     

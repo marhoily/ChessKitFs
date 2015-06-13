@@ -30,7 +30,7 @@ let ToSanString(move : LegalMove) =
     let fileStr x = fileToStirng (x |> file)
     let rankStr x = rankToString (x |> rank)
     let at x = move.OriginalPosition |> PieceAt x
-    let isSimilarTo x y = 
+    let isSimilarTo (x:LegalMove) (y:LegalMove) = 
         (x.Start <> y.Start) && (x.End = y.End) && (at x.Start = at y.Start)
     
     let disambiguationList = 
@@ -229,17 +229,11 @@ let FromSanString str board =
         |> ValidateMove(_cn (move))
         |> addNotes notes None []
     
-    let validateUsual fromSquare toSquare = 
-        ValidateMove (UsualMove (fromSquare, toSquare))
-
     let validate promoteTo fromSquare toSquare = 
-        match promoteTo with
-        | Some p -> 
-            let m = { Vector = (fromSquare, toSquare)
-                      PromoteTo = p }
-            ValidateMove (PromotionMove m)
-        | None -> validateUsual fromSquare toSquare
-
+        ValidateMove (Move.Create fromSquare toSquare promoteTo)
+    
+    let validateUsual = validate None
+    
     let interpret validate fromSquare toSquare notes capture warnings = 
         board 
         |> validate fromSquare toSquare
@@ -257,6 +251,46 @@ let FromSanString str board =
             | IllegalMove m -> yield m
             | _ -> ()]
         
+   (* let toSanMove2 find validate hint pieceType toSquare notes capture = 
+        let addExcessive candidates = 
+            if candidates |> List.length = 1 && hint <> NoHint then 
+                [ DisambiguationIsExcessive ]
+            else []
+
+        let validate2 fromSquare = validate fromSquare toSquare board 
+        let isValid = function | LegalMove _ -> true | _ -> false
+        let getStart = function 
+            | LegalMove m -> m.Start
+            | IllegalMove m -> m.Start
+        let candidates = 
+            find (toSquare |> toX88)
+            |> List.map validate2
+            |> List.partition isValid
+        let disambiguate moves = 
+            let disambiguator = 
+                match hint with
+                | FileHint f -> (fun coord -> coord |> fst = f)
+                | RankHint r -> (fun coord -> coord |> snd = r)
+                | SquareHint s -> (fun coord -> coord = s)
+                | NoHint -> (fun _ -> true)
+            candidates |> List.filter disambiguator
+    
+
+        match candidates |> disambiguate hint with
+        | [] -> Nonsense (PieceNotFound (color, pieceType))
+        | fromSquare::[] -> 
+            let warnings = addExcessive candidates
+            interpret validate fromSquare toSquare notes capture warnings
+        | filtered ->
+            match filterValid validate filtered toSquare with
+            | [] -> 
+                let choice = filterInvalid validate filtered toSquare
+                Nonsense (ChoiceOfIllegalMoves choice)
+            | validMove::[] -> 
+                let warnings = []//addExcessive candidates 
+                validMove |> addNotesToALegalMove notes capture warnings
+            | tooMany -> Nonsense (AmbiguousChoice tooMany)
+*)
     let toSanMove find validate hint pieceType toSquare notes capture = 
         let addExcessive candidates = 
             if candidates |> List.length = 1 && hint <> NoHint then 
@@ -275,8 +309,7 @@ let FromSanString str board =
                 let choice = filterInvalid validate filtered toSquare
                 Nonsense (ChoiceOfIllegalMoves choice)
             | validMove::[] -> 
-                // bug: candidates
-                let warnings = addExcessive candidates 
+                let warnings = []//addExcessive candidates 
                 validMove |> addNotesToALegalMove notes capture warnings
             | tooMany -> Nonsense (AmbiguousChoice tooMany)
 

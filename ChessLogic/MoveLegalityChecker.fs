@@ -35,24 +35,21 @@ type LegalMove =
     { Start : Coordinate
       End : Coordinate
       PromoteTo : PieceType
+      Move : Move
       OriginalPosition : Position
       ResultPosition : Position
       Piece : PieceType
       Castling : CastlingHint option
       Observations : Observation list
       Warnings : Warning list }
-    member x.AsString = 
-        let f = CoordinateToString x.Start
-        let t = CoordinateToString x.End
-        if x.Observations |> MyList.contains Promotion then
-            let p = PieceToString(White, x.PromoteTo)
-            sprintf "%s-%s=%c" f t p
-        else
-            sprintf "%s-%s" f t
+    member x.AsString = x.Move.AsString
 
 [<StructuredFormatDisplayAttribute("{AsString}")>]
 type IllegalMove = 
-    { Move : Move
+    { Start : Coordinate
+      End : Coordinate
+      PromoteTo : PieceType
+      Move : Move
       OriginalPosition : Position
       Piece : PieceType option
       Castling : CastlingHint option
@@ -71,7 +68,7 @@ type MoveInfo =
     | LegalMove of LegalMove
     | IllegalMove of IllegalMove
 
-let ValidateMove move position = 
+let ValidateMove (move:Move) position = 
     let errors = ref []
     let observations = ref []
     let warnings = ref  []
@@ -86,13 +83,11 @@ let ValidateMove move position =
     let hasNoEnPassant() = 
         err HasNoEnPassant
         enPassant()
-    
+
     //   ___________
     //__/ Shortcats \_____________________________________________________
     let moveFrom, moveTo, promoteTo = 
-        match move with
-        | UsualMove(f, t) -> (f, t, Queen)
-        | PromotionMove({ Vector = (f, t); PromoteTo = p }) -> (f, t, p)
+        (move.Start, move.End, move.PromoteTo ?|? Queen)
     
     let at64 i64 = position |> PieceAt i64
     let at i = position |> PieceAt(i % 16, i / 16)
@@ -101,7 +96,7 @@ let ValidateMove move position =
     | Some(clr, _) when clr = color -> err ToOccupiedCell
     | Some(_) -> info Capture
     | None -> ()
-    let pieceType = 
+    let pieceType : PieceType option = 
         match at64 moveFrom with
         | Some(pieceColor, fPt) -> 
             if color <> pieceColor then err WrongSideToMove
@@ -226,7 +221,7 @@ let ValidateMove move position =
                 else -8
             newPlacement.[(moveTo |> ToIndex) + increment] <- None
         // Remove the piece from the old square and put it to the new square
-        let effectivePiece = 
+        let effectivePiece : PieceType = 
             if !observations |> contains Promotion then promoteTo
             else pieceType.Value
         newPlacement.[moveTo |> ToIndex] <- Some((color, effectivePiece))
@@ -301,10 +296,9 @@ let ValidateMove move position =
     
     let setRequiresPromotion() = 
         let requiresPromotion = !observations |> contains Promotion
-        match move with
-        | UsualMove(_, _) -> 
+        if move.PromoteTo = None then
             if requiresPromotion then warn MissingPromotionHint
-        | PromotionMove(_) -> 
+        else 
             if not requiresPromotion then warn PromotionHintIsNotNeeded
     
     //   __________
@@ -317,6 +311,7 @@ let ValidateMove move position =
         LegalMove { Start = moveFrom
                     End = moveTo
                     PromoteTo = promoteTo
+                    Move = move
                     OriginalPosition = position
                     ResultPosition = (!newPosition).Value
                     Piece = pieceType.Value
@@ -324,7 +319,10 @@ let ValidateMove move position =
                     Observations = !observations
                     Warnings = !warnings }
     else 
-        IllegalMove({ Move = move
+        IllegalMove({ Start = moveFrom
+                      End = moveTo
+                      PromoteTo = promoteTo
+                      Move = move
                       OriginalPosition = position
                       Piece = pieceType
                       Castling = !castling
