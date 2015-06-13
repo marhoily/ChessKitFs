@@ -310,7 +310,8 @@ let ``San: pawn 3 squares push``() =
 
 [<Fact>]
 let ``San: pawn captures``() = 
-    "8/8/8/8/8/1p6/P7/8 w - - 0 12" |> san "axb3" "a2-b3" ""
+    "8/8/8/8/8/1p6/P7/8 w - - 0 12" 
+    |> san "axb3" "a2-b3" "DisambiguationIsExcessive"
 
 [<Fact>]
 let ``San: 2 pawns can capture``() = 
