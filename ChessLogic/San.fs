@@ -7,7 +7,7 @@ open CoordinateNotation
 open FParsec
 open IsAttackedBy
 
-let ToSanString(move : LegalMove) = 
+let ToSanString(legalMove : ValidationResult<LegalMove>) = 
     //     _______________________
     // ___/ Shortcuts and helpers \___________________________
     let typeToString = 
@@ -20,48 +20,49 @@ let ToSanString(move : LegalMove) =
         | King -> 'K'
     
     let sb = new StringBuilder(6)
-    let mv = move.Move
-    let shortCastling = move.Castling = Some(WK) || move.Castling = Some(BK)
-    let longCastling = move.Castling = Some(WQ) || move.Castling = Some(BQ)
-    let capture = move.Observations |> MyList.contains Capture
-    let promotion = move.Observations |> MyList.contains Promotion
-    let check = move.ResultPosition.Observations |> MyList.contains Check
-    let mate = move.ResultPosition.Observations |> MyList.contains Mate
+    let move = legalMove.Move
+    let data = legalMove.Data
+    let shortCastling = data.Castling = Some(WK) || data.Castling = Some(BK)
+    let longCastling = data.Castling = Some(WQ) || data.Castling = Some(BQ)
+    let capture = data.Observations |> MyList.contains Capture
+    let promotion = data.Observations |> MyList.contains Promotion
+    let check = data.ResultPosition.Observations |> MyList.contains Check
+    let mate = data.ResultPosition.Observations |> MyList.contains Mate
     let append (str : string) = sb.Append(str) |> ignore
     let appendc (str : char) = sb.Append(str) |> ignore
     let file, rank, fileAndRankStr = fst, snd, CoordinateToString
     let fileStr x = fileToStirng (x |> file)
     let rankStr x = rankToString (x |> rank)
-    let at x = move.OriginalPosition |> PieceAt x
-    let isSimilarTo (a:LegalMove) (b:LegalMove) = 
+    let at x = legalMove.OriginalPosition |> PieceAt x
+    let isSimilarTo (a:ValidationResult<LegalMove>) (b:ValidationResult<LegalMove>) = 
         let x, y = a.Move, b.Move
         (x.Start <> y.Start) && (x.End = y.End) && (at x.Start = at y.Start)
     
     let disambiguationList = 
-        lazy ([ for m in move.OriginalPosition |> GetLegalMoves.All do
-                    if m |> isSimilarTo move then yield m.Move.Start ])
+        lazy ([ for m in legalMove.OriginalPosition |> GetLegalMoves.All do
+                    if m |> isSimilarTo legalMove then yield m.Move.Start ])
     let ambiguous() = not (disambiguationList.Value |> List.isEmpty)
     let unique fn = 
         disambiguationList.Value 
-        |> List.forall (fun x -> (mv.Start |> fn) <> (x |> fn))
+        |> List.forall (fun x -> (move.Start |> fn) <> (x |> fn))
     //     __________________
     // ___/ Actual algorithm \________________________________
     if shortCastling then append "O-O"
     else if longCastling then append "O-O-O"
     else 
-        if move.Piece = Pawn then 
-            if capture then append (fileStr mv.Start)
+        if data.Piece = Pawn then 
+            if capture then append (fileStr move.Start)
         else 
-            appendc (move.Piece |> typeToString)
+            appendc (data.Piece |> typeToString)
             if ambiguous() then 
-                if unique file then append (fileStr mv.Start)
-                else if unique rank then append (rankStr mv.Start)
-                else append (fileAndRankStr mv.Start)
+                if unique file then append (fileStr move.Start)
+                else if unique rank then append (rankStr move.Start)
+                else append (fileAndRankStr move.Start)
         if capture then appendc 'x'
-        append (fileAndRankStr mv.End)
+        append (fileAndRankStr move.End)
     if promotion then 
         appendc '='
-        appendc (mv.PromoteTo.Value |> typeToString)
+        appendc (move.PromoteTo.Value |> typeToString)
     if check then appendc '+'
     else if mate then appendc '#'
     string sb
@@ -127,8 +128,8 @@ let ParseSanString str =
 
 type SanError = 
     | PieceNotFound of Piece
-    | AmbiguousChoice of LegalMove list
-    | ChoiceOfIllegalMoves of IllegalMove list
+    | AmbiguousChoice of ValidationResult<LegalMove> list
+    | ChoiceOfIllegalMoves of ValidationResult<IllegalMove> list
 
 type SanWarning = 
     | IsCapture
@@ -140,8 +141,8 @@ type SanWarning =
     | DisambiguationIsExcessive
 
 type SanMove = 
-    | LegalSan of LegalMove * SanWarning list
-    | IllegalSan of IllegalMove 
+    | LegalSan of ValidationResult<LegalMove> * SanWarning list
+    | IllegalSan of ValidationResult<IllegalMove>
     | Nonsense of SanError
     | Unparsable of string
 
@@ -190,17 +191,17 @@ let FromSanString str board =
         let warn w = warnings := w :: !warnings
 
         let checkNote = notes = Some(SanCheck)
-        let checkReal = legalMove.ResultPosition.Observations |> MyList.contains Check
+        let checkReal = legalMove.Data.ResultPosition.Observations |> MyList.contains Check
         if not checkNote && checkReal then warn IsCheck
         else if checkNote && not checkReal then warn IsNotCheck
                     
         let mateNote = notes = Some(SanMate)
-        let mateReal = legalMove.ResultPosition.Observations |> MyList.contains Mate
+        let mateReal = legalMove.Data.ResultPosition.Observations |> MyList.contains Mate
         if not mateNote && mateReal then warn IsMate
         else if mateNote && not mateReal then warn IsNotMate
                     
         let captureNote = capture = Some(SanCapture)
-        let captureReal = legalMove.Observations |> MyList.contains Capture
+        let captureReal = legalMove.Data.Observations |> MyList.contains Capture
         if not captureNote && captureReal then warn IsCapture
         else if captureNote && not captureReal then warn IsNotCapture
             
@@ -226,8 +227,8 @@ let FromSanString str board =
     let validate promoteTo fromSquare toSquare = 
         ValidateMove (Move.Create fromSquare toSquare promoteTo) board
 
-    let disambiguate hint moves = 
-        let unique (m : IMoveSource) = 
+    let disambiguate hint (moves: ValidationResult<_> list) = 
+        let unique (m: ValidationResult<_>) = 
             match hint with
             | FileHint f -> m.Move.Start |> fst = f
             | RankHint r -> m.Move.Start |> snd = r
@@ -249,7 +250,7 @@ let FromSanString str board =
         |> List.map (fun x -> validate x toSquare)
         |> separateToLegalAndIllegal
 
-    let toSanMove find hint pieceType addNotes = 
+    let toSanMove (find: unit -> ValidationResult<LegalMove> list*ValidationResult<IllegalMove> list) hint pieceType addNotes = 
         let validCandidates, invalidCandidates = find()
         let valid = disambiguate hint validCandidates
         let invalid = disambiguate hint invalidCandidates

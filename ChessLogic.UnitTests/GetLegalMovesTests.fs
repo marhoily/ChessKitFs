@@ -9,7 +9,7 @@ open CoordinateNotation
 open Definitions
 open Dump
 
-let toString (m:LegalMove) = CoordinateToString m.Move.End
+let toString (m:ValidationResult<_>) = CoordinateToString m.Move.End
 
 let check from (expected : string list) position = 
     let p = unwrap (position |> ParseFen)

@@ -30,55 +30,42 @@ type Error =
     | DoesNotMoveThisWay
     | CastleFromCheck
 
-type IMoveSource = 
-    abstract Move : Move
-    abstract OriginalPosition : Position
-
 [<StructuredFormatDisplayAttribute("{AsString}")>]
-type LegalMove = 
+type ValidationResult<'T> = 
     { Move : Move
       OriginalPosition : Position
-      ResultPosition : Position
+      Data : 'T }
+    member x.AsString = x.Move.AsString + x.Data.ToString()
+      
+[<StructuredFormatDisplayAttribute("{AsString}")>]
+type LegalMove = 
+    { ResultPosition : Position
       Piece : PieceType
       Castling : CastlingHint option
       Observations : Observation list
       Warnings : Warning list }
+    override x.ToString() = ""
     
-    interface IMoveSource with
-        member x.Move : Move = x.Move
-        member x.OriginalPosition : Position = x.OriginalPosition
-    
-    member x.AsString = x.Move.AsString
 
 [<StructuredFormatDisplayAttribute("{AsString}")>]
 type IllegalMove = 
-    { Move : Move
-      OriginalPosition : Position
-      Piece : PieceType option
+    { Piece : PieceType option
       Castling : CastlingHint option
       Observations : Observation list
       Warnings : Warning list
       Errors : Error list }
     
-    interface IMoveSource with
-        member x.Move : Move = x.Move
-        member x.OriginalPosition : Position = x.OriginalPosition
-    
-    member x.AsString = 
+    override x.ToString() = 
         let toString (x : 'a) = 
             match FSharpValue.GetUnionFields(x, typeof<'a>) with
             | case, _ -> case.Name
         
         let errors = x.Errors |> List.map toString
-        sprintf "%A (%s)" x.Move (String.concat ", " errors)
+        sprintf " (%s)" (String.concat ", " errors)
 
 type MoveInfo = 
-    | LegalMove of LegalMove
-    | IllegalMove of IllegalMove
-    interface IMoveSource with
-        member x.Move : Move = (x :> IMoveSource).Move
-        member x.OriginalPosition : Position = 
-            (x :> IMoveSource).OriginalPosition
+    | LegalMove of ValidationResult<LegalMove>
+    | IllegalMove of ValidationResult<IllegalMove>
 
 type ValidatedMove = 
     { Move : Move
@@ -327,19 +314,19 @@ let ValidateMove (move : Move) position =
     if (!errors).IsEmpty then 
         LegalMove { Move = move
                     OriginalPosition = position
-                    ResultPosition = (!newPosition).Value
-                    Piece = pieceType.Value
-                    Castling = !castling
-                    Observations = !observations
-                    Warnings = !warnings }
+                    Data = { ResultPosition = (!newPosition).Value
+                             Piece = pieceType.Value
+                             Castling = !castling
+                             Observations = !observations
+                             Warnings = !warnings }}
     else 
-        IllegalMove({ Move = move
+        IllegalMove { Move = move
                       OriginalPosition = position
-                      Piece = pieceType
-                      Castling = !castling
-                      Observations = !observations
-                      Warnings = !warnings
-                      Errors = !errors })
+                      Data = { Piece = pieceType
+                               Castling = !castling
+                               Observations = !observations
+                               Warnings = !warnings
+                               Errors = !errors }}
 
 let ValidateLegalMove move position = 
     match ValidateMove move position with
