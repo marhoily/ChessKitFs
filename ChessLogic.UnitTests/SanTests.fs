@@ -428,6 +428,6 @@ let ``San: it not marked capture when it should be``() =
 [<Fact>]
 let ``San: 2 candidates, 0 valid moves``() = 
     "8/8/2B3B1/3n1n2/4k3/8/8/8 b - - 0 2" 
-    |> nonsense "Ne7" "PieceNotFound (Black, Knight)"
+    |> nonsense "Ne7" "ChoiceOfIllegalMoves [f5-e7 (MoveToCheck); d5-e7 (MoveToCheck)]"
 
     

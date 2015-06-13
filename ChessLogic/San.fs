@@ -125,6 +125,7 @@ let ParseSanString str =
 type SanError = 
     | PieceNotFound of Piece
     | AmbiguousChoice of LegalMove list
+    | ChoiceOfIllegalMoves of IllegalMove list
 
 type SanWarning = 
     | IsCapture
@@ -250,6 +251,12 @@ let FromSanString str board =
             | LegalMove m -> yield m
             | _ -> ()]
         
+    let filterInvalid validate fromSquares toSquare =
+        [for fromSquare in fromSquares do
+            match board |> validate fromSquare toSquare with
+            | IllegalMove m -> yield m
+            | _ -> ()]
+        
     let toSanMove find validate hint pieceType toSquare notes capture = 
         let addExcessive candidates = 
             if candidates |> List.length = 1 && hint <> NoHint then 
@@ -264,7 +271,9 @@ let FromSanString str board =
             interpret validate fromSquare toSquare notes capture warnings
         | filtered ->
             match filterValid validate filtered toSquare with
-            | [] -> Nonsense (PieceNotFound (color, pieceType))
+            | [] -> 
+                let choice = filterInvalid validate filtered toSquare
+                Nonsense (ChoiceOfIllegalMoves choice)
             | validMove::[] -> 
                 // bug: candidates
                 let warnings = addExcessive candidates 

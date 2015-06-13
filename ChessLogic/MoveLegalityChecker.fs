@@ -4,6 +4,7 @@ open CoordinateNotation
 open Definitions
 open IsAttackedBy
 open MyList
+open Microsoft.FSharp.Reflection
 
 type Observation = 
     | Capture
@@ -49,6 +50,7 @@ type LegalMove =
         else
             sprintf "%s-%s" f t
 
+[<StructuredFormatDisplayAttribute("{AsString}")>]
 type IllegalMove = 
     { Move : Move
       OriginalPosition : Position
@@ -57,6 +59,13 @@ type IllegalMove =
       Observations : Observation list
       Warnings : Warning list
       Errors : Error list }
+    member x.AsString = 
+        let toString (x : 'a) = 
+            match FSharpValue.GetUnionFields(x, typeof<'a>) with
+            | case, _ -> case.Name
+        let errors = x.Errors |> List.map toString
+        sprintf "%A (%s)" x.Move (String.concat ", " errors)
+
 
 type MoveInfo = 
     | LegalMove of LegalMove
