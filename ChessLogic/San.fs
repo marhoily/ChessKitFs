@@ -34,7 +34,7 @@ let ToSanString(legalMove : ValidationResult<LegalMove>) =
     let fileStr x = fileToStirng (x |> file)
     let rankStr x = rankToString (x |> rank)
     let at x = legalMove.OriginalPosition |> PieceAt x
-    let isSimilarTo (a:ValidationResult<LegalMove>) (b:ValidationResult<LegalMove>) = 
+    let isSimilarTo (a:ValidationResult<_>) (b:ValidationResult<_>) = 
         let x, y = a.Move, b.Move
         (x.Start <> y.Start) && (x.End = y.End) && (at x.Start = at y.Start)
     
@@ -227,7 +227,7 @@ let FromSanString str board =
     let validate promoteTo fromSquare toSquare = 
         ValidateMove (Move.Create fromSquare toSquare promoteTo) board
 
-    let disambiguate hint (moves: ValidationResult<_> list) = 
+    let disambiguate hint moves = 
         let unique (m: ValidationResult<_>) = 
             match hint with
             | FileHint f -> m.Move.Start |> fst = f
@@ -250,7 +250,7 @@ let FromSanString str board =
         |> List.map (fun x -> validate x toSquare)
         |> separateToLegalAndIllegal
 
-    let toSanMove (find: unit -> ValidationResult<LegalMove> list*ValidationResult<IllegalMove> list) hint pieceType addNotes = 
+    let toSanMove find hint pieceType addNotes = 
         let validCandidates, invalidCandidates = find()
         let valid = disambiguate hint validCandidates
         let invalid = disambiguate hint invalidCandidates
