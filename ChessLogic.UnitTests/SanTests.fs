@@ -266,6 +266,26 @@ let interpretIllegal move expected errors board =
     | x -> (sprintf "%A" x) |> should equal errors
 
 [<Fact>]
+let ``San: white O-O``() = 
+    "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 12" 
+    |> san "O-O" "e1-g1"
+
+[<Fact>]
+let ``San: black O-O``() = 
+    "r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 12" 
+    |> san "O-O" "e8-g8"
+
+[<Fact>]
+let ``San: white O-O-O``() = 
+    "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 12" 
+    |> san "O-O-O" "e1-c1"
+
+[<Fact>]
+let ``San: black O-O-O``() = 
+    "r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 12" 
+    |> san "O-O-O" "e8-c8"
+
+[<Fact>]
 let ``San: pawn push``() = "8/8/8/8/8/8/P7/8 w - - 0 12" |> san "a3" "a2-a3"
 
 [<Fact>]
