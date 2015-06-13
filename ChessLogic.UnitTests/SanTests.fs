@@ -230,9 +230,23 @@ let ``findNonPawnPieces throws when given pawn``() =
     |> should throw typeof<System.Exception>
 
 // ----- toSanMove --------
-let san move (expected : string) board = 
+let san move (expected : string) warnings board = 
+    let toString (x : 'a) = 
+        match FSharpValue.GetUnionFields(x, typeof<'a>) with
+        | case, _ -> case.Name
+    
+    let fromLegalSanString str board = 
+        match FromSanString str board with
+        | LegalSan(move, warns) -> 
+            if not warns.IsEmpty then 
+                let strings = warns |> List.map toString
+                let actual = String.concat ", " strings
+                actual |> should equal warnings
+            move
+        | x -> failwithf "%A" x
+    
     (ParseFen board |> unwrap)
-    |> FromLegalSanString move
+    |> fromLegalSanString move
     |> (fun x -> 
     sprintf "%s-%s" (CoordinateToString x.Start) (CoordinateToString x.End))
     |> should equal expected
@@ -242,7 +256,7 @@ let interpretIllegal move expected errors board =
         let toString (x : 'a) = 
             match FSharpValue.GetUnionFields(x, typeof<'a>) with
             | case, _ -> case.Name
-    
+        
         let getStrings piece castling observations warnings errors 
             resultObservations = 
             seq { 
@@ -253,44 +267,41 @@ let interpretIllegal move expected errors board =
                 for x in errors -> toString x
                 for x in resultObservations -> toString x
             }
-    
-        getStrings m.Piece m.Castling m.Observations m.Warnings m.Errors []
+        
+        getStrings m.Piece m.Castling m.Observations m.Warnings m.Errors [] 
         |> String.concat " | "
-
     (ParseFen board |> unwrap)
     |> FromSanString move
     |> function 
     | IllegalSan il -> 
         il.Move.AsString |> should equal expected
-        il |> MoveToString |> should equal errors
+        il
+        |> MoveToString
+        |> should equal errors
     | x -> (sprintf "%A" x) |> should equal errors
 
 [<Fact>]
 let ``San: white O-O``() = 
-    "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 12" 
-    |> san "O-O" "e1-g1"
+    "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 12" |> san "O-O" "e1-g1" ""
 
 [<Fact>]
 let ``San: black O-O``() = 
-    "r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 12" 
-    |> san "O-O" "e8-g8"
+    "r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 12" |> san "O-O" "e8-g8" ""
 
 [<Fact>]
 let ``San: white O-O-O``() = 
-    "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 12" 
-    |> san "O-O-O" "e1-c1"
+    "r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 12" |> san "O-O-O" "e1-c1" ""
 
 [<Fact>]
 let ``San: black O-O-O``() = 
-    "r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 12" 
-    |> san "O-O-O" "e8-c8"
+    "r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 12" |> san "O-O-O" "e8-c8" ""
 
 [<Fact>]
-let ``San: pawn push``() = "8/8/8/8/8/8/P7/8 w - - 0 12" |> san "a3" "a2-a3"
+let ``San: pawn push``() = "8/8/8/8/8/8/P7/8 w - - 0 12" |> san "a3" "a2-a3" ""
 
 [<Fact>]
 let ``San: pawn double push``() = 
-    "8/8/8/8/8/8/P7/8 w - - 0 12" |> san "a4" "a2-a4"
+    "8/8/8/8/8/8/P7/8 w - - 0 12" |> san "a4" "a2-a4" ""
 
 [<Fact>]
 let ``San: pawn 3 squares push``() = 
@@ -299,13 +310,21 @@ let ``San: pawn 3 squares push``() =
 
 [<Fact>]
 let ``San: pawn captures``() = 
-    "8/8/8/8/8/1p6/P7/8 w - - 0 12" |> san "axb3" "a2-b3"
+    "8/8/8/8/8/1p6/P7/8 w - - 0 12" |> san "axb3" "a2-b3" ""
 
 [<Fact>]
 let ``San: 2 pawns can capture``() = 
-    "8/8/8/8/8/1p6/P1P5/8 w - - 0 12" |> san "cxb3" "c2-b3"
+    "8/8/8/8/8/1p6/P1P5/8 w - - 0 12" |> san "cxb3" "c2-b3" ""
 
 [<Fact>]
 let ``San: pawn move does not make sense``() = 
     "8/8/8/8/8/8/P7/8 w - - 0 12" 
     |> interpretIllegal "axb4" "c2-b3" "Nonsense (PieceNotFound (White, Pawn))"
+
+[<Fact>]
+let ``San: Nf3``() = "8/8/8/8/8/8/8/6N1 w - - 0 12" |> san "Nf3" "g1-f3" ""
+
+[<Fact>]
+let ``San: over-disambiguate N1f3``() = 
+    "8/8/8/8/8/8/8/6N1 w - - 0 12" 
+    |> san "N1f3" "g1-f3" "DisambiguationIsExcessive"

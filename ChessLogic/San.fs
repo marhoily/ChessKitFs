@@ -2,7 +2,6 @@
 
 open Definitions
 open MoveLegalityChecker
-open Parsing
 open System.Text
 open CoordinateNotation
 open FParsec
