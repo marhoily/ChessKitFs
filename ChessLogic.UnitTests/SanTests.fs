@@ -410,4 +410,8 @@ let ``San: no check when there should be``() =
     "Q7/8/8/8/8/8/8/8 w - - 0 2" 
     |> warn "Qh1+" "a8-h1" "IsNotCheck"
 
-    
+[<Fact>]
+let ``San: check is not marked``() = 
+    "Q7/8/8/8/8/8/8/k7 w - - 0 2" 
+    |> warn "Qh1" "a8-h1" "IsCheck"
+
