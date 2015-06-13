@@ -415,3 +415,13 @@ let ``San: check is not marked``() =
     "Q7/8/8/8/8/8/8/k7 w - - 0 2" 
     |> warn "Qh1" "a8-h1" "IsCheck"
 
+[<Fact>]
+let ``San: it not capture when it should be``() = 
+    "Q7/8/8/8/8/8/8/7n w - - 0 2" 
+    |> warn "Qh1" "a8-h1" "IsCapture"
+
+[<Fact>]
+let ``San: it not marked capture when it should be``() = 
+    "Q7/8/8/8/8/8/8/8 w - - 0 2" 
+    |> warn "Qxh1" "a8-h1" "IsNotCapture"
+
