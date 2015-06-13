@@ -251,23 +251,23 @@ let FromSanString str board =
             | _ -> ()]
         
     let toSanMove find validate hint pieceType toSquare notes capture = 
+        let addExcessive candidates = 
+            if candidates |> List.length = 1 && hint <> NoHint then 
+                [ DisambiguationIsExcessive ]
+            else []
+
         let candidates = find (toSquare |> toX88)
         match candidates |> disambiguate hint with
         | [] -> Nonsense (PieceNotFound (color, pieceType))
         | fromSquare::[] -> 
-            let warnings = 
-                if candidates.Length = 1 && hint <> NoHint then 
-                    [ DisambiguationIsExcessive ]
-                else []
+            let warnings = addExcessive candidates
             interpret validate fromSquare toSquare notes capture warnings
         | filtered ->
             match filterValid validate filtered toSquare with
             | [] -> Nonsense (PieceNotFound (color, pieceType))
             | validMove::[] -> 
-                let warnings = 
-                    if candidates.Length = 1 && hint <> NoHint then 
-                        [ DisambiguationIsExcessive ]
-                    else []
+                // bug: candidates
+                let warnings = addExcessive candidates 
                 validMove |> addNotesToALegalMove notes capture warnings
             | tooMany -> Nonsense (AmbiguousChoice tooMany)
 

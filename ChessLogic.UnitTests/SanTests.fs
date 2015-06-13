@@ -425,3 +425,9 @@ let ``San: it not marked capture when it should be``() =
     "Q7/8/8/8/8/8/8/8 w - - 0 2" 
     |> warn "Qxh1" "a8-h1" "IsNotCapture"
 
+[<Fact>]
+let ``San: 2 candidates, 0 valid moves``() = 
+    "8/8/2B3B1/3n1n2/4k3/8/8/8 b - - 0 2" 
+    |> nonsense "Ne7" "PieceNotFound (Black, Knight)"
+
+    
