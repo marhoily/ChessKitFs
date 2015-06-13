@@ -37,7 +37,6 @@ type ValidationResult<'T> =
       Data : 'T }
     member x.AsString = x.Move.AsString + x.Data.ToString()
       
-[<StructuredFormatDisplayAttribute("{AsString}")>]
 type LegalMove = 
     { ResultPosition : Position
       Piece : PieceType
@@ -47,7 +46,6 @@ type LegalMove =
     override x.ToString() = ""
     
 
-[<StructuredFormatDisplayAttribute("{AsString}")>]
 type IllegalMove = 
     { Piece : PieceType option
       Castling : CastlingHint option
