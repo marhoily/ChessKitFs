@@ -30,48 +30,61 @@ type Error =
     | DoesNotMoveThisWay
     | CastleFromCheck
 
+type IMoveSource = 
+    abstract Move : Move
+    abstract OriginalPosition : Position
+
 [<StructuredFormatDisplayAttribute("{AsString}")>]
 type LegalMove = 
-    { Start : Coordinate
-      End : Coordinate
-      PromoteTo : PieceType
-      Move : Move
+    { Move : Move
       OriginalPosition : Position
       ResultPosition : Position
       Piece : PieceType
       Castling : CastlingHint option
       Observations : Observation list
       Warnings : Warning list }
+    
+    interface IMoveSource with
+        member x.Move : Move = x.Move
+        member x.OriginalPosition : Position = x.OriginalPosition
+    
     member x.AsString = x.Move.AsString
 
 [<StructuredFormatDisplayAttribute("{AsString}")>]
 type IllegalMove = 
-    { Start : Coordinate
-      End : Coordinate
-      PromoteTo : PieceType
-      Move : Move
+    { Move : Move
       OriginalPosition : Position
       Piece : PieceType option
       Castling : CastlingHint option
       Observations : Observation list
       Warnings : Warning list
       Errors : Error list }
+    
+    interface IMoveSource with
+        member x.Move : Move = x.Move
+        member x.OriginalPosition : Position = x.OriginalPosition
+    
     member x.AsString = 
         let toString (x : 'a) = 
             match FSharpValue.GetUnionFields(x, typeof<'a>) with
             | case, _ -> case.Name
+        
         let errors = x.Errors |> List.map toString
         sprintf "%A (%s)" x.Move (String.concat ", " errors)
-
 
 type MoveInfo = 
     | LegalMove of LegalMove
     | IllegalMove of IllegalMove
 
-let ValidateMove (move:Move) position = 
+type ValidatedMove = 
+    { Move : Move
+      OriginalPosition : Position
+      Info : MoveInfo }
+
+let ValidateMove (move : Move) position = 
     let errors = ref []
     let observations = ref []
-    let warnings = ref  []
+    let warnings = ref []
     let castling = ref None
     let newPosition = ref None
     let err e = errors := e :: !errors
@@ -83,12 +96,11 @@ let ValidateMove (move:Move) position =
     let hasNoEnPassant() = 
         err HasNoEnPassant
         enPassant()
-
+    
     //   ___________
     //__/ Shortcats \_____________________________________________________
     let moveFrom, moveTo, promoteTo = 
         (move.Start, move.End, move.PromoteTo ?|? Queen)
-    
     let at64 i64 = position |> PieceAt i64
     let at i = position |> PieceAt(i % 16, i / 16)
     let color = position.ActiveColor
@@ -244,7 +256,8 @@ let ValidateMove (move:Move) position =
             else None
         
         let newHalfMoveClock = 
-            if pieceType.Value = Pawn || !observations |> contains Capture then 0
+            if pieceType.Value = Pawn || !observations |> contains Capture then 
+                0
             else position.HalfMoveClock + 1
         
         let newMoveNumber = 
@@ -296,7 +309,7 @@ let ValidateMove (move:Move) position =
     
     let setRequiresPromotion() = 
         let requiresPromotion = !observations |> contains Promotion
-        if move.PromoteTo = None then
+        if move.PromoteTo = None then 
             if requiresPromotion then warn MissingPromotionHint
         else 
             if not requiresPromotion then warn PromotionHintIsNotNeeded
@@ -308,10 +321,7 @@ let ValidateMove (move:Move) position =
         [ validate; setupResultPosition; setMoveToCheck; setNewPositionIsCheck; 
           setRequiresPromotion ]
     if (!errors).IsEmpty then 
-        LegalMove { Start = moveFrom
-                    End = moveTo
-                    PromoteTo = promoteTo
-                    Move = move
+        LegalMove { Move = move
                     OriginalPosition = position
                     ResultPosition = (!newPosition).Value
                     Piece = pieceType.Value
@@ -319,10 +329,7 @@ let ValidateMove (move:Move) position =
                     Observations = !observations
                     Warnings = !warnings }
     else 
-        IllegalMove({ Start = moveFrom
-                      End = moveTo
-                      PromoteTo = promoteTo
-                      Move = move
+        IllegalMove({ Move = move
                       OriginalPosition = position
                       Piece = pieceType
                       Castling = !castling

@@ -30,34 +30,35 @@ let ToSanString(move : LegalMove) =
     let fileStr x = fileToStirng (x |> file)
     let rankStr x = rankToString (x |> rank)
     let at x = move.OriginalPosition |> PieceAt x
-    let isSimilarTo (x:LegalMove) (y:LegalMove) = 
+    let isSimilarTo (a:LegalMove) (b:LegalMove) = 
+        let x, y = a.Move, b.Move
         (x.Start <> y.Start) && (x.End = y.End) && (at x.Start = at y.Start)
     
     let disambiguationList = 
         lazy ([ for m in move.OriginalPosition |> GetLegalMoves.All do
-                    if m |> isSimilarTo move then yield m.Start ])
-    
+                    if m |> isSimilarTo move then yield m.Move.Start ])
+    let m = move.Move
     let ambiguous() = not (disambiguationList.Value |> List.isEmpty)
     let unique fn = 
         disambiguationList.Value 
-        |> List.forall (fun x -> (move.Start |> fn) <> (x |> fn))
+        |> List.forall (fun x -> (m.Start |> fn) <> (x |> fn))
     // Actual algorithm
     if shortCastling then append "O-O"
     else if longCastling then append "O-O-O"
     else 
         if move.Piece = Pawn then 
-            if capture then append (fileStr move.Start)
+            if capture then append (fileStr m.Start)
         else 
             appendc (move.Piece |> typeToString)
             if ambiguous() then 
-                if unique file then append (fileStr move.Start)
-                else if unique rank then append (rankStr move.Start)
-                else append (fileAndRankStr move.Start)
+                if unique file then append (fileStr m.Start)
+                else if unique rank then append (rankStr m.Start)
+                else append (fileAndRankStr m.Start)
         if capture then appendc 'x'
-        append (fileAndRankStr move.End)
+        append (fileAndRankStr m.End)
     if promotion then 
         appendc '='
-        appendc (move.PromoteTo |> typeToString)
+        appendc (m.PromoteTo.Value |> typeToString)
     if check then appendc '+'
     else 
         if mate then appendc '#'
