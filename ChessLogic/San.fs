@@ -7,7 +7,7 @@ open CoordinateNotation
 open FParsec
 open IsAttackedBy
 
-let ToSanString(legalMove : ValidationResult<LegalMove>) = 
+let ToSanString(legalMove : MoveSrc<LegalMove>) = 
     //     _______________________
     // ___/ Shortcuts and helpers \___________________________
     let typeToString = 
@@ -34,7 +34,7 @@ let ToSanString(legalMove : ValidationResult<LegalMove>) =
     let fileStr x = fileToStirng (x |> file)
     let rankStr x = rankToString (x |> rank)
     let at x = legalMove.OriginalPosition |> PieceAt x
-    let isSimilarTo (a:ValidationResult<_>) (b:ValidationResult<_>) = 
+    let isSimilarTo (a:MoveSrc<_>) (b:MoveSrc<_>) = 
         let x, y = a.Move, b.Move
         (x.Start <> y.Start) && (x.End = y.End) && (at x.Start = at y.Start)
     
@@ -128,8 +128,8 @@ let ParseSanString str =
 
 type SanError = 
     | PieceNotFound of Piece
-    | AmbiguousChoice of ValidationResult<LegalMove> list
-    | ChoiceOfIllegalMoves of ValidationResult<IllegalMove> list
+    | AmbiguousChoice of MoveSrc<LegalMove> list
+    | ChoiceOfIllegalMoves of MoveSrc<IllegalMove> list
 
 type SanWarning = 
     | IsCapture
@@ -141,8 +141,8 @@ type SanWarning =
     | DisambiguationIsExcessive
 
 type SanMove = 
-    | LegalSan of ValidationResult<LegalMove> * SanWarning list
-    | IllegalSan of ValidationResult<IllegalMove>
+    | LegalSan of MoveSrc<LegalMove> * SanWarning list
+    | IllegalSan of MoveSrc<IllegalMove>
     | Nonsense of SanError
     | Unparsable of string
 
@@ -228,7 +228,7 @@ let FromSanString str board =
         ValidateMove (Move.Create fromSquare toSquare promoteTo) board
 
     let disambiguate hint moves = 
-        let unique (m: ValidationResult<_>) = 
+        let unique (m: MoveSrc<_>) = 
             match hint with
             | FileHint f -> m.Move.Start |> fst = f
             | RankHint r -> m.Move.Start |> snd = r

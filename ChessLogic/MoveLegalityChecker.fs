@@ -31,7 +31,7 @@ type Error =
     | CastleFromCheck
 
 [<StructuredFormatDisplayAttribute("{AsString}")>]
-type ValidationResult<'T> = 
+type MoveSrc<'T> = 
     { Move : Move
       OriginalPosition : Position
       Data : 'T }
@@ -62,8 +62,8 @@ type IllegalMove =
         sprintf " (%s)" (String.concat ", " errors)
 
 type MoveInfo = 
-    | LegalMove of ValidationResult<LegalMove>
-    | IllegalMove of ValidationResult<IllegalMove>
+    | LegalMove of MoveSrc<LegalMove>
+    | IllegalMove of MoveSrc<IllegalMove>
 
 type ValidatedMove = 
     { Move : Move

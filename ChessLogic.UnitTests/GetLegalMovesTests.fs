@@ -9,11 +9,10 @@ open CoordinateNotation
 open Definitions
 open Dump
 
-let toString (m:ValidationResult<_>) = CoordinateToString m.Move.End
+let toString (m : MoveSrc<_>) = CoordinateToString m.Move.End
 
 let check from (expected : string list) position = 
     let p = unwrap (position |> ParseFen)
-    
     printf "%s" (Print p)
     let f = _c from
     
@@ -28,13 +27,12 @@ let check from (expected : string list) position =
         [ for i = 0 to 63 do
               let t = Move.Create f (i % 8, i / 8) None
               match ValidateMove t p with
-                  | LegalMove m -> yield m |> toString
-                  | _ -> () ]
+              | LegalMove m -> yield m |> toString
+              | _ -> () ]
     actual |> should equal (expected2 |> List.sort)
 
 let checkAll expected position = 
     let p = unwrap (position |> ParseFen)
-    
     printf "%s" (Print p)
     let actual = 
         p

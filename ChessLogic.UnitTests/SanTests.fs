@@ -359,13 +359,11 @@ let ``San: pawn move does not make sense``() =
 
 [<Fact>]
 let ``San: can't push pawn cause it's pinned``() = 
-    "8/8/8/3rP1K1/8/8/8/8 w - f6 0 1" 
-    |> illegal "e6" "MoveToCheck"
+    "8/8/8/3rP1K1/8/8/8/8 w - f6 0 1" |> illegal "e6" "MoveToCheck"
 
 [<Fact>]
 let ``San: pawn can't capture cause it's pinned``() = 
-    "8/6K1/3r4/4P3/8/2b5/8/2k5 w - f6 0 1" 
-    |> illegal "exd6" "MoveToCheck"
+    "8/6K1/3r4/4P3/8/2b5/8/2k5 w - f6 0 1" |> illegal "exd6" "MoveToCheck"
 
 [<Fact>]
 let ``San: Nf3``() = "8/8/8/8/8/8/8/6N1 w - - 0 12" |> san "Nf3" "g1-f3"
@@ -397,38 +395,33 @@ let ``San: wrong disambiguation N1f3``() =
 
 [<Fact>]
 let ``San: one of the knights is pinned``() = 
-    "8/6K1/8/4N3/8/2b5/8/2k1N3 w - f6 0 1" 
-    |> san "Nd3+" "e1-d3"
+    "8/6K1/8/4N3/8/2b5/8/2k1N3 w - f6 0 1" |> san "Nd3+" "e1-d3"
 
 [<Fact>]
 let ``San: file and rank disambiguation``() = 
-    "8/5N2/8/6q1/8/5N1N/8/2k1K3 w - - 0 2" 
-    |> san "Nf3xg5" "f3-g5"
+    "8/5N2/8/6q1/8/5N1N/8/2k1K3 w - - 0 2" |> san "Nf3xg5" "f3-g5"
 
 [<Fact>]
 let ``San: no check when there should be``() = 
-    "Q7/8/8/8/8/8/8/8 w - - 0 2" 
-    |> warn "Qh1+" "a8-h1" "IsNotCheck"
+    "Q7/8/8/8/8/8/8/8 w - - 0 2" |> warn "Qh1+" "a8-h1" "IsNotCheck"
 
 [<Fact>]
 let ``San: check is not marked``() = 
-    "Q7/8/8/8/8/8/8/k7 w - - 0 2" 
-    |> warn "Qh1" "a8-h1" "IsCheck"
+    "Q7/8/8/8/8/8/8/k7 w - - 0 2" |> warn "Qh1" "a8-h1" "IsCheck"
 
 [<Fact>]
 let ``San: it not capture when it should be``() = 
-    "Q7/8/8/8/8/8/8/7n w - - 0 2" 
-    |> warn "Qh1" "a8-h1" "IsCapture"
+    "Q7/8/8/8/8/8/8/7n w - - 0 2" |> warn "Qh1" "a8-h1" "IsCapture"
 
 [<Fact>]
 let ``San: it not marked capture when it should be``() = 
-    "Q7/8/8/8/8/8/8/8 w - - 0 2" 
-    |> warn "Qxh1" "a8-h1" "IsNotCapture"
+    "Q7/8/8/8/8/8/8/8 w - - 0 2" |> warn "Qxh1" "a8-h1" "IsNotCapture"
 
 [<Fact>]
 let ``San: 2 candidates, 0 valid moves``() = 
     "8/8/2B3B1/3n1n2/4k3/8/8/8 b - - 0 2" 
-    |> nonsense "Ne7" "ChoiceOfIllegalMoves [d5-e7 (MoveToCheck); f5-e7 (MoveToCheck)]"
+    |> nonsense "Ne7" 
+           "ChoiceOfIllegalMoves [d5-e7 (MoveToCheck); f5-e7 (MoveToCheck)]"
 
 [<Fact>]
 let ``San: disambiguation is excessive only after validation``() = 
@@ -439,7 +432,3 @@ let ``San: disambiguation is excessive only after validation``() =
 let ``San: invalid castling``() = 
     "rn2k2r/ppp2ppp/3B1n2/8/3P2b1/6P1/PPP1N2P/RN1QKB1q b Qkq - 0 9" 
     |> illegal "O-O" "e8-g8" "King | BK | CastleThroughCheck"
-
-
-    
-    
