@@ -367,3 +367,13 @@ let ``San: under-disambiguate Nf3``() =
 let ``San: disambiguate N1f3``() = 
     "8/8/8/6N1/8/8/8/6N1 w - - 0 12" 
     |> warn "N1f3" "g1-f3" "DisambiguationIsExcessive"
+
+[<Fact>]
+let ``San: no candidates found Nf3``() = 
+    "8/8/8/8/8/8/8/8 w - - 0 12" 
+    |> nonsense "Nf3" "PieceNotFound (White, Knight)"
+
+[<Fact>]
+let ``San: wrong disambiguation N1f3``() = 
+    "8/8/8/6N1/8/8/8/8 w - - 0 12" 
+    |> nonsense "N1f3" "PieceNotFound (White, Knight)"
