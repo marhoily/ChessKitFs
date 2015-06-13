@@ -29,6 +29,7 @@ type Error =
     | DoesNotMoveThisWay
     | CastleFromCheck
 
+[<StructuredFormatDisplayAttribute("{AsString}")>]
 type LegalMove = 
     { Start : Coordinate
       End : Coordinate
@@ -39,6 +40,14 @@ type LegalMove =
       Castling : CastlingHint option
       Observations : Observation list
       Warnings : Warning list }
+    member x.AsString = 
+        let f = CoordinateToString x.Start
+        let t = CoordinateToString x.End
+        if x.Observations |> MyList.contains Promotion then
+            let p = PieceToString(White, x.PromoteTo)
+            sprintf "%s-%s=%c" f t p
+        else
+            sprintf "%s-%s" f t
 
 type IllegalMove = 
     { Move : Move

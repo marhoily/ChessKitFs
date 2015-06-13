@@ -247,8 +247,7 @@ let san move (expected : string) board =
     
     (ParseFen board |> unwrap)
     |> fromLegalSanString move
-    |> (fun x -> 
-    sprintf "%s-%s" (CoordinateToString x.Start) (CoordinateToString x.End))
+    |> sprintf "%A"
     |> should equal expected
 
 let warn move (expected : string) warnings board = 
@@ -326,6 +325,10 @@ let ``San: black O-O-O``() =
 
 [<Fact>]
 let ``San: pawn push``() = "8/8/8/8/8/8/P7/8 w - - 0 12" |> san "a3" "a2-a3"
+
+[<Fact>]
+let ``San: pawn push and promote``() = 
+    "8/P7/8/8/8/8/8/8 w - - 0 12" |> san "a8=R" "a7-a8=R"
 
 [<Fact>]
 let ``San: pawn double push``() = 
