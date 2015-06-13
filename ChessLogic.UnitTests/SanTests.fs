@@ -267,8 +267,7 @@ let warn move (expected : string) warnings board =
     
     (ParseFen board |> unwrap)
     |> fromLegalSanString move
-    |> (fun x -> 
-    sprintf "%s-%s" (CoordinateToString x.Start) (CoordinateToString x.End))
+    |> sprintf "%A"
     |> should equal expected
 
 let illegal move expected errors board = 
@@ -329,6 +328,11 @@ let ``San: pawn push``() = "8/8/8/8/8/8/P7/8 w - - 0 12" |> san "a3" "a2-a3"
 [<Fact>]
 let ``San: pawn push and promote``() = 
     "8/P7/8/8/8/8/8/8 w - - 0 12" |> san "a8=R" "a7-a8=R"
+
+[<Fact>]
+let ``San: pawn capture and promote``() = 
+    "1n6/P7/8/8/8/8/8/8 w - - 0 12" 
+    |> warn "axb8=Q" "a7-b8=Q" "DisambiguationIsExcessive"
 
 [<Fact>]
 let ``San: pawn double push``() = 
