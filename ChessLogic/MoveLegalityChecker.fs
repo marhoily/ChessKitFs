@@ -4,62 +4,6 @@ open CoordinateNotation
 open Definitions
 open IsAttackedBy
 open MyList
-open Microsoft.FSharp.Reflection
-
-type Observation = 
-    | Capture
-    | EnPassant
-    | Promotion
-    | DoublePush
-
-type Warning = 
-    | MissingPromotionHint
-    | PromotionHintIsNotNeeded
-
-type Error = 
-    | MoveToCheck
-    | EmptyCell
-    | WrongSideToMove
-    | HasNoCastling
-    | ToOccupiedCell
-    | HasNoEnPassant
-    | DoesNotJump
-    | OnlyCapturesThisWay
-    | DoesNotCaptureThisWay
-    | CastleThroughCheck
-    | DoesNotMoveThisWay
-    | CastleFromCheck
-
-[<StructuredFormatDisplayAttribute("{AsString}")>]
-type MoveSrc<'T> = 
-    { Move : Move
-      OriginalPosition : Position
-      Data : 'T }
-    member x.AsString = x.Move.AsString + x.Data.ToString()
-      
-type LegalMove = 
-    { ResultPosition : Position
-      Piece : PieceType
-      Castling : CastlingHint option
-      Observations : Observation list
-      Warnings : Warning list }
-    override x.ToString() = ""
-    
-
-type IllegalMove = 
-    { Piece : PieceType option
-      Castling : CastlingHint option
-      Observations : Observation list
-      Warnings : Warning list
-      Errors : Error list }
-    
-    override x.ToString() = 
-        let toString (x : 'a) = 
-            match FSharpValue.GetUnionFields(x, typeof<'a>) with
-            | case, _ -> case.Name
-        
-        let errors = x.Errors |> List.map toString
-        sprintf " (%s)" (String.concat ", " errors)
 
 type MoveInfo = 
     | LegalMove of MoveSrc<LegalMove>

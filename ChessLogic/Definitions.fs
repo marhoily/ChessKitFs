@@ -1,6 +1,7 @@
 ﻿module Definitions
 
 open System.Text
+open Microsoft.FSharp.Reflection
 
 type File = int
 
@@ -86,6 +87,49 @@ type PositionObservation =
     | Check
     | Mate
 
+let vectorToString = function 
+    | (f, t) -> CoordinateToString f + "-" + CoordinateToString t
+
+[<StructuredFormatDisplay("{AsString}")>]
+type Move = 
+    { Start : Coordinate
+      End : Coordinate
+      PromoteTo : PieceType option }
+    member this.AsString = 
+        let vector = vectorToString (this.Start, this.End)
+        if this.PromoteTo = None then vector
+        else
+            let p = PieceToString(White, this.PromoteTo.Value) 
+            sprintf "%s=%c" vector p
+    static member Create f t p =
+        { Start = f
+          End = t
+          PromoteTo = p }
+
+type Observation = 
+    | Capture
+    | EnPassant
+    | Promotion
+    | DoublePush
+
+type Warning = 
+    | MissingPromotionHint
+    | PromotionHintIsNotNeeded
+
+type Error = 
+    | MoveToCheck
+    | EmptyCell
+    | WrongSideToMove
+    | HasNoCastling
+    | ToOccupiedCell
+    | HasNoEnPassant
+    | DoesNotJump
+    | OnlyCapturesThisWay
+    | DoesNotCaptureThisWay
+    | CastleThroughCheck
+    | DoesNotMoveThisWay
+    | CastleFromCheck
+
 type Position = 
     { Placement : Piece option array
       ActiveColor : Color
@@ -93,7 +137,38 @@ type Position =
       EnPassant : File option
       HalfMoveClock : int
       FullMoveNumber : int
-      Observations : PositionObservation list }
+      Observations : PositionObservation list
+      Move : MoveSrc<LegalMove> option }
+and
+    [<StructuredFormatDisplayAttribute("{AsString}")>]
+    MoveSrc<'T> = 
+    { Move : Move
+      OriginalPosition : Position
+      Data : 'T }
+    member x.AsString = x.Move.AsString + x.Data.ToString()
+
+and LegalMove = 
+    { ResultPosition : Position
+      Piece : PieceType
+      Castling : CastlingHint option
+      Observations : Observation list
+      Warnings : Warning list }
+    override x.ToString() = ""
+
+type IllegalMove = 
+    { Piece : PieceType option
+      Castling : CastlingHint option
+      Observations : Observation list
+      Warnings : Warning list
+      Errors : Error list }
+    
+    override x.ToString() = 
+        let toString (x : 'a) = 
+            match FSharpValue.GetUnionFields(x, typeof<'a>) with
+            | case, _ -> case.Name
+        
+        let errors = x.Errors |> List.map toString
+        sprintf " (%s)" (String.concat ", " errors)
 
 let EmptyPosition = 
     { Placement = [||]
@@ -102,7 +177,8 @@ let EmptyPosition =
       EnPassant = None
       HalfMoveClock = 0
       FullMoveNumber = 1
-      Observations = [] }
+      Observations = []
+      Move = None }
 
 let BoardToString b = 
     let sb = new StringBuilder()

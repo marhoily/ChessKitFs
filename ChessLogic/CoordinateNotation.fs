@@ -7,24 +7,7 @@ open Parsing
 let ToIndex = function 
     | (file, rank) -> rank * 8 + file
 let PieceAt coordinate position = position.Placement.[ToIndex coordinate]
-let vectorToString = function 
-    | (f, t) -> CoordinateToString f + "-" + CoordinateToString t
 
-[<StructuredFormatDisplay("{AsString}")>]
-type Move = 
-    { Start : Coordinate
-      End : Coordinate
-      PromoteTo : PieceType option }
-    member this.AsString = 
-        let vector = vectorToString (this.Start, this.End)
-        if this.PromoteTo = None then vector
-        else
-            let p = PieceToString(White, this.PromoteTo.Value) 
-            sprintf "%s=%c" vector p
-    static member Create f t p =
-        { Start = f
-          End = t
-          PromoteTo = p }
 
 
 let ToCoordinateNotation (m:Move) = m.AsString

@@ -48,7 +48,8 @@ let ParseFen str =
               EnPassant = parseEnPassant (enPassant)
               HalfMoveClock = halfMoveClock
               FullMoveNumber = fullMoveNumber
-              Observations = [] })
+              Observations = []
+              Move = None })
     
     wrap (run fenParser str)
 
