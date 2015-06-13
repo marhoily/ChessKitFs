@@ -405,4 +405,9 @@ let ``San: file and rank disambiguation``() =
     "8/5N2/8/6q1/8/5N1N/8/2k1K3 w - - 0 2" 
     |> san "Nf3xg5" "f3-g5"
 
+[<Fact>]
+let ``San: no check when there should be``() = 
+    "Q7/8/8/8/8/8/8/8 w - - 0 2" 
+    |> warn "Qh1+" "a8-h1" "IsNotCheck"
+
     
