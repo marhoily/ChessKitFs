@@ -70,7 +70,7 @@ type ValidatedMove =
       OriginalPosition : Position
       Info : MoveInfo }
 
-let ValidateMove (move : Move) position = 
+let rec validateMoveInternal stopRecursion (move : Move) position = 
     let errors = ref []
     let observations = ref []
     let warnings = ref []
@@ -293,8 +293,25 @@ let ValidateMove (move : Move) position =
         let old = (!newPosition).Value
         let newAt x = old.Placement.[x |> ToIndex]
         let isInCheck = IsInCheck old.ActiveColor newAt
-        if isInCheck then 
-            newPosition := Some({ old with Observations = [ Check ] })
+        if isInCheck then
+            let observations = 
+                if not stopRecursion then 
+                    let isNotMate =
+                        seq {
+                            for i = 0 to 7 do
+                            for j = 0 to 7 do
+                            for k = 0 to 7 do
+                            for l = 0 to 7 do
+                                let move = Move.Create(i, j) (k, l) None
+                                let res = old |> validateMoveInternal true move
+                                match res with
+                                | LegalMove _ -> yield true
+                                | IllegalMove _ -> yield false
+                            }
+                        |> Seq.exists id
+                    if isNotMate then [ Check ] else [ Check; Mate ]
+                else [ Check ]
+            newPosition := Some({ old with Observations = observations })
     
     let setRequiresPromotion() = 
         let requiresPromotion = !observations |> contains Promotion
@@ -305,8 +322,7 @@ let ValidateMove (move : Move) position =
     
     //   __________
     //__/ Do steps \______________________________________________________    
-    List.iter (fun f -> 
-        if (!errors).IsEmpty then f()) 
+    List.iter (fun f -> if (!errors).IsEmpty then f()) 
         [ validate; setupResultPosition; setMoveToCheck; setNewPositionIsCheck; 
           setRequiresPromotion ]
     if (!errors).IsEmpty then 
@@ -326,6 +342,7 @@ let ValidateMove (move : Move) position =
                                Warnings = !warnings
                                Errors = !errors }}
 
+let ValidateMove = validateMoveInternal false
 let ValidateLegalMove move position = 
     match ValidateMove move position with
     | LegalMove(m) -> m

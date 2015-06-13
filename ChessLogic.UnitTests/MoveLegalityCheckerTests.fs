@@ -83,7 +83,17 @@ module ``Generic errors`` =
     let ``Promotion hint is not needed``() = 
         check "rnbqk1nr/pppp1ppp/3bp3/8/4P3/7P/PPPP1PP1/RNBQKBNR w KQkq - 1 3" 
             "e4-e5=Q" "Pawn | PromotionHintIsNotNeeded"
+    
+    [<Fact>]
+    let ``Gives check``() = 
+        check "8/2Rk4/1q4BP/8/8/6K1/8/8 b - - 24 119" "b6-c7" 
+            "Queen | Capture | Check"
 
+    [<Fact>]
+    let ``Gives mate``() = 
+        check "2K5/8/2k4r/8/8/8/8/8 b - - 0 9" "h6-h8" 
+            "Rook | Check | Mate"
+            
 module ``Moves along the pin line`` = 
     [<Fact>]
     let ``white pawn double push``() = 
@@ -1355,9 +1365,6 @@ module Queen =
            (285, "nr2r1n1/pb1p3k/1pp5/8/PbP1PpP1/1P1K2Pq/3R1P2/R3B3 b - - 1 36", 
             "h3-g3", "Queen | Capture | Check")
            (286, "8/7n/5k1B/3P4/1K6/p7/5q2/8 b - - 8 121", "f2-g3", "Queen")
-           
-           (287, "8/2Rk4/1q4BP/8/8/6K1/8/8 b - - 24 119", "b6-c7", 
-            "Queen | Capture | Check")
            
            (288, 
             "1nb5/r2p1p2/3k1q2/1p2Q2B/p2pPP2/1Pb4P/P1P3P1/RNBK2NR b - - 0 20", 
