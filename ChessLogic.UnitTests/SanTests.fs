@@ -361,7 +361,12 @@ let ``San: pawn move does not make sense``() =
 let ``San: can't push pawn cause it's pinned``() = 
     "8/8/8/3rP1K1/8/8/8/8 w - f6 0 1" 
     |> illegal "e6" "MoveToCheck"
-    
+
+[<Fact>]
+let ``San: pawn can't capture cause it's pinned``() = 
+    "8/6K1/3r4/4P3/8/2b5/8/2k5 w - f6 0 1" 
+    |> illegal "exd6" "MoveToCheck"
+
 [<Fact>]
 let ``San: Nf3``() = "8/8/8/8/8/8/8/6N1 w - - 0 12" |> san "Nf3" "g1-f3"
 
@@ -395,3 +400,9 @@ let ``San: one of the knights is pinned``() =
     "8/6K1/8/4N3/8/2b5/8/2k1N3 w - f6 0 1" 
     |> san "Nd3+" "e1-d3"
 
+[<Fact>]
+let ``San: file and rank disambiguation``() = 
+    "8/5N2/8/6q1/8/5N1N/8/2k1K3 w - - 0 2" 
+    |> san "Nf3xg5" "f3-g5"
+
+    
