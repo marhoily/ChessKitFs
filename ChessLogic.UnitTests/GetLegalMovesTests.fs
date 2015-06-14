@@ -27,7 +27,7 @@ let check from (expected : string list) position =
         [ for i = 0 to 63 do
               let t = Move.Create f (i % 8, i / 8) None
               match ValidateMoveAndWrap t p with
-              | MoveInfo.LegalMove m -> yield m |> toString
+              | LegalMoveSrc m -> yield m |> toString
               | _ -> () ]
     actual |> should equal (expected2 |> List.sort)
 
@@ -46,7 +46,7 @@ let checkAll expected position =
               for j = 0 to 63 do
                   let t = Move.Create (j % 8, j / 8) (i % 8, i / 8) None
                   match ValidateMoveAndWrap t p with
-                  | MoveInfo.LegalMove m -> yield m |> toString
+                  | LegalMoveSrc m -> yield m |> toString
                   | _ -> () ]
     actual |> should equal (expected2 |> List.sort)
 

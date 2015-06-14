@@ -25,10 +25,10 @@ let MoveToString move =
     
     let strings = 
         match move with
-        | MoveInfo.LegalMove m -> 
+        | LegalMoveSrc m -> 
             let m = m.Data
             getStrings (Some(m.Piece)) m.Castling m.Observations m.Warnings [] 
-        | MoveInfo.IllegalMove m -> 
+        | IllegalMoveSrc m -> 
             let m = m.Data
             getStrings m.Piece m.Castling m.Observations m.Warnings m.Errors
     

@@ -6,8 +6,8 @@ open IsAttackedBy
 open MyList
 
 type MoveInfo = 
-    | LegalMove of MoveSrc<LegalMove>
-    | IllegalMove of MoveSrc<IllegalMove>
+    | LegalMoveSrc of MoveSrc<LegalMove>
+    | IllegalMoveSrc of MoveSrc<IllegalMove>
 
 type ValidationResult = 
     | LegalMove of LegalMove
@@ -250,12 +250,12 @@ let ValidateMove (move : Move) (core:PositionCore) =
 let ValidateMoveAndWrap (move : Move) (pos:Position) = 
     
     match ValidateMove move pos.Core with
-    | LegalMove m -> MoveInfo.LegalMove { Move = move
-                                          OriginalPosition = pos
-                                          Data = m }
-    | IllegalMove m -> MoveInfo.IllegalMove { Move = move
-                                              OriginalPosition = pos
-                                              Data = m }
+    | LegalMove m -> LegalMoveSrc { Move = move
+                                    OriginalPosition = pos
+                                    Data = m }
+    | IllegalMove m -> IllegalMoveSrc { Move = move
+                                        OriginalPosition = pos
+                                        Data = m }
 
 let ValidateLegalMove move position = 
     match ValidateMove move position with
