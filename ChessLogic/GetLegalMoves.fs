@@ -5,7 +5,7 @@ open Definitions
 open MoveLegalityChecker
 
 let FromSquare from position = 
-    let legalOnly (moves : MoveInfo list) = 
+    let legalOnly moves = 
         [ for move in moves do
               match move with
               | LegalMove legal -> yield legal
