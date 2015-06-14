@@ -4,7 +4,6 @@ open Definitions
 open MyList
 open CoordinateNotation
 open IsAttackedBy
-open System.Collections.Generic
 
 let CoreToPosition(move : MoveSrc<LegalMove>) = 
     let core = move.Data.ResultPosition
@@ -25,7 +24,7 @@ let CoreToPosition(move : MoveSrc<LegalMove>) =
     let isCheck = IsInCheck core.ActiveColor newAt
     
     let isMate() = 
-        Position.Create core
+        Position.FromCore core
         |> GetLegalMoves.All
         |> List.isEmpty
     
@@ -37,7 +36,7 @@ let CoreToPosition(move : MoveSrc<LegalMove>) =
                     let next = pos.Move.Value.OriginalPosition
                     yield! toSequence next
             }
-        toSequence (Position.Create core)
+        toSequence (Position.FromCoreAndMove core move)
         |> Seq.countBy id
         |> Seq.map snd
         |> Seq.max
@@ -50,7 +49,7 @@ let CoreToPosition(move : MoveSrc<LegalMove>) =
         else []
     
     let newObs = 
-        if isRepetition() then Repition :: checkOrMate
+        if isRepetition() then Repetition :: checkOrMate
         else checkOrMate
     
     { Core = core

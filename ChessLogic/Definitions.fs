@@ -86,7 +86,7 @@ type CastlingHint =
 type PositionObservation = 
     | Check
     | Mate
-    | Repition
+    | Repetition
 
 let vectorToString = function 
     | (f, t) -> CoordinateToString f + "-" + CoordinateToString t
@@ -149,9 +149,15 @@ type Position =
       FullMoveNumber : int
       Observations : PositionObservation list
       Move : MoveSrc<LegalMove> option }
-    static member Create core = 
+    static member FromCore core = 
         { Core = core
           Move = None
+          HalfMoveClock = 0
+          FullMoveNumber = 0
+          Observations = [] }
+    static member FromCoreAndMove core move = 
+        { Core = core
+          Move = Some(move)
           HalfMoveClock = 0
           FullMoveNumber = 0
           Observations = [] }
