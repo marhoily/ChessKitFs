@@ -30,7 +30,7 @@ let CoreToPosition(move : MoveSrc<LegalMove>) =
     
     let newObs = 
         if isCheck then 
-            if isMate() then [ Check; Mate ]
+            if isMate() then [ Mate ]
             else [ Check ]
         else []
     

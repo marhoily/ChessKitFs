@@ -33,4 +33,4 @@ let ``Gives check``() =
 
 [<Fact>]
 let ``Gives mate``() = 
-    checkObservations "2K5/8/2k4r/8/8/8/8/8 b - - 0 9" "h6-h8" "Check | Mate"
+    checkObservations "2K5/8/2k4r/8/8/8/8/8 b - - 0 9" "h6-h8" "Mate"

@@ -409,8 +409,16 @@ let ``San: check is not marked``() =
     "Q7/8/8/8/8/8/8/k7 w - - 0 2" |> warn "Qh1" "a8-h1" "IsCheck"
 
 [<Fact>]
-let ``San: it not capture when it should be``() = 
+let ``San: it is not capture when it should be``() = 
     "Q7/8/8/8/8/8/8/7n w - - 0 2" |> warn "Qh1" "a8-h1" "IsCapture"
+
+[<Fact>]
+let ``San: it is not mate when it should be``() = 
+    "8/Q7/8/8/8/8/8/5K1k w - - 0 1" |> warn "Qh7" "a7-h7" "IsMate"
+
+[<Fact>]
+let ``San: it is mate when it should be``() = 
+    "8/Q7/8/8/8/8/8/5K1k w - - 0 1" |> san "Qh7#" "a7-h7"
 
 [<Fact>]
 let ``San: it not marked capture when it should be``() = 
