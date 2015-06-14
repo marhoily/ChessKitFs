@@ -24,19 +24,19 @@ let CoreToPosition(move : MoveSrc<LegalMove>) =
     let newAt x = core.Placement.[x |> ToIndex]
     let isCheck = IsInCheck core.ActiveColor newAt
     
-    let isNotMate() = 
+    let isMate() = 
         { Core = core
           Move = Some(move)
           HalfMoveClock = 0
           FullMoveNumber = 0
           Observations = [] }
         |> GetLegalMoves.All 
-        |> List.exists (fun _ -> true)
+        |> List.isEmpty
     
     let newObs = 
         if isCheck then 
-            if isNotMate() then [ Check ]
-            else [ Check; Mate ]
+            if isMate() then [ Check; Mate ]
+            else [ Check ]
         else []
     
     { Core = core
