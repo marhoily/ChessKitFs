@@ -191,14 +191,15 @@ let FromSanString str board =
     let addNotesToLegal notes capture warns (legalMove:MoveSrc<LegalMove>) =
         let warnings = ref warns
         let warn w = warnings := w :: !warnings
+        let obs = (CoreToPosition legalMove).Observations
 
-      (*  let checkNote = notes = Some(SanCheck)
-        let checkReal = legalMove.Data.ResultPosition.Observations |> MyList.contains Check
+        let checkNote = notes = Some(SanCheck)
+        let checkReal = obs |> MyList.contains Check
         if not checkNote && checkReal then warn IsCheck
         else if checkNote && not checkReal then warn IsNotCheck
                     
         let mateNote = notes = Some(SanMate)
-        let mateReal = legalMove.Data.ResultPosition.Observations |> MyList.contains Mate
+        let mateReal = obs |> MyList.contains Mate
         if not mateNote && mateReal then warn IsMate
         else if mateNote && not mateReal then warn IsNotMate
                     
@@ -206,7 +207,7 @@ let FromSanString str board =
         let captureReal = legalMove.Data.Observations |> MyList.contains Capture
         if not captureNote && captureReal then warn IsCapture
         else if captureNote && not captureReal then warn IsNotCapture
-         *)   
+            
         LegalSan(legalMove, !warnings)
 
     let addNotesToAny notes capture warns moveInfo =

@@ -258,10 +258,9 @@ let warn move (expected : string) warnings board =
     let fromLegalSanString str board = 
         match FromSanString str board with
         | LegalSan(move, warns) -> 
-            if not warns.IsEmpty then 
-                let strings = warns |> List.map toString
-                let actual = String.concat ", " strings
-                actual |> should equal warnings
+            let strings = warns |> List.map toString
+            let actual = String.concat ", " strings
+            actual |> should equal warnings
             move
         | x -> failwithf "%A" x
     
