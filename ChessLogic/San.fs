@@ -223,11 +223,11 @@ let FromSanString str board =
             | Black, LongCastling -> "e8-c8"
             | _ -> failwith "unexpected"
         board 
-        |> ValidateMoveAndWrap(_cn (move))
+        |> ValidateMove(_cn (move))
         |> addNotesToAny notes None []
     
     let validate promoteTo fromSquare toSquare = 
-        ValidateMoveAndWrap (Move.Create fromSquare toSquare promoteTo) board
+        ValidateMove (Move.Create fromSquare toSquare promoteTo) board
 
     let disambiguate hint moves = 
         let unique (m: MoveSrc<_>) = 

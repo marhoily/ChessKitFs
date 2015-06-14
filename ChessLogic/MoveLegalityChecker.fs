@@ -13,7 +13,7 @@ type ValidationResult =
     | LegalMove of LegalMove
     | IllegalMove of IllegalMove
 
-let ValidateMove (move : Move) (core:PositionCore) = 
+let ValidateMoveRaw (move : Move) (positionCore : PositionCore) = 
     let errors = ref []
     let observations = ref []
     let warnings = ref []
@@ -33,9 +33,9 @@ let ValidateMove (move : Move) (core:PositionCore) =
     //__/ Shortcats \_____________________________________________________
     let moveFrom, moveTo, promoteTo = 
         (move.Start, move.End, move.PromoteTo ?|? Queen)
-    let at64 i64 = core |> PieceAt i64
-    let at i = core |> PieceAt(i % 16, i / 16)
-    let color = core.ActiveColor
+    let at64 i64 = positionCore |> PieceAt i64
+    let at i = positionCore |> PieceAt(i % 16, i / 16)
+    let color = positionCore.ActiveColor
     match at64 moveTo with
     | Some(clr, _) when clr = color -> err ToOccupiedCell
     | Some(_) -> info Capture
@@ -66,7 +66,7 @@ let ValidateMove (move : Move) (core:PositionCore) =
         let validateCapture c2 looksEnPassanty = 
             if at toSquare = None then 
                 if looksEnPassanty() then 
-                    if core.EnPassant = Some(toSquare % 16) then enPassant()
+                    if positionCore.EnPassant = Some(toSquare % 16) then enPassant()
                     else hasNoEnPassant()
                 else err OnlyCapturesThisWay
             else 
@@ -92,7 +92,7 @@ let ValidateMove (move : Move) (core:PositionCore) =
         | _ -> err DoesNotMoveThisWay
     
     let validateKingMove fromSquare toSquare = 
-        let avail opt = core.CastlingAvailability |> contains opt
+        let avail opt = positionCore.CastlingAvailability |> contains opt
         
         let long B C D E attacked castlingOpt = 
             if at D <> None || at B <> None then err DoesNotJump
@@ -157,7 +157,7 @@ let ValidateMove (move : Move) (core:PositionCore) =
     let validate() = validateByPieceType () (toX88 moveFrom) (toX88 moveTo)
     
     let setupResultPosition() = 
-        let newPlacement = Array.copy core.Placement
+        let newPlacement = Array.copy positionCore.Placement
         // Remove the pawn captured en-passant
         if !observations |> contains EnPassant then 
             let increment = 
@@ -182,7 +182,6 @@ let ValidateMove (move : Move) (core:PositionCore) =
         | Some(BK) -> moveCastlingRook H8 F8
         | Some(BQ) -> moveCastlingRook A8 D8
         | None -> ()
-        
         // Figure out new castling availability
         let optionsInvalidatedBy p = 
             match p |> toX88 with
@@ -195,7 +194,7 @@ let ValidateMove (move : Move) (core:PositionCore) =
             | _ -> []
         
         let newCastlingAvailability = 
-            core.CastlingAvailability
+            positionCore.CastlingAvailability
             |> except (optionsInvalidatedBy moveFrom)
             |> except (optionsInvalidatedBy moveTo)
         
@@ -203,16 +202,16 @@ let ValidateMove (move : Move) (core:PositionCore) =
         let newEnPassant = 
             if !observations |> contains DoublePush then Some(fst moveFrom)
             else None
-
+        
         // Figure out new active color, and if the move gives check
         let newActiveColor = Color.oppositeOf color
         
         // Construct new position
         let updatedPosition = 
-            { core with Placement = newPlacement
-                        ActiveColor = newActiveColor
-                        EnPassant = newEnPassant
-                        CastlingAvailability = newCastlingAvailability }
+            { positionCore with Placement = newPlacement
+                                ActiveColor = newActiveColor
+                                EnPassant = newEnPassant
+                                CastlingAvailability = newCastlingAvailability }
         newPosition := Some(updatedPosition)
     
     let setMoveToCheck() = 
@@ -220,7 +219,6 @@ let ValidateMove (move : Move) (core:PositionCore) =
         if IsInCheck (Color.oppositeOf (!newPosition).Value.ActiveColor) at then 
             err MoveToCheck
             newPosition := None
-    
     
     let setRequiresPromotion() = 
         let requiresPromotion = !observations |> contains Promotion
@@ -231,9 +229,9 @@ let ValidateMove (move : Move) (core:PositionCore) =
     
     //   __________
     //__/ Do steps \______________________________________________________    
-    List.iter (fun f -> if (!errors).IsEmpty then f()) 
-        [ validate; setupResultPosition; setMoveToCheck; 
-          setRequiresPromotion ]
+    List.iter (fun f -> 
+        if (!errors).IsEmpty then f()) 
+        [ validate; setupResultPosition; setMoveToCheck; setRequiresPromotion ]
     if (!errors).IsEmpty then 
         LegalMove { ResultPosition = (!newPosition).Value
                     Piece = pieceType.Value
@@ -247,25 +245,26 @@ let ValidateMove (move : Move) (core:PositionCore) =
                       Warnings = !warnings
                       Errors = !errors }
 
-let ValidateMoveAndWrap (move : Move) (pos:Position) = 
-    
-    match ValidateMove move pos.Core with
-    | LegalMove m -> LegalMoveSrc { Move = move
-                                    OriginalPosition = pos
-                                    Data = m }
-    | IllegalMove m -> IllegalMoveSrc { Move = move
-                                        OriginalPosition = pos
-                                        Data = m }
+let ValidateMove (move : Move) (pos : Position) = 
+    match ValidateMoveRaw move pos.Core with
+    | LegalMove m -> 
+        LegalMoveSrc { Move = move
+                       OriginalPosition = pos
+                       Data = m }
+    | IllegalMove m -> 
+        IllegalMoveSrc { Move = move
+                         OriginalPosition = pos
+                         Data = m }
 
-let ValidateLegalMove move position = 
-    match ValidateMove move position with
+let ValidateLegalMoveRaw move positionCore = 
+    match ValidateMoveRaw move positionCore with
     | LegalMove(m) -> m
     | IllegalMove(_) -> failwith "move is illegal"
 
-let ValidateLegalMoveAndWrap (move : Move) (pos:Position) = 
-    match ValidateMove move pos.Core with
-    | LegalMove m -> { Move = move
-                       OriginalPosition = pos
-                       Data = m }
+let ValidateLegalMove (move : Move) (pos : Position) = 
+    match ValidateMoveRaw move pos.Core with
+    | LegalMove m -> 
+        { Move = move
+          OriginalPosition = pos
+          Data = m }
     | IllegalMove(_) -> failwith "move is illegal"
-

@@ -31,7 +31,7 @@ let CoreToPosition(move : MoveSrc<LegalMove>) =
                     for k = 0 to 7 do
                         for l = 0 to 7 do
                             let move = Move.Create (i, j) (k, l) None
-                            let res = core |> ValidateMove move
+                            let res = core |> ValidateMoveRaw move
                             match res with
                             | LegalMove _ -> yield true
                             | IllegalMove _ -> yield false

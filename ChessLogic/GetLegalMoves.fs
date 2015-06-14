@@ -17,7 +17,7 @@ let FromSquare from position =
     let p (f,t) = Move.Create f t (Some(Queen))
     let u (f,t) = Move.Create f t None
     let f = from |> toX88
-    let validate v t = position |> ValidateMoveAndWrap(v (from, t |> fromX88))
+    let validate v t = position |> ValidateMove(v (from, t |> fromX88))
     let at88 i = position.Core |> PieceAt(i |> fromX88)
     
     let gen v = 

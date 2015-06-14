@@ -22,7 +22,7 @@ let checkObservations position move expectedObservations =
     position
     |> ParseFen
     |> unwrap
-    |> ValidateLegalMoveAndWrap(_cn move)
+    |> ValidateLegalMove(_cn move)
     |> CoreToPosition
     |> observationsToString
     |> should equal expectedObservations

@@ -18,7 +18,7 @@ let check move expectedSan position =
         |> unwrap
     printfn "%s" (Dump.Print p)
     p
-    |> ValidateLegalMoveAndWrap(_cn move)
+    |> ValidateLegalMove(_cn move)
     |> ToSanString
     |> should equal expectedSan
 

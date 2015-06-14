@@ -27,7 +27,7 @@ let check from (expected : string list) position =
         [ for i = 0 to 63 do
               let e = (i % 8, i / 8)
               let t = Move.Create f e None
-              match ValidateMove t p.Core with
+              match ValidateMoveRaw t p.Core with
               | LegalMove _ -> yield CoordinateToString e
               | _ -> () ]
     actual |> should equal (expected2 |> List.sort)
@@ -47,7 +47,7 @@ let checkAll expected position =
               for j = 0 to 63 do
                   let e = (i % 8, i / 8)
                   let t = Move.Create (j % 8, j / 8) e None
-                  match ValidateMove t p.Core with
+                  match ValidateMoveRaw t p.Core with
                   | LegalMove _ -> yield CoordinateToString e
                   | _ -> () ]
     actual |> should equal (expected2 |> List.sort)

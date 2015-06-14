@@ -37,7 +37,7 @@ let check position move expectedHint =
     |> ParseFen
     |> unwrap
     |> (fun x -> x.Core)
-    |> ValidateMove(_cn move)
+    |> ValidateMoveRaw(_cn move)
     |> MoveToString
     |> should equal expectedHint
 
@@ -1373,7 +1373,7 @@ module Queen =
                     |> ParseFen
                     |> unwrap
                     |> (fun x -> x.Core)
-                    |> ValidateMove(_cn move)
+                    |> ValidateMoveRaw(_cn move)
                     |> MoveToString
                 if expected <> actual then 
                     errCounter <- errCounter + 1
