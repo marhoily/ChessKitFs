@@ -9,7 +9,7 @@ open CoordinateNotation
 open Parsing
 open Microsoft.FSharp.Reflection
 
-let MoveToString move = 
+let MoveToString (move : ValidationResult) = 
     let toString (x : 'a) = 
         match FSharpValue.GetUnionFields(x, typeof<'a>) with
         | case, _ -> case.Name
@@ -25,11 +25,9 @@ let MoveToString move =
     
     let strings = 
         match move with
-        | LegalMoveSrc m -> 
-            let m = m.Data
+        | LegalMove m -> 
             getStrings (Some(m.Piece)) m.Castling m.Observations m.Warnings [] 
-        | IllegalMoveSrc m -> 
-            let m = m.Data
+        | IllegalMove m -> 
             getStrings m.Piece m.Castling m.Observations m.Warnings m.Errors
     
     String.Join(" | ", strings)
@@ -38,7 +36,8 @@ let check position move expectedHint =
     position
     |> ParseFen
     |> unwrap
-    |> ValidateMoveAndWrap(_cn move)
+    |> (fun x -> x.Core)
+    |> ValidateMove(_cn move)
     |> MoveToString
     |> should equal expectedHint
 
@@ -1373,7 +1372,8 @@ module Queen =
                     fen
                     |> ParseFen
                     |> unwrap
-                    |> ValidateMoveAndWrap(_cn move)
+                    |> (fun x -> x.Core)
+                    |> ValidateMove(_cn move)
                     |> MoveToString
                 if expected <> actual then 
                     errCounter <- errCounter + 1

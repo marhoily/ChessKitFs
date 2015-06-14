@@ -25,9 +25,10 @@ let check from (expected : string list) position =
     // Now do full search and make sure ValidateMove agrees
     let expected2 = 
         [ for i = 0 to 63 do
-              let t = Move.Create f (i % 8, i / 8) None
-              match ValidateMoveAndWrap t p with
-              | LegalMoveSrc m -> yield m |> toString
+              let e = (i % 8, i / 8)
+              let t = Move.Create f e None
+              match ValidateMove t p.Core with
+              | LegalMove _ -> yield CoordinateToString e
               | _ -> () ]
     actual |> should equal (expected2 |> List.sort)
 
@@ -44,9 +45,10 @@ let checkAll expected position =
     let expected2 = 
         [ for i = 0 to 63 do
               for j = 0 to 63 do
-                  let t = Move.Create (j % 8, j / 8) (i % 8, i / 8) None
-                  match ValidateMoveAndWrap t p with
-                  | LegalMoveSrc m -> yield m |> toString
+                  let e = (i % 8, i / 8)
+                  let t = Move.Create (j % 8, j / 8) e None
+                  match ValidateMove t p.Core with
+                  | LegalMove _ -> yield CoordinateToString e
                   | _ -> () ]
     actual |> should equal (expected2 |> List.sort)
 
