@@ -6,16 +6,15 @@ open MoveLegalityChecker
 
 let FromSquare from position = 
     let legalOnly (moves : MoveInfo list) = 
-        [ for m in moves do
-              match m with
-              | LegalMoveSrc(m) -> yield m
+        [ for move in moves do
+              match move with
+              | LegalMoveSrc legal -> yield legal
               | _ -> () ]
     
     let rank7 = 1
     let rank2 = 6
     
     let p (f,t) = Move.Create f t (Some(Queen))
-    
     let u (f,t) = Move.Create f t None
     let f = from |> toX88
     let validate v t = position |> ValidateMoveAndWrap(v (from, t |> fromX88))
