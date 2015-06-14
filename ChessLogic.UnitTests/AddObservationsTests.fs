@@ -14,14 +14,20 @@ open FenPrinter
 let observationsToString (pos : Position) = 
     pos.Observations |> listToString " | "
 
+let check expectedObservations position = 
+    printfn "%s" (ToFen position)
+    printfn "%s" (Dump.Print position)
+    position
+    |> observationsToString
+    |> should equal expectedObservations
+
 let checkObservations position move expectedObservations = 
     position
     |> ParseFen
     |> unwrap
     |> ValidateLegalMove(_cn move)
     |> CoreToPosition
-    |> observationsToString
-    |> should equal expectedObservations
+    |> check expectedObservations
 
 let rec playFrom m p = 
     match m with
@@ -83,9 +89,7 @@ let ``Draw by threefold repetition``() =
               "Bg5"; "Be6"; "Qf3"; "Be7"; "Rfe1"; "h6"; "Bxh6"; "gxh6"; "Rxe6"; 
               "fxe6"; "Qg3+"; "Kh8"; "Qg6"; "Qe8"; "Qxh6+"; "Kg8"; "Qg5+"; "Kh8"; 
               "Qh6+"; "Kg8"; "Qg5+"; "Kh8"; "Qh6+" ]
-    res.Observations
-    |> listToString ", "
-    |> should equal "Repetition, Check"
+    res |> check "Repetition | Check"
 
 [<Fact>]
 let ``50 moves rule clock increments after move``() = 
@@ -114,23 +118,21 @@ let ``Full moves clock does not increment after white's move``() =
 
 [<Fact>]
 let ``Full moves clock does increment after black's move``() = 
-    let res = "7K/5n2/4b3/8/8/8/7k/8 w - - 49 1" |> playFromFen [ "Kg7"; "Ng5" ]
-    res.HalfMoveClock |> should equal 51
-    res.Observations
-    |> listToString ", "
-    |> should equal "FiftyMoveRule"
+    "7K/5n2/4b3/8/8/8/7k/8 w - - 49 1"
+    |> playFromFen [ "Kg7"; "Ng5" ]
+    |> check "FiftyMoveRule"
 
 [<Fact>]
 let Stalemate() = 
-    let res = "7k/7P/8/7K/8/8/8/8 w - - 0 0" |> playFromFen [ "Kh6" ]
-    res.Observations
-    |> listToString ", "
-    |> should equal "Stalemate"
+    "7k/7P/8/7K/8/8/8/8 w - - 0 0"
+    |> playFromFen [ "Kh6" ]
+    |> check "Stalemate"
 
 [<Fact>]
 let ``count material``() = 
-    (CountMaterial StartingPosition.Core |> sprintf "%A")
-    |> should equal (([|11; 2; 1; 1; 1|], [|11; 2; 1; 1; 1|]) |> sprintf "%A")
+    (CountMaterial StartingPosition.Core |> sprintf "%A") 
+    |> should equal 
+           (([| 11; 2; 1; 1; 1 |], [| 11; 2; 1; 1; 1 |]) |> sprintf "%A")
 
 [<Fact>]
 let ``get square color``() = 
@@ -138,14 +140,9 @@ let ``get square color``() =
     GetSquareColor 1 |> should equal Black
     GetSquareColor 8 |> should equal Black
     GetSquareColor 63 |> should equal White
-    
+
 [<Fact>]
 let ``insufficient material``() = 
-    let res = "7k/7P/8/7K/8/8/8/8 b - - 0 0" |> playFromFen [ "Kxh7" ]
-    printfn "%s" (ToFen res)
-    printfn "%s" (Dump.Print res)
-    res.Observations
-    |> listToString ", "
-    |> should equal "InsufficientMaterial"
-
-    
+    "7k/7P/8/7K/8/8/8/8 b - - 0 0"
+    |> playFromFen [ "Kxh7" ]
+    |> check "InsufficientMaterial"
