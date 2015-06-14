@@ -87,3 +87,33 @@ let ``Draw by threefold repetition``() =
     let strings = res.Observations |> List.map toString
     let actual = String.concat ", " strings
     actual |> should equal "Repetition, Check"
+
+[<Fact>]
+let ``50 moves rule clock increments after move``() = 
+    let res = play [ "Nf3" ]
+    res.HalfMoveClock |> should equal 1
+
+[<Fact>]
+let ``50 moves rule clock resets after pawn advance``() = 
+    let res = play [ "Nf3"; "e5" ]
+    res.HalfMoveClock |> should equal 0
+
+[<Fact>]
+let ``50 moves rule clock resets after pawn capture``() = 
+    let res = play [ "e4"; "d5"; "Nf3"; "dxe4" ]
+    res.HalfMoveClock |> should equal 0
+
+[<Fact>]
+let ``50 moves rule clock resets after capture``() = 
+    let res = play [ "e4"; "d5"; "exd5"; "Qxd5" ]
+    res.HalfMoveClock |> should equal 0
+
+[<Fact>]
+let ``Full moves clock does not increment after white's move``() = 
+    let res = play [ "e4" ]
+    res.FullMoveNumber |> should equal 1
+
+[<Fact>]
+let ``Full moves clock does increment after black's move``() = 
+    let res = play [ "e4"; "e5" ]
+    res.FullMoveNumber |> should equal 2

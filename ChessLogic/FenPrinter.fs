@@ -1,6 +1,7 @@
 ﻿module FenPrinter
 
 open Definitions
+open System
 open System.Text
 
 let ToFen p = 
@@ -10,7 +11,7 @@ let ToFen p =
             |> List.map CastlingHint.toString
             |> List.toArray
             // This can be just "System.String" in F# 4.0
-            |> (fun arr -> (new System.String(arr))) 
+            |> (fun arr -> (String(arr))) 
         if result = "" then "-"
         else result
     
