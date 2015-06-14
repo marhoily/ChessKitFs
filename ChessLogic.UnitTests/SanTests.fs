@@ -379,8 +379,7 @@ let ``San: under-disambiguate Nf3``() =
 
 [<Fact>]
 let ``San: disambiguate N1f3``() = 
-    "8/8/8/6N1/8/8/8/6N1 w - - 0 12" 
-    |> san "N1f3" "g1-f3" 
+    "8/8/8/6N1/8/8/8/6N1 w - - 0 12" |> san "N1f3" "g1-f3"
 
 [<Fact>]
 let ``San: no candidates found Nf3``() = 
@@ -419,6 +418,10 @@ let ``San: it is not mate when it should be``() =
 [<Fact>]
 let ``San: it is mate when it should be``() = 
     "8/Q7/8/8/8/8/8/5K1k w - - 0 1" |> san "Qh7#" "a7-h7"
+
+[<Fact>]
+let ``San: it is check, not mate``() = 
+    "8/Q7/8/8/8/8/8/5K1k w - - 0 1" |> warn "Qa8#" "a7-a8" "IsNotMate, IsCheck"
 
 [<Fact>]
 let ``San: it not marked capture when it should be``() = 
