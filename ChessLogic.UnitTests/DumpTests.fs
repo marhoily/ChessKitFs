@@ -1,6 +1,5 @@
 ﻿module DumpTests
 
-open Definitions;
 open Dump;
 open FenParser;
 open Parsing;

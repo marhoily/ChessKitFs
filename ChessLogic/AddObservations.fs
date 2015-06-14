@@ -4,7 +4,6 @@ open Definitions
 open MyList
 open CoordinateNotation
 open IsAttackedBy
-open MoveLegalityChecker
 
 let CoreToPosition(move : MoveSrc<LegalMove>) = 
     let core = move.Data.ResultPosition
