@@ -126,3 +126,11 @@ let Stalemate() =
     res.Observations
     |> listToString ", "
     |> should equal "Stalemate"
+
+[<Fact>]
+let ``insufficient material``() = 
+    let res = "7k/7P/8/7K/8/8/8/8 b - - 0 0" |> playFromFen [ "Kxh7" ]
+    res.Observations
+    |> listToString ", "
+    |> should equal "InsufficientMaterial"
+    

@@ -28,7 +28,7 @@ let CoreToPosition(move : MoveSrc<LegalMove>) =
         |> GetLegalMoves.All
         |> List.isEmpty
     
-    let isRepetition() = 
+    let isRepetition = 
         let rec toSequence pos = 
             seq { 
                 yield pos.Core
@@ -42,21 +42,32 @@ let CoreToPosition(move : MoveSrc<LegalMove>) =
         |> Seq.max
         > 2
     
+    let insufficientMaterial = 
+        core.Placement
+        |> Array.choose id
+        |> Array.sort
+        |> function 
+        | [| (Black, King); (White, King) |] -> true
+        | _ -> false
+    
     let checkOrMate = 
-        if isCheck then 
-            if noMoves then [ Mate ]
-            else [ Check ]
-        else 
-            if noMoves then [ Stalemate ]
-            else [  ]
+        match isCheck, noMoves with
+        | true, true -> [ Mate ]
+        | true, false -> [ Check ]
+        | false, true -> [ Stalemate ]
+        | false, false -> []
     
     let repetition = 
-        if isRepetition() then Repetition :: checkOrMate
+        if isRepetition then Repetition :: checkOrMate
         else checkOrMate
     
-    let newObs = 
-        if prev.HalfMoveClock >= 50 then FiftyMoveRule :: repetition
+    let im = 
+        if insufficientMaterial then InsufficientMaterial :: repetition
         else repetition
+    
+    let newObs = 
+        if prev.HalfMoveClock >= 50 then FiftyMoveRule :: im
+        else im
     
     { Core = core
       HalfMoveClock = newHalfMoveClock

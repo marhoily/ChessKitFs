@@ -89,6 +89,7 @@ type PositionObservation =
     | Repetition
     | FiftyMoveRule
     | Stalemate
+    | InsufficientMaterial
 
 let vectorToString = function 
     | (f, t) -> CoordinateToString f + "-" + CoordinateToString t
