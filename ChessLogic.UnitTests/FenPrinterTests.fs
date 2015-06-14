@@ -5,21 +5,26 @@ open Definitions
 open FenPrinter
 open FsUnit.Xunit
 
+let toFenCore c = 
+    ToFen { EmptyPosition with Core = c } 
+
+let ec = EmptyPosition.Core;
+
 [<Fact>]
 let ``ToFen works``() = 
-    ToFen { EmptyPosition with Placement = [| Some(White, Pawn) |] } 
+    toFenCore { ec with Placement = [| Some(White, Pawn) |] } 
     |> should equal "P w KQkq - 0 1"
 
 [<Fact>]
 let ``ToFen works with one empty square``() = 
-    ToFen { EmptyPosition with Placement = 
+    toFenCore { ec with Placement = 
                                    [| None
                                       Some(White, Pawn) |] }
     |> should equal "1P w KQkq - 0 1"
 
 [<Fact>]
 let ``ToFen works with two empty squares``() = 
-    ToFen { EmptyPosition with Placement = 
+    toFenCore { ec with Placement = 
                                    [| None
                                       None
                                       Some(White, Pawn) |] }
@@ -27,7 +32,7 @@ let ``ToFen works with two empty squares``() =
 
 [<Fact>]
 let ``ToFen works with empty squares in the middle``() = 
-    ToFen { EmptyPosition with Placement = 
+    toFenCore { ec with Placement = 
                                    [| Some(White, Pawn)
                                       None
                                       None
@@ -36,7 +41,7 @@ let ``ToFen works with empty squares in the middle``() =
 
 [<Fact>]
 let ``ToFen works with 2 ranks``() = 
-    ToFen { EmptyPosition with Placement = 
+    toFenCore { ec with Placement = 
                                    [| Some(White, Pawn)
                                       None
                                       None
@@ -50,7 +55,7 @@ let ``ToFen works with 2 ranks``() =
 
 [<Fact>]
 let ``ToFen works with piece on the H file``() = 
-    ToFen { EmptyPosition with Placement = 
+    toFenCore { ec with Placement = 
                                    [| Some(White, Pawn)
                                       None
                                       None
@@ -63,7 +68,7 @@ let ``ToFen works with piece on the H file``() =
 
 [<Fact>]
 let ``ToFen works with empty ranks``() = 
-    ToFen { EmptyPosition with Placement = 
+    toFenCore { ec with Placement = 
                                    [| None
                                       None
                                       None
@@ -77,7 +82,7 @@ let ``ToFen works with empty ranks``() =
 
 [<Fact>]
 let ``ToFen works with empty rank after non-empty rank``() = 
-    ToFen { EmptyPosition with Placement = 
+    toFenCore { ec with Placement = 
                                    [| Some(White, Pawn)
                                       None
                                       None
@@ -99,7 +104,7 @@ let ``ToFen works with empty rank after non-empty rank``() =
 
 [<Fact>]
 let ``ToFen works with round number of squares``() = 
-    ToFen { EmptyPosition with Placement = 
+    toFenCore { ec with Placement = 
                                    [| Some(White, Pawn)
                                       None
                                       None
@@ -112,16 +117,16 @@ let ``ToFen works with round number of squares``() =
 
 [<Fact>]
 let ``ToFen prints en-passant for white correctly``() = 
-    ToFen { EmptyPosition with EnPassant = Some(4) } 
+    toFenCore { ec with EnPassant = Some(4) } 
     |> should equal " w KQkq e6 0 1"
 
 [<Fact>]
 let ``ToFen prints en-passant for black correctly``() = 
-    ToFen { EmptyPosition with EnPassant = Some(4)
-                               ActiveColor = Black }
+    toFenCore { ec with EnPassant = Some(4)
+                        ActiveColor = Black }
     |> should equal " b KQkq e3 0 1"
 
 [<Fact>]
 let ``ToFen prints castling availability correctly when some unavailable``() = 
-    ToFen { EmptyPosition with CastlingAvailability = [] } 
+    toFenCore { ec with CastlingAvailability = [] } 
     |> should equal " w - - 0 1"

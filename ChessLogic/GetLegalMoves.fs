@@ -53,6 +53,6 @@ let All position =
           let square = (i % 8, i / 8)
           match position |> PieceAt square with
           | Some(color, _) -> 
-              if color = position.ActiveColor then 
+              if color = position.Core.ActiveColor then 
                   yield! position |> FromSquare square
           | _ -> () ]

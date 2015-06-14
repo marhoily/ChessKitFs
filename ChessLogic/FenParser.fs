@@ -42,10 +42,11 @@ let ParseFen str =
     
     let fenParser = 
         pipe2 (piecePlacement .>> ws) theRest (fun placement (activeColor, castlingAvailability, enPassant, halfMoveClock, fullMoveNumber) -> 
-            { Placement = parsePlacement (placement)
-              ActiveColor = activeColor
-              CastlingAvailability = castlingAvailability
-              EnPassant = parseEnPassant (enPassant)
+            { Core = 
+                { Placement = parsePlacement (placement)
+                  ActiveColor = activeColor
+                  CastlingAvailability = castlingAvailability
+                  EnPassant = parseEnPassant (enPassant) }
               HalfMoveClock = halfMoveClock
               FullMoveNumber = fullMoveNumber
               Observations = []

@@ -130,11 +130,15 @@ type Error =
     | DoesNotMoveThisWay
     | CastleFromCheck
 
-type Position = 
+
+type PositionCore =
     { Placement : Piece option array
       ActiveColor : Color
       CastlingAvailability : CastlingHint list
-      EnPassant : File option
+      EnPassant : File option }
+
+type Position = 
+    { Core : PositionCore
       HalfMoveClock : int
       FullMoveNumber : int
       Observations : PositionObservation list
@@ -171,10 +175,11 @@ type IllegalMove =
         sprintf " (%s)" (String.concat ", " errors)
 
 let EmptyPosition = 
-    { Placement = [||]
-      ActiveColor = White
-      CastlingAvailability = [ WK; WQ; BK; BQ ]
-      EnPassant = None
+    { Core = 
+        { Placement = [||]
+          ActiveColor = White
+          CastlingAvailability = [ WK; WQ; BK; BQ ]
+          EnPassant = None }
       HalfMoveClock = 0
       FullMoveNumber = 1
       Observations = []
@@ -183,7 +188,7 @@ let EmptyPosition =
 let BoardToString b = 
     let sb = new StringBuilder()
     let mutable counter = 0
-    for s in b.Placement do
+    for s in b.Core.Placement do
         counter <- counter + 1
         match s with
         | Some(p) -> sb.Append(PieceToString p) |> ignore

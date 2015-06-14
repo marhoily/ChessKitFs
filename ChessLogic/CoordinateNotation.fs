@@ -6,7 +6,7 @@ open Parsing
 
 let ToIndex = function 
     | (file, rank) -> rank * 8 + file
-let PieceAt coordinate position = position.Placement.[ToIndex coordinate]
+let PieceAt coordinate position = position.Core.Placement.[ToIndex coordinate]
 
 
 

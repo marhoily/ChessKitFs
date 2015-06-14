@@ -148,7 +148,7 @@ type SanMove =
 
 let sanScanners board = 
     let at88 i = board |> PieceAt(i |> fromX88)
-    let color = board.ActiveColor
+    let color = board.Core.ActiveColor
     let project = 
         Seq.map (fun f -> f())
         >> Seq.filter (fun x -> x <> -1)
@@ -182,7 +182,7 @@ let sanScanners board =
     (findPushingPawns, findCapturingPawns, findNonPawnPieces)
 
 let FromSanString str board = 
-    let color = board.ActiveColor
+    let color = board.Core.ActiveColor
     let findPushingPawns, findCapturingPawns, findNonPawnPieces = 
         sanScanners board
     

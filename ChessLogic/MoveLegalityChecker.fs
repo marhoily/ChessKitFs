@@ -14,7 +14,7 @@ type ValidatedMove =
       OriginalPosition : Position
       Info : MoveInfo }
 
-let rec validateMoveInternal stopRecursion (move : Move) position = 
+let rec validateMoveInternal stopRecursion (move : Move) (position:Position) = 
     let errors = ref []
     let observations = ref []
     let warnings = ref []
@@ -36,7 +36,7 @@ let rec validateMoveInternal stopRecursion (move : Move) position =
         (move.Start, move.End, move.PromoteTo ?|? Queen)
     let at64 i64 = position |> PieceAt i64
     let at i = position |> PieceAt(i % 16, i / 16)
-    let color = position.ActiveColor
+    let color = position.Core.ActiveColor
     match at64 moveTo with
     | Some(clr, _) when clr = color -> err ToOccupiedCell
     | Some(_) -> info Capture
@@ -67,7 +67,7 @@ let rec validateMoveInternal stopRecursion (move : Move) position =
         let validateCapture c2 looksEnPassanty = 
             if at toSquare = None then 
                 if looksEnPassanty() then 
-                    if position.EnPassant = Some(toSquare % 16) then enPassant()
+                    if position.Core.EnPassant = Some(toSquare % 16) then enPassant()
                     else hasNoEnPassant()
                 else err OnlyCapturesThisWay
             else 
@@ -93,7 +93,7 @@ let rec validateMoveInternal stopRecursion (move : Move) position =
         | _ -> err DoesNotMoveThisWay
     
     let validateKingMove fromSquare toSquare = 
-        let avail opt = position.CastlingAvailability |> contains opt
+        let avail opt = position.Core.CastlingAvailability |> contains opt
         
         let long B C D E attacked castlingOpt = 
             if at D <> None || at B <> None then err DoesNotJump
@@ -158,7 +158,7 @@ let rec validateMoveInternal stopRecursion (move : Move) position =
     let validate() = validateByPieceType () (toX88 moveFrom) (toX88 moveTo)
     
     let setupResultPosition() = 
-        let newPlacement = Array.copy position.Placement
+        let newPlacement = Array.copy position.Core.Placement
         // Remove the pawn captured en-passant
         if !observations |> contains EnPassant then 
             let increment = 
@@ -209,7 +209,7 @@ let rec validateMoveInternal stopRecursion (move : Move) position =
             | _ -> []
         
         let newCastlingAvailability = 
-            position.CastlingAvailability
+            position.Core.CastlingAvailability
             |> except (optionsInvalidatedBy moveFrom)
             |> except (optionsInvalidatedBy moveTo)
         
@@ -218,25 +218,26 @@ let rec validateMoveInternal stopRecursion (move : Move) position =
         
         // Construct new position
         let updatedPosition = 
-            { position with Placement = newPlacement
-                            ActiveColor = newActiveColor
-                            EnPassant = newEnPassant
+            { position with Core =
+                                { Placement = newPlacement
+                                  ActiveColor = newActiveColor
+                                  EnPassant = newEnPassant
+                                  CastlingAvailability = newCastlingAvailability }
                             HalfMoveClock = newHalfMoveClock
                             FullMoveNumber = newMoveNumber
-                            CastlingAvailability = newCastlingAvailability
                             Observations = [] }
         newPosition := Some(updatedPosition)
     
     let setMoveToCheck() = 
         let at c = PieceAt c (!newPosition).Value
-        if IsInCheck (Color.oppositeOf (!newPosition).Value.ActiveColor) at then 
+        if IsInCheck (Color.oppositeOf (!newPosition).Value.Core.ActiveColor) at then 
             err MoveToCheck
             newPosition := None
     
     let setNewPositionIsCheck() = 
         let old = (!newPosition).Value
-        let newAt x = old.Placement.[x |> ToIndex]
-        let isInCheck = IsInCheck old.ActiveColor newAt
+        let newAt x = old.Core.Placement.[x |> ToIndex]
+        let isInCheck = IsInCheck old.Core.ActiveColor newAt
         if isInCheck then
             let observations = 
                 if not stopRecursion then 

@@ -24,7 +24,7 @@ let ToFen p =
     let sb = new StringBuilder()
     let mutable skip = 0
     let mutable file = 0
-    for square in p.Placement do
+    for square in p.Core.Placement do
         if file = 8 then 
             sb.Append('/') |> ignore
             file <- 0
@@ -40,11 +40,11 @@ let ToFen p =
             sb.Append(skip) |> ignore
             skip <- 0
     sb.Append(' ') |> ignore
-    sb.Append(p.ActiveColor |> Color.toString) |> ignore
+    sb.Append(p.Core.ActiveColor |> Color.toString) |> ignore
     sb.Append(' ') |> ignore
-    sb.Append(printOutCastling p.CastlingAvailability) |> ignore
+    sb.Append(printOutCastling p.Core.CastlingAvailability) |> ignore
     sb.Append(' ') |> ignore
-    sb.Append(printOutEnPassant p.ActiveColor p.EnPassant) |> ignore
+    sb.Append(printOutEnPassant p.Core.ActiveColor p.Core.EnPassant) |> ignore
     sb.Append(' ') |> ignore
     sb.Append(p.HalfMoveClock) |> ignore
     sb.Append(' ') |> ignore
