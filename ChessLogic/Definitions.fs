@@ -88,6 +88,7 @@ type PositionObservation =
     | Mate
     | Repetition
     | FiftyMoveRule
+    | Stalemate
 
 let vectorToString = function 
     | (f, t) -> CoordinateToString f + "-" + CoordinateToString t
@@ -137,6 +138,10 @@ type Error =
 let toString (x : 'a) = 
     match FSharpValue.GetUnionFields(x, typeof<'a>) with
     | case, _ -> case.Name
+
+let listToString sep list = 
+    let strings = list |> List.map toString
+    String.concat sep strings
 
 type PositionCore = 
     { Placement : Piece option array

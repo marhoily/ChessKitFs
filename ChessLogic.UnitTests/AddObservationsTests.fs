@@ -12,8 +12,7 @@ open San
 open FenPrinter
 
 let observationsToString (pos : Position) = 
-    let strings = pos.Observations |> List.map toString
-    String.concat " | " strings
+    pos.Observations |> listToString " | "
 
 let checkObservations position move expectedObservations = 
     position
@@ -84,9 +83,9 @@ let ``Draw by threefold repetition``() =
               "Bg5"; "Be6"; "Qf3"; "Be7"; "Rfe1"; "h6"; "Bxh6"; "gxh6"; "Rxe6"; 
               "fxe6"; "Qg3+"; "Kh8"; "Qg6"; "Qe8"; "Qxh6+"; "Kg8"; "Qg5+"; "Kh8"; 
               "Qh6+"; "Kg8"; "Qg5+"; "Kh8"; "Qh6+" ]
-    let strings = res.Observations |> List.map toString
-    let actual = String.concat ", " strings
-    actual |> should equal "Repetition, Check"
+    res.Observations
+    |> listToString ", "
+    |> should equal "Repetition, Check"
 
 [<Fact>]
 let ``50 moves rule clock increments after move``() = 
@@ -115,10 +114,15 @@ let ``Full moves clock does not increment after white's move``() =
 
 [<Fact>]
 let ``Full moves clock does increment after black's move``() = 
-    let res = 
-        "7K/5n2/4b3/8/8/8/7k/8 w - - 49 1"
-        |> playFromFen [ "Kg7"; "Ng5" ]
+    let res = "7K/5n2/4b3/8/8/8/7k/8 w - - 49 1" |> playFromFen [ "Kg7"; "Ng5" ]
     res.HalfMoveClock |> should equal 51
-    let strings = res.Observations |> List.map toString
-    let actual = String.concat ", " strings
-    actual |> should equal "FiftyMoveRule"
+    res.Observations
+    |> listToString ", "
+    |> should equal "FiftyMoveRule"
+
+[<Fact>]
+let Stalemate() = 
+    let res = "7k/7P/8/7K/8/8/8/8 w - - 0 0" |> playFromFen [ "Kh6" ]
+    res.Observations
+    |> listToString ", "
+    |> should equal "Stalemate"

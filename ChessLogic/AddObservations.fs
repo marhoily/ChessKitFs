@@ -23,7 +23,7 @@ let CoreToPosition(move : MoveSrc<LegalMove>) =
     let newAt x = core.Placement.[x |> ToIndex]
     let isCheck = IsInCheck core.ActiveColor newAt
     
-    let isMate() = 
+    let noMoves = 
         Position.FromCore core
         |> GetLegalMoves.All
         |> List.isEmpty
@@ -44,9 +44,11 @@ let CoreToPosition(move : MoveSrc<LegalMove>) =
     
     let checkOrMate = 
         if isCheck then 
-            if isMate() then [ Mate ]
+            if noMoves then [ Mate ]
             else [ Check ]
-        else []
+        else 
+            if noMoves then [ Stalemate ]
+            else [  ]
     
     let repetition = 
         if isRepetition() then Repetition :: checkOrMate
