@@ -11,26 +11,11 @@ type private Code =
 let ParseFen str = 
     let parseGap c = Gap(int c - int '0')
     let parsePiece c = Piece(parsePieceLetter c)
-    let piece = anyOf "pnbrqkPNBRQK" |>> parsePiece <?> "piece symbol"
-    let gap = anyOf "12345678" |>> parseGap <?> "number 1..8"
-    let rank = many1 (piece <|> gap)
-    let piecePlacement = sepBy1 rank (pchar '/')
-    let color = (pchar 'b' >>% Black) <|> (pchar 'w' >>% White)
-    let castlingHint = anyOf "KQkq" |>> CastlingHint.parse
-    let ws = pchar ' '
-    let ca = (pchar '-' >>% []) <|> (many1 castlingHint)
-    let file = anyOf "abcdefgh" |>> LetterToFileNoCheck
-    let enColor = (pchar '3' >>% Black) <|> (pchar '6' >>% White)
-    let en = (file .>>. enColor) |>> Some
-    let enPassant = (pchar '-' >>% None) <|> en
-    let n = pint32
-    let theRest = 
-        tuple5 (color .>> ws) (ca .>> ws) (enPassant .>> ws) (n .>> ws) n
     
-    let parsePlacement p = 
-        [| for rank in p do
-               for code in rank do
-                   match code with
+    let parsePlacement ranks = 
+        [| for rank in ranks do
+               for square in rank do
+                   match square with
                    | Piece(p) -> yield Some(p)
                    | Gap(n) -> 
                        for _ in 1..n -> None |]
@@ -40,18 +25,37 @@ let ParseFen str =
         | Some(p, _) -> Some(p)
         | None -> None
     
-    let fenParser = 
-        pipe2 (piecePlacement .>> ws) theRest (fun placement (activeColor, castlingAvailability, enPassant, halfMoveClock, fullMoveNumber) -> 
-            { Core = 
-                { Placement = parsePlacement (placement)
-                  ActiveColor = activeColor
-                  CastlingAvailability = castlingAvailability
-                  EnPassant = parseEnPassant (enPassant) }
-              HalfMoveClock = halfMoveClock
-              FullMoveNumber = fullMoveNumber
-              Observations = []
-              Move = None })
+    let createCore plcmnt clr ca enp = 
+        { Placement = parsePlacement (plcmnt)
+          ActiveColor = clr
+          CastlingAvailability = ca
+          EnPassant = parseEnPassant (enp) }
     
+    let createPosition core halfMoveClock fullMoveNumber = 
+        { Core = core
+          HalfMoveClock = halfMoveClock
+          FullMoveNumber = fullMoveNumber
+          Observations = []
+          Move = None }
+    
+    let piece = anyOf "pnbrqkPNBRQK" |>> parsePiece <?> "piece symbol"
+    let gap = anyOf "12345678" |>> parseGap <?> "number 1..8"
+    let rank = many1 (piece <|> gap)
+    let ws = pchar ' '
+    let ranks = sepBy1 rank (pchar '/') .>> ws
+    let black = pchar 'b' >>% Black
+    let white = pchar 'w' >>% White
+    let color = black <|> white .>> ws
+    let castlingHint = anyOf "KQkq" |>> CastlingHint.parse
+    let noCastling = pchar '-' >>% []
+    let ca = noCastling <|> many1 castlingHint .>> ws
+    let file = anyOf "abcdefgh" |>> LetterToFileNoCheck
+    let enColor = (pchar '3' >>% Black) <|> (pchar '6' >>% White)
+    let en = (file .>>. enColor) |>> Some
+    let enPassant = ((pchar '-' >>% None) <|> en) .>> ws
+    let core = pipe4 ranks color ca enPassant createCore
+    let n = pint32
+    let fenParser = pipe3 core (n .>> ws) n createPosition
     wrap (run fenParser str)
 
 let StartingPosition = 
