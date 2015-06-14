@@ -14,8 +14,7 @@ type ValidatedMove =
       OriginalPosition : Position
       Info : MoveInfo }
 
-let ValidateMove (move : Move) (core:Position) = 
-    let position = core.Core
+let ValidateMove (move : Move) (position:Position) = 
     let errors = ref []
     let observations = ref []
     let warnings = ref []
@@ -36,9 +35,10 @@ let ValidateMove (move : Move) (core:Position) =
     let moveFrom, moveTo, promoteTo = 
         (move.Start, move.End, move.PromoteTo ?|? Queen)
     let PieceAt coordinate position = position.Placement.[ToIndex coordinate]
-    let at64 i64 = position |> PieceAt i64
-    let at i = position |> PieceAt(i % 16, i / 16)
-    let color = position.ActiveColor
+    let core = position.Core
+    let at64 i64 = core |> PieceAt i64
+    let at i = core |> PieceAt(i % 16, i / 16)
+    let color = core.ActiveColor
     match at64 moveTo with
     | Some(clr, _) when clr = color -> err ToOccupiedCell
     | Some(_) -> info Capture
@@ -69,7 +69,7 @@ let ValidateMove (move : Move) (core:Position) =
         let validateCapture c2 looksEnPassanty = 
             if at toSquare = None then 
                 if looksEnPassanty() then 
-                    if position.EnPassant = Some(toSquare % 16) then enPassant()
+                    if core.EnPassant = Some(toSquare % 16) then enPassant()
                     else hasNoEnPassant()
                 else err OnlyCapturesThisWay
             else 
@@ -95,7 +95,7 @@ let ValidateMove (move : Move) (core:Position) =
         | _ -> err DoesNotMoveThisWay
     
     let validateKingMove fromSquare toSquare = 
-        let avail opt = position.CastlingAvailability |> contains opt
+        let avail opt = core.CastlingAvailability |> contains opt
         
         let long B C D E attacked castlingOpt = 
             if at D <> None || at B <> None then err DoesNotJump
@@ -160,7 +160,7 @@ let ValidateMove (move : Move) (core:Position) =
     let validate() = validateByPieceType () (toX88 moveFrom) (toX88 moveTo)
     
     let setupResultPosition() = 
-        let newPlacement = Array.copy position.Placement
+        let newPlacement = Array.copy core.Placement
         // Remove the pawn captured en-passant
         if !observations |> contains EnPassant then 
             let increment = 
@@ -198,7 +198,7 @@ let ValidateMove (move : Move) (core:Position) =
             | _ -> []
         
         let newCastlingAvailability = 
-            position.CastlingAvailability
+            core.CastlingAvailability
             |> except (optionsInvalidatedBy moveFrom)
             |> except (optionsInvalidatedBy moveTo)
         
@@ -212,10 +212,10 @@ let ValidateMove (move : Move) (core:Position) =
         
         // Construct new position
         let updatedPosition = 
-            { position with Placement = newPlacement
-                            ActiveColor = newActiveColor
-                            EnPassant = newEnPassant
-                            CastlingAvailability = newCastlingAvailability }
+            { core with Placement = newPlacement
+                        ActiveColor = newActiveColor
+                        EnPassant = newEnPassant
+                        CastlingAvailability = newCastlingAvailability }
         newPosition := Some(updatedPosition)
     
     let setMoveToCheck() = 
@@ -239,7 +239,7 @@ let ValidateMove (move : Move) (core:Position) =
           setRequiresPromotion ]
     if (!errors).IsEmpty then 
         LegalMove { Move = move
-                    OriginalPosition = core
+                    OriginalPosition = position
                     Data = { ResultPosition = (!newPosition).Value
                              Piece = pieceType.Value
                              Castling = !castling
@@ -247,7 +247,7 @@ let ValidateMove (move : Move) (core:Position) =
                              Warnings = !warnings }}
     else 
         IllegalMove { Move = move
-                      OriginalPosition = core
+                      OriginalPosition = position
                       Data = { Piece = pieceType
                                Castling = !castling
                                Observations = !observations

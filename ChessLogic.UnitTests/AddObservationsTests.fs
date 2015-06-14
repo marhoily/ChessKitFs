@@ -15,10 +15,7 @@ let observationsToString (pos : Position) =
         match FSharpValue.GetUnionFields(x, typeof<'a>) with
         | case, _ -> case.Name
     
-    let strings = 
-        pos.Observations
-        |> List.map toString
-    
+    let strings = pos.Observations |> List.map toString
     String.concat " | " strings
 
 let checkObservations position move expectedObservations = 
@@ -32,11 +29,8 @@ let checkObservations position move expectedObservations =
 
 [<Fact>]
 let ``Gives check``() = 
-    checkObservations "8/2Rk4/1q4BP/8/8/6K1/8/8 b - - 24 119" "b6-c7" 
-        "Check"
+    checkObservations "8/2Rk4/1q4BP/8/8/6K1/8/8 b - - 24 119" "b6-c7" "Check"
 
-//[<Fact>]
-//let ``Gives mate``() = 
-//    checkObservations "2K5/8/2k4r/8/8/8/8/8 b - - 0 9" "h6-h8" 
-//        "Check | Mate"
-            
+[<Fact>]
+let ``Gives mate``() = 
+    checkObservations "2K5/8/2k4r/8/8/8/8/8 b - - 0 9" "h6-h8" "Check | Mate"
