@@ -84,24 +84,15 @@ let CoreToPosition(move : MoveSrc<LegalMove>) =
         let a, b = core |> CountMaterial
         isInsufficient a && isInsufficient b
     
-    let checkOrMate = 
-        match isCheck, noMoves with
-        | true, true -> [ Mate ]
-        | true, false -> [ Check ]
-        | false, true -> [ Stalemate ]
-        | false, false -> []
-    
-    let repetition = 
-        if isRepetition then Repetition :: checkOrMate
-        else checkOrMate
-    
-    let im = 
-        if insufficientMaterial then InsufficientMaterial :: repetition
-        else repetition
-    
     let newObs = 
-        if prev.HalfMoveClock >= 50 then FiftyMoveRule :: im
-        else im
+        [ match isCheck, noMoves with
+          | true, true -> yield Mate
+          | true, false -> yield Check
+          | false, true -> yield Stalemate
+          | false, false -> ()
+          if isRepetition then yield Repetition
+          if insufficientMaterial then yield InsufficientMaterial
+          if prev.HalfMoveClock >= 50 then yield FiftyMoveRule ]
     
     { Core = core
       HalfMoveClock = newHalfMoveClock
