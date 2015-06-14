@@ -6,14 +6,10 @@ open IsAttackedBy
 open MyList
 
 type MoveInfo = 
-    | LegalMoveSrc of MoveSrc<LegalMove>
-    | IllegalMoveSrc of MoveSrc<IllegalMove>
+    | LegalMove of MoveSrc<LegalMove>
+    | IllegalMove of MoveSrc<IllegalMove>
 
-type ValidationResult = 
-    | LegalMove of LegalMove
-    | IllegalMove of IllegalMove
-
-let ValidateMoveRaw move positionCore = 
+let ValidateMove move position = 
     let errors = ref []
     let observations = ref []
     let warnings = ref []
@@ -33,6 +29,7 @@ let ValidateMoveRaw move positionCore =
     //__/ Shortcats \_____________________________________________________
     let moveFrom, moveTo, promoteTo = 
         (move.Start, move.End, move.PromoteTo ?|? Queen)
+    let positionCore = position.Core
     let at64 i64 = positionCore |> PieceAt i64
     let at i = positionCore |> PieceAt(i % 16, i / 16)
     let color = positionCore.ActiveColor
@@ -233,38 +230,26 @@ let ValidateMoveRaw move positionCore =
         if (!errors).IsEmpty then f()) 
         [ validate; setupResultPosition; setMoveToCheck; setRequiresPromotion ]
     if (!errors).IsEmpty then 
-        LegalMove { ResultPosition = (!newPosition).Value
-                    Piece = pieceType.Value
-                    Castling = !castling
-                    Observations = !observations
-                    Warnings = !warnings }
+        LegalMove { Move = move
+                    OriginalPosition = position
+                    Data =
+                     { ResultPosition = (!newPosition).Value
+                       Piece = pieceType.Value
+                       Castling = !castling
+                       Observations = !observations
+                       Warnings = !warnings }}
     else 
-        IllegalMove { Piece = pieceType
-                      Castling = !castling
-                      Observations = !observations
-                      Warnings = !warnings
-                      Errors = !errors }
+        IllegalMove { Move = move
+                      OriginalPosition = position
+                      Data =
+                       { Piece = pieceType
+                         Castling = !castling
+                         Observations = !observations
+                         Warnings = !warnings
+                         Errors = !errors }}
 
-let ValidateMove move pos = 
-    match ValidateMoveRaw move pos.Core with
-    | LegalMove m -> 
-        LegalMoveSrc { Move = move
-                       OriginalPosition = pos
-                       Data = m }
-    | IllegalMove m -> 
-        IllegalMoveSrc { Move = move
-                         OriginalPosition = pos
-                         Data = m }
-
-let ValidateLegalMoveRaw move positionCore = 
-    match ValidateMoveRaw move positionCore with
-    | LegalMove(m) -> m
-    | IllegalMove(_) -> failwith "move is illegal"
 
 let ValidateLegalMove move pos = 
-    match ValidateMoveRaw move pos.Core with
-    | LegalMove m -> 
-        { Move = move
-          OriginalPosition = pos
-          Data = m }
+    match ValidateMove move pos with
+    | LegalMove m -> m
     | IllegalMove(_) -> failwith "move is illegal"

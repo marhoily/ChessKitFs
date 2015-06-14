@@ -8,7 +8,7 @@ let FromSquare from position =
     let legalOnly (moves : MoveInfo list) = 
         [ for move in moves do
               match move with
-              | LegalMoveSrc legal -> yield legal
+              | LegalMove legal -> yield legal
               | _ -> () ]
     
     let rank7 = 1

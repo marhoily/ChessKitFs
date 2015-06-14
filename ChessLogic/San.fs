@@ -211,8 +211,8 @@ let FromSanString str board =
 
     let addNotesToAny notes capture warns moveInfo =
         match moveInfo with
-        | LegalMoveSrc m -> addNotesToLegal notes capture warns m
-        | IllegalMoveSrc m -> IllegalSan m
+        | LegalMove m -> addNotesToLegal notes capture warns m
+        | IllegalMove m -> IllegalSan m
 
     let castlingToSanMove opt notes = 
         let move = 
@@ -244,8 +244,8 @@ let FromSanString str board =
             let mutable invalid = []
             for move in list do
                 match move with
-                | LegalMoveSrc m -> valid <- m::valid
-                | IllegalMoveSrc m -> invalid <- m::invalid
+                | LegalMove m -> valid <- m::valid
+                | IllegalMove m -> invalid <- m::invalid
             (valid, invalid)
 
         find (toSquare |> toX88)
