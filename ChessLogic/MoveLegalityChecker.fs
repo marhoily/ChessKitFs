@@ -13,11 +13,6 @@ type ValidationResult =
     | LegalMove of LegalMove
     | IllegalMove of IllegalMove
 
-type ValidatedMove = 
-    { Move : Move
-      OriginalPosition : Position
-      Info : MoveInfo }
-
 let ValidateMove (move : Move) (core:PositionCore) = 
     let errors = ref []
     let observations = ref []
