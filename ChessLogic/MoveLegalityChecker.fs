@@ -14,7 +14,8 @@ type ValidatedMove =
       OriginalPosition : Position
       Info : MoveInfo }
 
-let rec validateMoveInternal stopRecursion (move : Move) (position:Position) = 
+let rec validateMoveInternal stopRecursion (move : Move) (core:Position) = 
+    let position = core.Core
     let errors = ref []
     let observations = ref []
     let warnings = ref []
@@ -34,9 +35,10 @@ let rec validateMoveInternal stopRecursion (move : Move) (position:Position) =
     //__/ Shortcats \_____________________________________________________
     let moveFrom, moveTo, promoteTo = 
         (move.Start, move.End, move.PromoteTo ?|? Queen)
+    let PieceAt coordinate position = position.Placement.[ToIndex coordinate]
     let at64 i64 = position |> PieceAt i64
     let at i = position |> PieceAt(i % 16, i / 16)
-    let color = position.Core.ActiveColor
+    let color = position.ActiveColor
     match at64 moveTo with
     | Some(clr, _) when clr = color -> err ToOccupiedCell
     | Some(_) -> info Capture
@@ -67,7 +69,7 @@ let rec validateMoveInternal stopRecursion (move : Move) (position:Position) =
         let validateCapture c2 looksEnPassanty = 
             if at toSquare = None then 
                 if looksEnPassanty() then 
-                    if position.Core.EnPassant = Some(toSquare % 16) then enPassant()
+                    if position.EnPassant = Some(toSquare % 16) then enPassant()
                     else hasNoEnPassant()
                 else err OnlyCapturesThisWay
             else 
@@ -93,7 +95,7 @@ let rec validateMoveInternal stopRecursion (move : Move) (position:Position) =
         | _ -> err DoesNotMoveThisWay
     
     let validateKingMove fromSquare toSquare = 
-        let avail opt = position.Core.CastlingAvailability |> contains opt
+        let avail opt = position.CastlingAvailability |> contains opt
         
         let long B C D E attacked castlingOpt = 
             if at D <> None || at B <> None then err DoesNotJump
@@ -158,7 +160,7 @@ let rec validateMoveInternal stopRecursion (move : Move) (position:Position) =
     let validate() = validateByPieceType () (toX88 moveFrom) (toX88 moveTo)
     
     let setupResultPosition() = 
-        let newPlacement = Array.copy position.Core.Placement
+        let newPlacement = Array.copy position.Placement
         // Remove the pawn captured en-passant
         if !observations |> contains EnPassant then 
             let increment = 
@@ -183,19 +185,6 @@ let rec validateMoveInternal stopRecursion (move : Move) (position:Position) =
         | Some(BK) -> moveCastlingRook H8 F8
         | Some(BQ) -> moveCastlingRook A8 D8
         | None -> ()
-        // Figure out new en-passant option, half-move clock, full-move number
-        let newEnPassant = 
-            if !observations |> contains DoublePush then Some(fst moveFrom)
-            else None
-        
-        let newHalfMoveClock = 
-            if pieceType.Value = Pawn || !observations |> contains Capture then 
-                0
-            else position.HalfMoveClock + 1
-        
-        let newMoveNumber = 
-            position.FullMoveNumber + if color = Black then 1
-                                      else 0
         
         // Figure out new castling availability
         let optionsInvalidatedBy p = 
@@ -209,35 +198,84 @@ let rec validateMoveInternal stopRecursion (move : Move) (position:Position) =
             | _ -> []
         
         let newCastlingAvailability = 
-            position.Core.CastlingAvailability
+            position.CastlingAvailability
             |> except (optionsInvalidatedBy moveFrom)
             |> except (optionsInvalidatedBy moveTo)
         
+        // Figure out new en-passant option
+        let newEnPassant = 
+            if !observations |> contains DoublePush then Some(fst moveFrom)
+            else None
+
         // Figure out new active color, and if the move gives check
         let newActiveColor = Color.oppositeOf color
         
         // Construct new position
         let updatedPosition = 
-            { position with Core =
-                                { Placement = newPlacement
-                                  ActiveColor = newActiveColor
-                                  EnPassant = newEnPassant
-                                  CastlingAvailability = newCastlingAvailability }
-                            HalfMoveClock = newHalfMoveClock
-                            FullMoveNumber = newMoveNumber
-                            Observations = [] }
+            { position with Placement = newPlacement
+                            ActiveColor = newActiveColor
+                            EnPassant = newEnPassant
+                            CastlingAvailability = newCastlingAvailability }
         newPosition := Some(updatedPosition)
     
     let setMoveToCheck() = 
         let at c = PieceAt c (!newPosition).Value
-        if IsInCheck (Color.oppositeOf (!newPosition).Value.Core.ActiveColor) at then 
+        if IsInCheck (Color.oppositeOf (!newPosition).Value.ActiveColor) at then 
             err MoveToCheck
             newPosition := None
     
+    
+    let setRequiresPromotion() = 
+        let requiresPromotion = !observations |> contains Promotion
+        if move.PromoteTo = None then 
+            if requiresPromotion then warn MissingPromotionHint
+        else 
+            if not requiresPromotion then warn PromotionHintIsNotNeeded
+    
+    //   __________
+    //__/ Do steps \______________________________________________________    
+    List.iter (fun f -> if (!errors).IsEmpty then f()) 
+        [ validate; setupResultPosition; setMoveToCheck; 
+          setRequiresPromotion ]
+    if (!errors).IsEmpty then 
+        LegalMove { Move = move
+                    OriginalPosition = core
+                    Data = { ResultPosition = (!newPosition).Value
+                             Piece = pieceType.Value
+                             Castling = !castling
+                             Observations = !observations
+                             Warnings = !warnings }}
+    else 
+        IllegalMove { Move = move
+                      OriginalPosition = core
+                      Data = { Piece = pieceType
+                               Castling = !castling
+                               Observations = !observations
+                               Warnings = !warnings
+                               Errors = !errors }}
+
+let ValidateMove = validateMoveInternal false
+let ValidateLegalMove move position = 
+    match ValidateMove move position with
+    | LegalMove(m) -> m
+    | IllegalMove(_) -> failwith "move is illegal"
+
+(*
+        
+        let newHalfMoveClock = 
+            if pieceType.Value = Pawn || !observations |> contains Capture then 
+                0
+            else position.HalfMoveClock + 1
+        
+        let newMoveNumber = 
+            position.FullMoveNumber + if color = Black then 1
+                                      else 0
+
+
     let setNewPositionIsCheck() = 
         let old = (!newPosition).Value
-        let newAt x = old.Core.Placement.[x |> ToIndex]
-        let isInCheck = IsInCheck old.Core.ActiveColor newAt
+        let newAt x = old.Placement.[x |> ToIndex]
+        let isInCheck = IsInCheck old.ActiveColor newAt
         if isInCheck then
             let observations = 
                 if not stopRecursion then 
@@ -257,38 +295,5 @@ let rec validateMoveInternal stopRecursion (move : Move) (position:Position) =
                     if isNotMate then [ Check ] else [ Check; Mate ]
                 else [ Check ]
             newPosition := Some({ old with Observations = observations })
-    
-    let setRequiresPromotion() = 
-        let requiresPromotion = !observations |> contains Promotion
-        if move.PromoteTo = None then 
-            if requiresPromotion then warn MissingPromotionHint
-        else 
-            if not requiresPromotion then warn PromotionHintIsNotNeeded
-    
-    //   __________
-    //__/ Do steps \______________________________________________________    
-    List.iter (fun f -> if (!errors).IsEmpty then f()) 
-        [ validate; setupResultPosition; setMoveToCheck; setNewPositionIsCheck; 
-          setRequiresPromotion ]
-    if (!errors).IsEmpty then 
-        LegalMove { Move = move
-                    OriginalPosition = position
-                    Data = { ResultPosition = (!newPosition).Value
-                             Piece = pieceType.Value
-                             Castling = !castling
-                             Observations = !observations
-                             Warnings = !warnings }}
-    else 
-        IllegalMove { Move = move
-                      OriginalPosition = position
-                      Data = { Piece = pieceType
-                               Castling = !castling
-                               Observations = !observations
-                               Warnings = !warnings
-                               Errors = !errors }}
 
-let ValidateMove = validateMoveInternal false
-let ValidateLegalMove move position = 
-    match ValidateMove move position with
-    | LegalMove(m) -> m
-    | IllegalMove(_) -> failwith "move is illegal"
+*)

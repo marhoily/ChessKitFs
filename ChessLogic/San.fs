@@ -26,8 +26,8 @@ let ToSanString(legalMove : MoveSrc<LegalMove>) =
     let longCastling = data.Castling = Some(WQ) || data.Castling = Some(BQ)
     let capture = data.Observations |> MyList.contains Capture
     let promotion = data.Observations |> MyList.contains Promotion
-    let check = data.ResultPosition.Observations |> MyList.contains Check
-    let mate = data.ResultPosition.Observations |> MyList.contains Mate
+   // let check = data.ResultPosition.Observations |> MyList.contains Check
+   // let mate = data.ResultPosition.Observations |> MyList.contains Mate
     let append (str : string) = sb.Append(str) |> ignore
     let appendc (str : char) = sb.Append(str) |> ignore
     let file, rank, fileAndRankStr = fst, snd, CoordinateToString
@@ -63,8 +63,8 @@ let ToSanString(legalMove : MoveSrc<LegalMove>) =
     if promotion then 
         appendc '='
         appendc (move.PromoteTo.Value |> typeToString)
-    if check then appendc '+'
-    else if mate then appendc '#'
+   // if check then appendc '+'
+   // else if mate then appendc '#'
     string sb
 
 type Ending = 
@@ -186,11 +186,11 @@ let FromSanString str board =
     let findPushingPawns, findCapturingPawns, findNonPawnPieces = 
         sanScanners board
     
-    let addNotesToLegal notes capture warns legalMove =
+    let addNotesToLegal notes capture warns (legalMove:MoveSrc<LegalMove>) =
         let warnings = ref warns
         let warn w = warnings := w :: !warnings
 
-        let checkNote = notes = Some(SanCheck)
+      (*  let checkNote = notes = Some(SanCheck)
         let checkReal = legalMove.Data.ResultPosition.Observations |> MyList.contains Check
         if not checkNote && checkReal then warn IsCheck
         else if checkNote && not checkReal then warn IsNotCheck
@@ -204,7 +204,7 @@ let FromSanString str board =
         let captureReal = legalMove.Data.Observations |> MyList.contains Capture
         if not captureNote && captureReal then warn IsCapture
         else if captureNote && not captureReal then warn IsNotCapture
-            
+         *)   
         LegalSan(legalMove, !warnings)
 
     let addNotesToAny notes capture warns moveInfo =

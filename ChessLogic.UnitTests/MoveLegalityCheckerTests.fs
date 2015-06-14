@@ -14,18 +14,13 @@ let MoveToString move =
         match FSharpValue.GetUnionFields(x, typeof<'a>) with
         | case, _ -> case.Name
     
-    let getStrings piece castling observations warnings errors 
-        resultObservations = 
+    let getStrings piece castling observations warnings errors = 
         seq { 
             if piece <> None then yield toString piece.Value
             if castling <> None then yield toString castling.Value
             for x in observations -> toString x
-            for x in warnings do
-                yield toString x
-            for x in errors do
-                yield toString x
-            for x in resultObservations do
-                yield toString x
+            for x in warnings -> toString x
+            for x in errors -> toString x
         }
     
     let strings = 
@@ -33,10 +28,9 @@ let MoveToString move =
         | LegalMove m -> 
             let m = m.Data
             getStrings (Some(m.Piece)) m.Castling m.Observations m.Warnings [] 
-                m.ResultPosition.Observations
         | IllegalMove m -> 
             let m = m.Data
-            getStrings m.Piece m.Castling m.Observations m.Warnings m.Errors []
+            getStrings m.Piece m.Castling m.Observations m.Warnings m.Errors
     
     String.Join(" | ", strings)
 
@@ -83,16 +77,6 @@ module ``Generic errors`` =
     let ``Promotion hint is not needed``() = 
         check "rnbqk1nr/pppp1ppp/3bp3/8/4P3/7P/PPPP1PP1/RNBQKBNR w KQkq - 1 3" 
             "e4-e5=Q" "Pawn | PromotionHintIsNotNeeded"
-    
-    [<Fact>]
-    let ``Gives check``() = 
-        check "8/2Rk4/1q4BP/8/8/6K1/8/8 b - - 24 119" "b6-c7" 
-            "Queen | Capture | Check"
-
-    [<Fact>]
-    let ``Gives mate``() = 
-        check "2K5/8/2k4r/8/8/8/8/8 b - - 0 9" "h6-h8" 
-            "Rook | Check | Mate"
             
 module ``Moves along the pin line`` = 
     [<Fact>]
@@ -990,7 +974,7 @@ module Queen =
            
            (171, 
             "r1bqkbr1/2B2pp1/ppn5/3pP2p/PPP3n1/8/2QPP1PP/RN2KBNR b KQq - 0 12", 
-            "d8-h4", "Queen | Check")
+            "d8-h4", "Queen")
            
            (172, "1r3k2/n3q3/1P1r4/p3B2p/NR3pP1/5P2/2bP3R/4K2B b - - 5 38", 
             "e7-d8", "Queen")
@@ -1264,19 +1248,19 @@ module Queen =
            (254, "8/3k4/1q4BP/8/8/8/5K2/4R3 w - - 19 117", "e1-e3", "Rook")
            
            (255, "3k4/8/q3R2n/1p4pB/4P2P/2P5/7P/1rR4K w - - 1 61", "c1-d1", 
-            "Rook | Check")
+            "Rook")
            
            (256, "3kr3/npp2p2/1P6/3rpbpp/p1PRP2P/2N2N2/5PQ1/3KBBR1 w - - 5 38", 
             "d4-d3", "Rook")
            
            (257, "8/3N2r1/4k3/p1p3R1/p2r4/6pp/1b1B3P/3K4 w - - 0 68", "d7-c5", 
-            "Knight | Capture | Check")
+            "Knight | Capture")
            
            (258, "1n3R2/2N3k1/p7/r2p3q/5p2/4K3/8/4N3 w - - 0 85", "f8-f4", 
             "Rook | Capture")
            
            (259, "1n6/1pk2r2/3R1pP1/1pP2b1p/3NP3/1Q5B/3K1P2/6R1 w - - 1 62", 
-            "d6-c6", "Rook | Check")
+            "d6-c6", "Rook")
            
            (260, 
             "r2q3r/1bpkp2p/np1p3n/p4p2/P4p2/N1Q3PP/1P1PP1K1/R1B2BNR w - - 1 18", 
@@ -1287,7 +1271,7 @@ module Queen =
             "d1-e1", "Queen | Capture")
            
            (262, "3K4/1P6/8/8/3Q4/k4b2/p1q5/8 w - - 5 141", "d4-d3", 
-            "Queen | Check")
+            "Queen")
            (263, "3K4/1P6/8/8/3Q4/k4b2/p1q5/8 w - - 5 141", "d4-c4", "Queen")
            
            (264, 
@@ -1299,7 +1283,7 @@ module Queen =
            
            (266, 
             "rn1q3r/2p1pk1p/3B1npb/1p1pQ3/1p1PP2P/2P3pP/P4P2/RN2KBR1 w Q - 6 15", 
-            "e5-f6", "Queen | Capture | Check")
+            "e5-f6", "Queen | Capture")
            
            (267, 
             "rn1q3r/2p1pk1p/3B1npb/1p1pQ3/1p1PP2P/2P3pP/P4P2/RN2KBR1 w Q - 6 15", 
@@ -1307,7 +1291,7 @@ module Queen =
            
            (268, 
             "2k5/rb3r1p/1p1Q3n/p1pp1p2/P3p2P/1P1P1BPN/R1n1P3/2B2K1R w - - 1 38", 
-            "d6-c5", "Queen | Capture | Check")
+            "d6-c5", "Queen | Capture")
            
            (269, "B4Q2/3r4/4kP2/ppp5/2P2K2/8/8/3q4 w - - 1 95", "f8-c5", 
             "Queen | Capture")
@@ -1363,7 +1347,7 @@ module Queen =
             "d8-d7", "Queen | Capture")
            
            (285, "nr2r1n1/pb1p3k/1pp5/8/PbP1PpP1/1P1K2Pq/3R1P2/R3B3 b - - 1 36", 
-            "h3-g3", "Queen | Capture | Check")
+            "h3-g3", "Queen | Capture")
            (286, "8/7n/5k1B/3P4/1K6/p7/5q2/8 b - - 8 121", "f2-g3", "Queen")
            
            (288, 

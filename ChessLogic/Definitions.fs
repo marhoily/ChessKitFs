@@ -152,7 +152,7 @@ and
     member x.AsString = x.Move.AsString + x.Data.ToString()
 
 and LegalMove = 
-    { ResultPosition : Position
+    { ResultPosition : PositionCore
       Piece : PieceType
       Castling : CastlingHint option
       Observations : Observation list
