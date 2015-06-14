@@ -13,7 +13,7 @@ type ValidationResult =
     | LegalMove of LegalMove
     | IllegalMove of IllegalMove
 
-let ValidateMoveRaw (move : Move) (positionCore : PositionCore) = 
+let ValidateMoveRaw move positionCore = 
     let errors = ref []
     let observations = ref []
     let warnings = ref []
@@ -216,7 +216,7 @@ let ValidateMoveRaw (move : Move) (positionCore : PositionCore) =
     
     let setMoveToCheck() = 
         let at c = PieceAt c (!newPosition).Value
-        if IsInCheck (Color.oppositeOf (!newPosition).Value.ActiveColor) at then 
+        if IsInCheck color at then 
             err MoveToCheck
             newPosition := None
     
@@ -245,7 +245,7 @@ let ValidateMoveRaw (move : Move) (positionCore : PositionCore) =
                       Warnings = !warnings
                       Errors = !errors }
 
-let ValidateMove (move : Move) (pos : Position) = 
+let ValidateMove move pos = 
     match ValidateMoveRaw move pos.Core with
     | LegalMove m -> 
         LegalMoveSrc { Move = move
@@ -261,7 +261,7 @@ let ValidateLegalMoveRaw move positionCore =
     | LegalMove(m) -> m
     | IllegalMove(_) -> failwith "move is illegal"
 
-let ValidateLegalMove (move : Move) (pos : Position) = 
+let ValidateLegalMove move pos = 
     match ValidateMoveRaw move pos.Core with
     | LegalMove m -> 
         { Move = move
