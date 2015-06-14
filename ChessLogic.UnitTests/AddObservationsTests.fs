@@ -11,14 +11,11 @@ open Xunit
 open San
 open FenPrinter
 
-let observationsToString (pos : Position) = 
-    pos.Observations |> listToString " | "
-
 let check expectedObservations position = 
     printfn "%s" (ToFen position)
     printfn "%s" (Dump.Print position)
-    position
-    |> observationsToString
+    position.Observations
+    |> listToString " | "
     |> should equal expectedObservations
 
 let checkObservations position move expectedObservations = 
@@ -145,4 +142,22 @@ let ``get square color``() =
 let ``insufficient material``() = 
     "7k/7P/8/7K/8/8/8/8 b - - 0 0"
     |> playFromFen [ "Kxh7" ]
+    |> check "InsufficientMaterial"
+
+[<Fact>]
+let ``insufficient material: one knight``() = 
+    "7k/8/8/7K/8/8/8/N7 b - - 0 0"
+    |> playFromFen [ "Kh7" ]
+    |> check "InsufficientMaterial"
+
+[<Fact>]
+let ``insufficient material: knight vs bishop``() = 
+    "7k/8/8/7K/8/8/8/Nb6 b - - 0 0"
+    |> playFromFen [ "Kh7" ]
+    |> check "InsufficientMaterial"
+
+[<Fact>]
+let ``insufficient material: 3 white bishops``() = 
+    "7k/8/8/7K/8/8/8/1B1B1B2 b - - 0 0"
+    |> playFromFen [ "Kg7" ]
     |> check "InsufficientMaterial"

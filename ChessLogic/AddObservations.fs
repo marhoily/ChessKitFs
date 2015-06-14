@@ -73,13 +73,14 @@ let CoreToPosition(move : MoveSrc<LegalMove>) =
         > 2
     
     let insufficientMaterial = 
-        let isInsufficient material =
+        let isInsufficient material = 
             // Other, Knight, White Bishop, Black Bishop, King
             match material with
-            | [|0; 0; 0; _; 1|] -> true // any number of black bishops
-            | [|0; 0; _; 0; 1|] -> true // any number of white bishops
-            | [|0; 1; 0; 0; 1|] -> true // one knight
+            | [| 0; 0; 0; _; 1 |] -> true // any number of black bishops
+            | [| 0; 0; _; 0; 1 |] -> true // any number of white bishops
+            | [| 0; 1; 0; 0; 1 |] -> true // one knight
             | _ -> false
+        
         let a, b = core |> CountMaterial
         isInsufficient a && isInsufficient b
     
