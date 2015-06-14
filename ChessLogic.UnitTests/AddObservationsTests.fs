@@ -128,9 +128,16 @@ let Stalemate() =
     |> should equal "Stalemate"
 
 [<Fact>]
+let ``count material``() = 
+    StartingPosition.Core 
+    |> CountMaterial
+    |> should equal ([|8; 2; 2; 2; 1; 1|], [|8; 2; 2; 2; 1; 1|])
+
+[<Fact>]
 let ``insufficient material``() = 
     let res = "7k/7P/8/7K/8/8/8/8 b - - 0 0" |> playFromFen [ "Kxh7" ]
     res.Observations
     |> listToString ", "
     |> should equal "InsufficientMaterial"
+
     

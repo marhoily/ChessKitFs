@@ -5,6 +5,27 @@ open MyList
 open CoordinateNotation
 open IsAttackedBy
 
+let CountMaterial(board : PositionCore) = 
+    let white = Array.zeroCreate 6
+    let black = Array.zeroCreate 6
+    for piece in board.Placement |> Array.choose id do
+        let arr = 
+            match piece |> fst with
+            | White -> white
+            | Black -> black
+        
+        let idx = 
+            match piece |> snd with
+            | Pawn -> 0
+            | Knight -> 1
+            | Bishop -> 2
+            | Rook -> 3
+            | Queen -> 4
+            | King -> 5
+        
+        arr.[idx] <- arr.[idx] + 1
+    white, black
+
 let CoreToPosition(move : MoveSrc<LegalMove>) = 
     let core = move.Data.ResultPosition
     let prev = move.OriginalPosition
@@ -42,13 +63,7 @@ let CoreToPosition(move : MoveSrc<LegalMove>) =
         |> Seq.max
         > 2
     
-    let insufficientMaterial = 
-        core.Placement
-        |> Array.choose id
-        |> Array.sort
-        |> function 
-        | [| (Black, King); (White, King) |] -> true
-        | _ -> false
+    let insufficientMaterial = false
     
     let checkOrMate = 
         match isCheck, noMoves with
