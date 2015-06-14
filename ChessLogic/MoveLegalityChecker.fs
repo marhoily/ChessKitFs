@@ -63,7 +63,8 @@ let ValidateMove move position =
         let validateCapture c2 looksEnPassanty = 
             if at toSquare = None then 
                 if looksEnPassanty() then 
-                    if positionCore.EnPassant = Some(toSquare % 16) then enPassant()
+                    if positionCore.EnPassant = Some(toSquare % 16) then 
+                        enPassant()
                     else hasNoEnPassant()
                 else err OnlyCapturesThisWay
             else 
@@ -232,22 +233,21 @@ let ValidateMove move position =
     if (!errors).IsEmpty then 
         LegalMove { Move = move
                     OriginalPosition = position
-                    Data =
-                     { ResultPosition = (!newPosition).Value
-                       Piece = pieceType.Value
-                       Castling = !castling
-                       Observations = !observations
-                       Warnings = !warnings }}
+                    Data = 
+                        { ResultPosition = (!newPosition).Value
+                          Piece = pieceType.Value
+                          Castling = !castling
+                          Observations = !observations
+                          Warnings = !warnings } }
     else 
         IllegalMove { Move = move
                       OriginalPosition = position
-                      Data =
-                       { Piece = pieceType
-                         Castling = !castling
-                         Observations = !observations
-                         Warnings = !warnings
-                         Errors = !errors }}
-
+                      Data = 
+                          { Piece = pieceType
+                            Castling = !castling
+                            Observations = !observations
+                            Warnings = !warnings
+                            Errors = !errors } }
 
 let ValidateLegalMove move pos = 
     match ValidateMove move pos with
