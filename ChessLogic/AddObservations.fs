@@ -85,11 +85,9 @@ let CoreToPosition(move : MoveSrc<LegalMove>) =
         isInsufficient a && isInsufficient b
     
     let newObs = 
-        [ match isCheck, noMoves with
-          | true, true -> yield Mate
-          | true, false -> yield Check
-          | false, true -> yield Stalemate
-          | false, false -> ()
+        [ if isCheck && noMoves then yield Mate
+          if isCheck && not noMoves then yield Check
+          if not isCheck && noMoves then yield Stalemate
           if isRepetition then yield Repetition
           if insufficientMaterial then yield InsufficientMaterial
           if prev.HalfMoveClock >= 50 then yield FiftyMoveRule ]
