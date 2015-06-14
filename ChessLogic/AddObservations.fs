@@ -25,18 +25,13 @@ let CoreToPosition(move : MoveSrc<LegalMove>) =
     let isCheck = IsInCheck core.ActiveColor newAt
     
     let isNotMate() = 
-        seq { 
-            for i = 0 to 7 do
-                for j = 0 to 7 do
-                    for k = 0 to 7 do
-                        for l = 0 to 7 do
-                            let move = Move.Create (i, j) (k, l) None
-                            let res = core |> ValidateMoveRaw move
-                            match res with
-                            | LegalMove _ -> yield true
-                            | IllegalMove _ -> yield false
-        }
-        |> Seq.exists id
+        { Core = core
+          Move = Some(move)
+          HalfMoveClock = 0
+          FullMoveNumber = 0
+          Observations = [] }
+        |> GetLegalMoves.All 
+        |> List.exists (fun _ -> true)
     
     let newObs = 
         if isCheck then 
