@@ -48,9 +48,13 @@ let CoreToPosition(move : MoveSrc<LegalMove>) =
             else [ Check ]
         else []
     
-    let newObs = 
+    let repetition = 
         if isRepetition() then Repetition :: checkOrMate
         else checkOrMate
+    
+    let newObs = 
+        if prev.HalfMoveClock >= 50 then FiftyMoveRule :: repetition
+        else repetition
     
     { Core = core
       HalfMoveClock = newHalfMoveClock

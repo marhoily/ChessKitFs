@@ -36,7 +36,7 @@ let rec playFrom m p =
             printfn "%s" head
             failwithf "%A" x
 
-let playFen start moves = 
+let playFromFen moves start = 
     start
     |> ParseFen
     |> unwrap
@@ -115,5 +115,10 @@ let ``Full moves clock does not increment after white's move``() =
 
 [<Fact>]
 let ``Full moves clock does increment after black's move``() = 
-    let res = play [ "e4"; "e5" ]
-    res.FullMoveNumber |> should equal 2
+    let res = 
+        "7K/5n2/4b3/8/8/8/7k/8 w - - 49 1"
+        |> playFromFen [ "Kg7"; "Ng5" ]
+    res.HalfMoveClock |> should equal 51
+    let strings = res.Observations |> List.map toString
+    let actual = String.concat ", " strings
+    actual |> should equal "FiftyMoveRule"
