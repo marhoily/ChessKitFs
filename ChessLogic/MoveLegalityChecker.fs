@@ -14,7 +14,7 @@ type ValidatedMove =
       OriginalPosition : Position
       Info : MoveInfo }
 
-let rec validateMoveInternal stopRecursion (move : Move) (core:Position) = 
+let ValidateMove (move : Move) (core:Position) = 
     let position = core.Core
     let errors = ref []
     let observations = ref []
@@ -254,46 +254,8 @@ let rec validateMoveInternal stopRecursion (move : Move) (core:Position) =
                                Warnings = !warnings
                                Errors = !errors }}
 
-let ValidateMove = validateMoveInternal false
 let ValidateLegalMove move position = 
     match ValidateMove move position with
     | LegalMove(m) -> m
     | IllegalMove(_) -> failwith "move is illegal"
 
-(*
-        
-        let newHalfMoveClock = 
-            if pieceType.Value = Pawn || !observations |> contains Capture then 
-                0
-            else position.HalfMoveClock + 1
-        
-        let newMoveNumber = 
-            position.FullMoveNumber + if color = Black then 1
-                                      else 0
-
-
-    let setNewPositionIsCheck() = 
-        let old = (!newPosition).Value
-        let newAt x = old.Placement.[x |> ToIndex]
-        let isInCheck = IsInCheck old.ActiveColor newAt
-        if isInCheck then
-            let observations = 
-                if not stopRecursion then 
-                    let isNotMate =
-                        seq {
-                            for i = 0 to 7 do
-                            for j = 0 to 7 do
-                            for k = 0 to 7 do
-                            for l = 0 to 7 do
-                                let move = Move.Create(i, j) (k, l) None
-                                let res = old |> validateMoveInternal true move
-                                match res with
-                                | LegalMove _ -> yield true
-                                | IllegalMove _ -> yield false
-                            }
-                        |> Seq.exists id
-                    if isNotMate then [ Check ] else [ Check; Mate ]
-                else [ Check ]
-            newPosition := Some({ old with Observations = observations })
-
-*)

@@ -69,6 +69,7 @@
     <Compile Include="MoveLegalityCheckerTests.fs" />
     <Compile Include="UpdatePositionTests.fs" />
     <Compile Include="GetLegalMovesTests.fs" />
+    <Compile Include="AddObservationsTests.fs" />
     <Compile Include="SanTests.fs" />
     <Content Include="packages.config" />
     <Content Include="app.config" />

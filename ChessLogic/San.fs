@@ -6,6 +6,7 @@ open System.Text
 open CoordinateNotation
 open FParsec
 open IsAttackedBy
+open AddObservations
 
 let ToSanString(legalMove : MoveSrc<LegalMove>) = 
     //     _______________________
@@ -22,12 +23,13 @@ let ToSanString(legalMove : MoveSrc<LegalMove>) =
     let sb = new StringBuilder(6)
     let move = legalMove.Move
     let data = legalMove.Data
+    let obs = (CoreToPosition legalMove).Observations
     let shortCastling = data.Castling = Some(WK) || data.Castling = Some(BK)
     let longCastling = data.Castling = Some(WQ) || data.Castling = Some(BQ)
     let capture = data.Observations |> MyList.contains Capture
     let promotion = data.Observations |> MyList.contains Promotion
-   // let check = data.ResultPosition.Observations |> MyList.contains Check
-   // let mate = data.ResultPosition.Observations |> MyList.contains Mate
+    let check = obs |> MyList.contains Check
+    let mate = obs |> MyList.contains Mate
     let append (str : string) = sb.Append(str) |> ignore
     let appendc (str : char) = sb.Append(str) |> ignore
     let file, rank, fileAndRankStr = fst, snd, CoordinateToString
@@ -63,8 +65,8 @@ let ToSanString(legalMove : MoveSrc<LegalMove>) =
     if promotion then 
         appendc '='
         appendc (move.PromoteTo.Value |> typeToString)
-   // if check then appendc '+'
-   // else if mate then appendc '#'
+    if check then appendc '+'
+    else if mate then appendc '#'
     string sb
 
 type Ending = 
