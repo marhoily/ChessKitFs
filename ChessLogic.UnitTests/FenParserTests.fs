@@ -52,7 +52,7 @@ RNBQKBNR
 
 [<Fact>]
 let ``d1 should refer to Q in starting position``() = 
-    StartingPosition
+    StartingPosition.Core
     |> PieceAt (_c "d1") |> get
     |> PieceToString
     |> should equal 'Q'

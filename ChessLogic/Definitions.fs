@@ -5,7 +5,7 @@ open Microsoft.FSharp.Reflection
 
 type File = int
 
-let fileToStirng (f : File) = char(int 'a' + f) |> string
+let fileToStirng (f : File) = char (int 'a' + f) |> string
 let LetterToFileNoCheck(p : char) : File = int (p) - int ('a')
 
 type Rank = int
@@ -95,13 +95,15 @@ type Move =
     { Start : Coordinate
       End : Coordinate
       PromoteTo : PieceType option }
+    
     member this.AsString = 
         let vector = vectorToString (this.Start, this.End)
         if this.PromoteTo = None then vector
-        else
-            let p = PieceToString(White, this.PromoteTo.Value) 
+        else 
+            let p = PieceToString(White, this.PromoteTo.Value)
             sprintf "%s=%c" vector p
-    static member Create f t p =
+    
+    static member Create f t p = 
         { Start = f
           End = t
           PromoteTo = p }
@@ -130,8 +132,7 @@ type Error =
     | DoesNotMoveThisWay
     | CastleFromCheck
 
-
-type PositionCore =
+type PositionCore = 
     { Placement : Piece option array
       ActiveColor : Color
       CastlingAvailability : CastlingHint list
@@ -143,9 +144,8 @@ type Position =
       FullMoveNumber : int
       Observations : PositionObservation list
       Move : MoveSrc<LegalMove> option }
-and
-    [<StructuredFormatDisplayAttribute("{AsString}")>]
-    MoveSrc<'T> = 
+
+and [<StructuredFormatDisplayAttribute("{AsString}")>] MoveSrc<'T> = 
     { Move : Move
       OriginalPosition : Position
       Data : 'T }
@@ -165,7 +165,6 @@ type IllegalMove =
       Observations : Observation list
       Warnings : Warning list
       Errors : Error list }
-    
     override x.ToString() = 
         let toString (x : 'a) = 
             match FSharpValue.GetUnionFields(x, typeof<'a>) with
@@ -176,10 +175,10 @@ type IllegalMove =
 
 let EmptyPosition = 
     { Core = 
-        { Placement = [||]
-          ActiveColor = White
-          CastlingAvailability = [ WK; WQ; BK; BQ ]
-          EnPassant = None }
+          { Placement = [||]
+            ActiveColor = White
+            CastlingAvailability = [ WK; WQ; BK; BQ ]
+            EnPassant = None }
       HalfMoveClock = 0
       FullMoveNumber = 1
       Observations = []

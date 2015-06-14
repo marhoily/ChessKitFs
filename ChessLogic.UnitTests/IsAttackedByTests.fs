@@ -11,6 +11,7 @@ let check square func fen =
           fen
           |> FenParser.ParseFen
           |> Parsing.unwrap
+          |> (fun x -> x.Core)
           |> PieceAt (i |> fromX88)) (toX88 (_c square))
 
 [<Fact>]
@@ -255,6 +256,7 @@ let check2 func fen =
           fen
           |> FenParser.ParseFen
           |> Parsing.unwrap
+          |> (fun x -> x.Core)
           |> PieceAt i) 
 
 [<Fact>]

@@ -25,10 +25,10 @@ let MoveToString move =
     
     let strings = 
         match move with
-        | LegalMove m -> 
+        | MoveInfo.LegalMove m -> 
             let m = m.Data
             getStrings (Some(m.Piece)) m.Castling m.Observations m.Warnings [] 
-        | IllegalMove m -> 
+        | MoveInfo.IllegalMove m -> 
             let m = m.Data
             getStrings m.Piece m.Castling m.Observations m.Warnings m.Errors
     
@@ -38,7 +38,7 @@ let check position move expectedHint =
     position
     |> ParseFen
     |> unwrap
-    |> ValidateMove(_cn move)
+    |> ValidateMoveAndWrap(_cn move)
     |> MoveToString
     |> should equal expectedHint
 
@@ -1373,7 +1373,7 @@ module Queen =
                     fen
                     |> ParseFen
                     |> unwrap
-                    |> ValidateMove(_cn move)
+                    |> ValidateMoveAndWrap(_cn move)
                     |> MoveToString
                 if expected <> actual then 
                     errCounter <- errCounter + 1

@@ -24,14 +24,14 @@ let CoreToPosition(move : MoveSrc<LegalMove>) =
     let newAt x = core.Placement.[x |> ToIndex]
     let isCheck = IsInCheck core.ActiveColor newAt
     
-    let isMate() = 
+    let isNotMate() = 
         seq { 
             for i = 0 to 7 do
                 for j = 0 to 7 do
                     for k = 0 to 7 do
                         for l = 0 to 7 do
                             let move = Move.Create (i, j) (k, l) None
-                            let res = prev |> ValidateMove move
+                            let res = core |> ValidateMove move
                             match res with
                             | LegalMove _ -> yield true
                             | IllegalMove _ -> yield false
@@ -40,8 +40,8 @@ let CoreToPosition(move : MoveSrc<LegalMove>) =
     
     let newObs = 
         if isCheck then 
-            if isMate() then [ Check; Mate ]
-            else [ Check ]
+            if isNotMate() then [ Check ]
+            else [ Check; Mate ]
         else []
     
     { Core = core

@@ -35,7 +35,7 @@ let ToSanString(legalMove : MoveSrc<LegalMove>) =
     let file, rank, fileAndRankStr = fst, snd, CoordinateToString
     let fileStr x = fileToStirng (x |> file)
     let rankStr x = rankToString (x |> rank)
-    let at x = legalMove.OriginalPosition |> PieceAt x
+    let at x = legalMove.OriginalPosition.Core |> PieceAt x
     let isSimilarTo (a:MoveSrc<_>) (b:MoveSrc<_>) = 
         let x, y = a.Move, b.Move
         (x.Start <> y.Start) && (x.End = y.End) && (at x.Start = at y.Start)
@@ -150,7 +150,7 @@ type SanMove =
 
 let sanScanners board = 
     let at88 i = board |> PieceAt(i |> fromX88)
-    let color = board.Core.ActiveColor
+    let color = board.ActiveColor
     let project = 
         Seq.map (fun f -> f())
         >> Seq.filter (fun x -> x <> -1)
@@ -186,7 +186,7 @@ let sanScanners board =
 let FromSanString str board = 
     let color = board.Core.ActiveColor
     let findPushingPawns, findCapturingPawns, findNonPawnPieces = 
-        sanScanners board
+        sanScanners board.Core
     
     let addNotesToLegal notes capture warns (legalMove:MoveSrc<LegalMove>) =
         let warnings = ref warns
@@ -211,8 +211,8 @@ let FromSanString str board =
 
     let addNotesToAny notes capture warns moveInfo =
         match moveInfo with
-        | LegalMove m -> addNotesToLegal notes capture warns m
-        | IllegalMove m -> IllegalSan m
+        | MoveInfo.LegalMove m -> addNotesToLegal notes capture warns m
+        | MoveInfo.IllegalMove m -> IllegalSan m
 
     let castlingToSanMove opt notes = 
         let move = 
@@ -223,11 +223,11 @@ let FromSanString str board =
             | Black, LongCastling -> "e8-c8"
             | _ -> failwith "unexpected"
         board 
-        |> ValidateMove(_cn (move))
+        |> ValidateMoveAndWrap(_cn (move))
         |> addNotesToAny notes None []
     
     let validate promoteTo fromSquare toSquare = 
-        ValidateMove (Move.Create fromSquare toSquare promoteTo) board
+        ValidateMoveAndWrap (Move.Create fromSquare toSquare promoteTo) board
 
     let disambiguate hint moves = 
         let unique (m: MoveSrc<_>) = 
@@ -244,8 +244,8 @@ let FromSanString str board =
             let mutable invalid = []
             for move in list do
                 match move with
-                | LegalMove m -> valid <- m::valid
-                | IllegalMove m -> invalid <- m::invalid
+                | MoveInfo.LegalMove m -> valid <- m::valid
+                | MoveInfo.IllegalMove m -> invalid <- m::invalid
             (valid, invalid)
 
         find (toSquare |> toX88)

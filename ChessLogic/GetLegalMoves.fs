@@ -5,10 +5,10 @@ open Definitions
 open MoveLegalityChecker
 
 let FromSquare from position = 
-    let legalOnly moves = 
+    let legalOnly (moves : MoveInfo list) = 
         [ for m in moves do
               match m with
-              | LegalMove(m) -> yield m
+              | MoveInfo.LegalMove(m) -> yield m
               | _ -> () ]
     
     let rank7 = 1
@@ -18,8 +18,8 @@ let FromSquare from position =
     
     let u (f,t) = Move.Create f t None
     let f = from |> toX88
-    let validate v t = position |> ValidateMove(v (from, t |> fromX88))
-    let at88 i = position |> PieceAt(i |> fromX88)
+    let validate v t = position |> ValidateMoveAndWrap(v (from, t |> fromX88))
+    let at88 i = position.Core |> PieceAt(i |> fromX88)
     
     let gen v = 
         List.map (fun i -> f + i)
@@ -33,7 +33,7 @@ let FromSquare from position =
               if at88 curr = None then yield! step curr increment ]
     
     let iter li = li |> List.collect (step f)
-    match position |> PieceAt from with
+    match position.Core |> PieceAt from with
     | Some(White, Pawn) -> 
         if snd from = rank7 then gen p [ -16; -15; -17 ]
         else gen u [ -16; -32; -15; -17 ]
@@ -48,10 +48,10 @@ let FromSquare from position =
     | None -> []
     |> legalOnly
 
-let All position = 
+let All (position : Position) = 
     [ for i = 0 to 63 do
           let square = (i % 8, i / 8)
-          match position |> PieceAt square with
+          match position.Core |> PieceAt square with
           | Some(color, _) -> 
               if color = position.Core.ActiveColor then 
                   yield! position |> FromSquare square

@@ -18,7 +18,7 @@ let check move expectedSan position =
         |> unwrap
     printfn "%s" (Dump.Print p)
     p
-    |> ValidateLegalMove(_cn move)
+    |> ValidateLegalMoveAndWrap(_cn move)
     |> ToSanString
     |> should equal expectedSan
 
@@ -135,7 +135,7 @@ let ``parse gxe4``() = parse "gxe4" "(PawnCapture (6,((4, 4), null)), null)"
 
 // ----- Scanners --------
 let findPushingPawns square (expected : string list) board = 
-    let scan, _, _ = sanScanners (ParseFen board |> unwrap)
+    let scan, _, _ = sanScanners (ParseFen board |> unwrap).Core
     scan (_c square |> toX88)
     |> List.map CoordinateToString
     |> should equal expected
@@ -157,7 +157,7 @@ let ``push white pawn: e2-e4``() =
     "8/8/8/8/8/8/4P3/8 w - - 0 1" |> findPushingPawns "e4" [ "e2" ]
 
 let findCapturingPawns square (expected : string list) board = 
-    let _, scan, _ = sanScanners (ParseFen board |> unwrap)
+    let _, scan, _ = sanScanners (ParseFen board |> unwrap).Core
     scan (_c square |> toX88)
     |> List.map CoordinateToString
     |> should equal expected
@@ -183,7 +183,7 @@ let ``2 black pawns can capture``() =
     "8/8/8/8/8/8/2p1p3/8 b - - 0 1" |> findCapturingPawns "d1" [ "e2"; "c2" ]
 
 let findNonPawnPieces pieceType square (expected : string list) board = 
-    let _, _, scan = sanScanners (ParseFen board |> unwrap)
+    let _, _, scan = sanScanners (ParseFen board |> unwrap).Core
     scan pieceType (_c square |> toX88)
     |> List.map CoordinateToString
     |> should equal expected
