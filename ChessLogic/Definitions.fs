@@ -144,6 +144,12 @@ type Position =
       FullMoveNumber : int
       Observations : PositionObservation list
       Move : MoveSrc<LegalMove> option }
+    static member Create core = 
+        { Core = core
+          Move = None
+          HalfMoveClock = 0
+          FullMoveNumber = 0
+          Observations = [] }
 
 and [<StructuredFormatDisplayAttribute("{AsString}")>] MoveSrc<'T> = 
     { Move : Move

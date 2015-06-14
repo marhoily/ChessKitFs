@@ -25,11 +25,7 @@ let CoreToPosition(move : MoveSrc<LegalMove>) =
     let isCheck = IsInCheck core.ActiveColor newAt
     
     let isMate() = 
-        { Core = core
-          Move = Some(move)
-          HalfMoveClock = 0
-          FullMoveNumber = 0
-          Observations = [] }
+        Position.Create core
         |> GetLegalMoves.All 
         |> List.isEmpty
     
