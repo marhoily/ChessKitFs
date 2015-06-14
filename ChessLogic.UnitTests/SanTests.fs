@@ -231,10 +231,6 @@ let ``findNonPawnPieces throws when given pawn``() =
 
 // ----- toSanMove --------
 let san move (expected : string) board = 
-    let toString (x : 'a) = 
-        match FSharpValue.GetUnionFields(x, typeof<'a>) with
-        | case, _ -> case.Name
-    
     let fromLegalSanString str board = 
         match FromSanString str board with
         | LegalSan(move, warns) -> 
@@ -251,10 +247,6 @@ let san move (expected : string) board =
     |> should equal expected
 
 let warn move (expected : string) warnings board = 
-    let toString (x : 'a) = 
-        match FSharpValue.GetUnionFields(x, typeof<'a>) with
-        | case, _ -> case.Name
-    
     let fromLegalSanString str board = 
         match FromSanString str board with
         | LegalSan(move, warns) -> 
@@ -271,10 +263,6 @@ let warn move (expected : string) warnings board =
 
 let illegal move expected errors board = 
     let MoveToString m = 
-        let toString (x : 'a) = 
-            match FSharpValue.GetUnionFields(x, typeof<'a>) with
-            | case, _ -> case.Name
-        
         let getStrings piece castling observations warnings errors 
             resultObservations = 
             seq { 

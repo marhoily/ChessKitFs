@@ -7,13 +7,9 @@ open System
 open MoveLegalityChecker
 open CoordinateNotation
 open Parsing
-open Microsoft.FSharp.Reflection
+open Definitions
 
 let MoveToString (move : MoveInfo) = 
-    let toString (x : 'a) = 
-        match FSharpValue.GetUnionFields(x, typeof<'a>) with
-        | case, _ -> case.Name
-    
     let getStrings piece castling observations warnings errors = 
         seq { 
             if piece <> None then yield toString piece.Value

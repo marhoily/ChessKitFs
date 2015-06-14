@@ -4,6 +4,7 @@ open Definitions
 open MyList
 open CoordinateNotation
 open IsAttackedBy
+open System.Collections.Generic
 
 let CoreToPosition(move : MoveSrc<LegalMove>) = 
     let core = move.Data.ResultPosition
@@ -25,14 +26,32 @@ let CoreToPosition(move : MoveSrc<LegalMove>) =
     
     let isMate() = 
         Position.Create core
-        |> GetLegalMoves.All 
+        |> GetLegalMoves.All
         |> List.isEmpty
     
-    let newObs = 
+    let isRepetition() = 
+        let rec toSequence pos = 
+            seq { 
+                yield pos.Core
+                if pos.Move <> None then 
+                    let next = pos.Move.Value.OriginalPosition
+                    yield! toSequence next
+            }
+        toSequence (Position.Create core)
+        |> Seq.countBy id
+        |> Seq.map snd
+        |> Seq.max
+        > 2
+    
+    let checkOrMate = 
         if isCheck then 
             if isMate() then [ Mate ]
             else [ Check ]
         else []
+    
+    let newObs = 
+        if isRepetition() then Repition :: checkOrMate
+        else checkOrMate
     
     { Core = core
       HalfMoveClock = newHalfMoveClock

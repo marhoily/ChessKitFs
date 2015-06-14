@@ -86,6 +86,7 @@ type CastlingHint =
 type PositionObservation = 
     | Check
     | Mate
+    | Repition
 
 let vectorToString = function 
     | (f, t) -> CoordinateToString f + "-" + CoordinateToString t
@@ -132,6 +133,10 @@ type Error =
     | DoesNotMoveThisWay
     | CastleFromCheck
 
+let toString (x : 'a) = 
+    match FSharpValue.GetUnionFields(x, typeof<'a>) with
+    | case, _ -> case.Name
+
 type PositionCore = 
     { Placement : Piece option array
       ActiveColor : Color
@@ -150,6 +155,9 @@ type Position =
           HalfMoveClock = 0
           FullMoveNumber = 0
           Observations = [] }
+    override x.ToString() = 
+        let errors = x.Observations |> List.map toString
+        sprintf " (%s)" (String.concat ", " errors)
 
 and [<StructuredFormatDisplayAttribute("{AsString}")>] MoveSrc<'T> = 
     { Move : Move
@@ -172,10 +180,6 @@ type IllegalMove =
       Warnings : Warning list
       Errors : Error list }
     override x.ToString() = 
-        let toString (x : 'a) = 
-            match FSharpValue.GetUnionFields(x, typeof<'a>) with
-            | case, _ -> case.Name
-        
         let errors = x.Errors |> List.map toString
         sprintf " (%s)" (String.concat ", " errors)
 

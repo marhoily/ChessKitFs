@@ -99,7 +99,7 @@ let ParseSanString str =
         | 'B' -> Bishop
         | 'R' -> Rook
         | 'Q' -> Queen
-        | 'K' -> Queen
+        | 'K' -> King
         | _ -> failwith ("unknown promotion hint")
     
     let short = stringReturn "O-O" ShortCastling
