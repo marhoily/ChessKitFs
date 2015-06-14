@@ -129,13 +129,21 @@ let Stalemate() =
 
 [<Fact>]
 let ``count material``() = 
-    StartingPosition.Core 
-    |> CountMaterial
-    |> should equal ([|8; 2; 2; 2; 1; 1|], [|8; 2; 2; 2; 1; 1|])
+    (CountMaterial StartingPosition.Core |> sprintf "%A")
+    |> should equal (([|11; 2; 1; 1; 1|], [|11; 2; 1; 1; 1|]) |> sprintf "%A")
 
+[<Fact>]
+let ``get square color``() = 
+    GetSquareColor 0 |> should equal White
+    GetSquareColor 1 |> should equal Black
+    GetSquareColor 8 |> should equal Black
+    GetSquareColor 63 |> should equal White
+    
 [<Fact>]
 let ``insufficient material``() = 
     let res = "7k/7P/8/7K/8/8/8/8 b - - 0 0" |> playFromFen [ "Kxh7" ]
+    printfn "%s" (ToFen res)
+    printfn "%s" (Dump.Print res)
     res.Observations
     |> listToString ", "
     |> should equal "InsufficientMaterial"

@@ -5,25 +5,34 @@ open MyList
 open CoordinateNotation
 open IsAttackedBy
 
+let GetSquareColor(c : int) = 
+    let file, rank = c % 8, c / 8
+    if (file % 2) = (rank % 2) then White
+    else Black
+
 let CountMaterial(board : PositionCore) = 
-    let white = Array.zeroCreate 6
-    let black = Array.zeroCreate 6
-    for piece in board.Placement |> Array.choose id do
-        let arr = 
-            match piece |> fst with
-            | White -> white
-            | Black -> black
-        
-        let idx = 
-            match piece |> snd with
-            | Pawn -> 0
-            | Knight -> 1
-            | Bishop -> 2
-            | Rook -> 3
-            | Queen -> 4
-            | King -> 5
-        
-        arr.[idx] <- arr.[idx] + 1
+    let white = Array.zeroCreate 5
+    let black = Array.zeroCreate 5
+    for i in 0..63 do
+        let p = board.Placement.[i]
+        if p <> None then 
+            let piece = p.Value
+            let square = GetSquareColor i
+            
+            let arr = 
+                match piece |> fst with
+                | White -> white
+                | Black -> black
+            
+            let idx = 
+                match piece |> snd, square with
+                | Pawn, _ | Rook, _ | Queen, _ -> 0
+                | Knight, _ -> 1
+                | Bishop, White -> 2
+                | Bishop, Black -> 3
+                | King, _ -> 4
+            
+            arr.[idx] <- arr.[idx] + 1
     white, black
 
 let CoreToPosition(move : MoveSrc<LegalMove>) = 
@@ -63,7 +72,11 @@ let CoreToPosition(move : MoveSrc<LegalMove>) =
         |> Seq.max
         > 2
     
-    let insufficientMaterial = false
+    let insufficientMaterial = 
+        // Other, Knight, White Bishop, Black Bishop, King
+        match core |> CountMaterial with
+        | ([|0; 0; 0; 0; 1|], [|0; 0; 0; 0; 1|]) -> true
+        | _ -> false
     
     let checkOrMate = 
         match isCheck, noMoves with
