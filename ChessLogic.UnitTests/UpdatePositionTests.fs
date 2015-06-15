@@ -1,5 +1,6 @@
 ﻿module UpdatePositionTests
 
+open FenPrinterTests
 open FsUnit.Xunit
 open Xunit
 open ChessKit.ChessLogic
@@ -8,7 +9,6 @@ open ChessKit.ChessLogic.MoveLegalityChecker
 open ChessKit.ChessLogic.FenParser
 open ChessKit.ChessLogic.CoordinateNotation
 open ChessKit.ChessLogic.FenPrinter
-open ChessKit.ChessLogic.Board
 
 let after move position = 
     position

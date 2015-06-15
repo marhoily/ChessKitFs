@@ -128,22 +128,6 @@ type CastlingHint with
         | 'k' -> BK
         | _ -> failwith "unknown castling symbol"
 
-type Position with
-    
-    static member FromCore core = 
-        { Core = core
-          Move = None
-          HalfMoveClock = 0
-          FullMoveNumber = 0
-          Observations = [] }
-    
-    static member FromCoreAndMove core move = 
-        { Core = core
-          Move = Some(move)
-          HalfMoveClock = 0
-          FullMoveNumber = 0
-          Observations = [] }
-
 type Move with
     static member internal Create f t p = 
         { Start = f
@@ -242,14 +226,3 @@ type IllegalMove with
         let errors = x.Errors |> List.map toString
         sprintf "%s (%s)" x.Move.AsString (String.concat ", " errors)
 
-module Board =
-    let internal EmptyPosition = 
-        { Core = 
-              { Placement = [||]
-                ActiveColor = White
-                CastlingAvailability = [ WK; WQ; BK; BQ ]
-                EnPassant = None }
-          HalfMoveClock = 0
-          FullMoveNumber = 1
-          Observations = []
-          Move = None }

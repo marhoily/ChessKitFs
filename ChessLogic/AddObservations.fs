@@ -33,6 +33,20 @@ let internal CountMaterial(board : PositionCore) =
             arr.[idx] <- arr.[idx] + 1
     white, black
 
+let internal positionFromCore core = 
+    { Core = core
+      Move = None
+      HalfMoveClock = 0
+      FullMoveNumber = 0
+      Observations = [] }
+    
+let internal positionFromCoreAndMove core move = 
+    { Core = core
+      Move = Some(move)
+      HalfMoveClock = 0
+      FullMoveNumber = 0
+      Observations = [] }
+
 let CoreToPosition(move : LegalMove) = 
     let core = move.ResultPosition
     let prev = move.OriginalPosition
@@ -52,7 +66,7 @@ let CoreToPosition(move : LegalMove) =
     let isCheck = IsInCheck core.ActiveColor newAt
     
     let noMoves = 
-        Position.FromCore core
+        positionFromCore core
         |> GetLegalMoves.All
         |> List.isEmpty
     
@@ -64,7 +78,7 @@ let CoreToPosition(move : LegalMove) =
                     let next = pos.Move.Value.OriginalPosition
                     yield! toSequence next
             }
-        toSequence (Position.FromCoreAndMove core move)
+        toSequence (positionFromCoreAndMove core move)
         |> Seq.countBy id
         |> Seq.map snd
         |> Seq.max

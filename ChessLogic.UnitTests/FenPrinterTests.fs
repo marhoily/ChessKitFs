@@ -2,9 +2,19 @@
 
 open Xunit
 open ChessKit.ChessLogic
-open ChessKit.ChessLogic.Board
 open ChessKit.ChessLogic.FenPrinter
 open FsUnit.Xunit
+
+let internal EmptyPosition = 
+    { Core = 
+          { Placement = [||]
+            ActiveColor = White
+            CastlingAvailability = [ WK; WQ; BK; BQ ]
+            EnPassant = None }
+      HalfMoveClock = 0
+      FullMoveNumber = 1
+      Observations = []
+      Move = None }
 
 let toFenCore c = 
     ToFen { EmptyPosition with Core = c } 
