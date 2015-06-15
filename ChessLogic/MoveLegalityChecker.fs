@@ -6,8 +6,8 @@ open IsAttackedBy
 open MyList
 
 type MoveInfo = 
-    | LegalMove of MoveSrc<LegalMove>
-    | IllegalMove of MoveSrc<IllegalMove>
+    | LegalMove of LegalMove
+    | IllegalMove of IllegalMove
 
 let ValidateMove move position = 
     let errors = ref []
@@ -233,21 +233,19 @@ let ValidateMove move position =
     if (!errors).IsEmpty then 
         LegalMove { Move = move
                     OriginalPosition = position
-                    Data = 
-                        { ResultPosition = (!newPosition).Value
-                          Piece = pieceType.Value
-                          Castling = !castling
-                          Observations = !observations
-                          Warnings = !warnings } }
+                    ResultPosition = (!newPosition).Value
+                    Piece = pieceType.Value
+                    Castling = !castling
+                    Observations = !observations
+                    Warnings = !warnings } 
     else 
         IllegalMove { Move = move
                       OriginalPosition = position
-                      Data = 
-                          { Piece = pieceType
-                            Castling = !castling
-                            Observations = !observations
-                            Warnings = !warnings
-                            Errors = !errors } }
+                      Piece = pieceType
+                      Castling = !castling
+                      Observations = !observations
+                      Warnings = !warnings
+                      Errors = !errors } 
 
 let ValidateLegalMove move pos = 
     match ValidateMove move pos with

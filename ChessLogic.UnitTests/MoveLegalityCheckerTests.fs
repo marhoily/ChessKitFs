@@ -22,10 +22,8 @@ let MoveToString (move : MoveInfo) =
     let strings = 
         match move with
         | LegalMove m -> 
-            let m = m.Data
             getStrings (Some(m.Piece)) m.Castling m.Observations m.Warnings [] 
         | IllegalMove m -> 
-            let m = m.Data
             getStrings m.Piece m.Castling m.Observations m.Warnings m.Errors
     
     String.Join(" | ", strings)

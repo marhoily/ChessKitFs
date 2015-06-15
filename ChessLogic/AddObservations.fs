@@ -35,11 +35,11 @@ let internal CountMaterial(board : PositionCore) =
             arr.[idx] <- arr.[idx] + 1
     white, black
 
-let CoreToPosition(move : MoveSrc<LegalMove>) = 
-    let core = move.Data.ResultPosition
+let CoreToPosition(move : LegalMove) = 
+    let core = move.ResultPosition
     let prev = move.OriginalPosition
-    let piece = move.Data.Piece
-    let obs = move.Data.Observations
+    let piece = move.Piece
+    let obs = move.Observations
     let color = prev.Core.ActiveColor
     
     let newHalfMoveClock = 

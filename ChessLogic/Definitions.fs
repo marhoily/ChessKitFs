@@ -153,7 +153,7 @@ type Position =
       HalfMoveClock : int
       FullMoveNumber : int
       Observations : PositionObservation list
-      Move : MoveSrc<LegalMove> option }
+      Move : LegalMove option }
     static member FromCore core = 
         { Core = core
           Move = None
@@ -170,29 +170,30 @@ type Position =
         let errors = x.Observations |> List.map toString
         sprintf " (%s)" (String.concat ", " errors)
 
-and [<StructuredFormatDisplayAttribute("{AsString}")>] MoveSrc<'T> = 
+and 
+    [<StructuredFormatDisplay("{AsString}")>]
+    LegalMove = 
     { Move : Move
       OriginalPosition : Position
-      Data : 'T }
-    member x.AsString = x.Move.AsString + x.Data.ToString()
-
-and LegalMove = 
-    { ResultPosition : PositionCore
+      ResultPosition : PositionCore
       Piece : PieceType
       Castling : CastlingHint option
       Observations : Observation list
       Warnings : Warning list }
-    override x.ToString() = ""
+    member x.AsString = x.Move.AsString
 
+[<StructuredFormatDisplay("{AsString}")>]
 type IllegalMove = 
-    { Piece : PieceType option
+    { Move : Move
+      OriginalPosition : Position
+      Piece : PieceType option
       Castling : CastlingHint option
       Observations : Observation list
       Warnings : Warning list
       Errors : Error list }
-    override x.ToString() = 
+    member x.AsString = 
         let errors = x.Errors |> List.map toString
-        sprintf " (%s)" (String.concat ", " errors)
+        sprintf "%s (%s)" x.Move.AsString (String.concat ", " errors)
 
 let EmptyPosition = 
     { Core = 

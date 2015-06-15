@@ -8,7 +8,7 @@ open FParsec
 open IsAttackedBy
 open AddObservations
 
-let ToSanString(legalMove : MoveSrc<LegalMove>) = 
+let ToSanString(legalMove : LegalMove) = 
     //     _______________________
     // ___/ Shortcuts and helpers \___________________________
     let typeToString = 
@@ -22,12 +22,11 @@ let ToSanString(legalMove : MoveSrc<LegalMove>) =
     
     let sb = new StringBuilder(6)
     let move = legalMove.Move
-    let data = legalMove.Data
     let obs = (CoreToPosition legalMove).Observations
-    let shortCastling = data.Castling = Some(WK) || data.Castling = Some(BK)
-    let longCastling = data.Castling = Some(WQ) || data.Castling = Some(BQ)
-    let capture = data.Observations |> MyList.contains Capture
-    let promotion = data.Observations |> MyList.contains Promotion
+    let shortCastling = legalMove.Castling = Some(WK) || legalMove.Castling = Some(BK)
+    let longCastling = legalMove.Castling = Some(WQ) || legalMove.Castling = Some(BQ)
+    let capture = legalMove.Observations |> MyList.contains Capture
+    let promotion = legalMove.Observations |> MyList.contains Promotion
     let check = obs |> MyList.contains Check
     let mate = obs |> MyList.contains Mate
     let append (str : string) = sb.Append(str) |> ignore
@@ -36,7 +35,7 @@ let ToSanString(legalMove : MoveSrc<LegalMove>) =
     let fileStr x = fileToStirng (x |> file)
     let rankStr x = rankToString (x |> rank)
     let at x = legalMove.OriginalPosition.Core |> PieceAt x
-    let isSimilarTo (a:MoveSrc<_>) (b:MoveSrc<_>) = 
+    let isSimilarTo (a:LegalMove) (b:LegalMove) = 
         let x, y = a.Move, b.Move
         (x.Start <> y.Start) && (x.End = y.End) && (at x.Start = at y.Start)
     
@@ -52,10 +51,10 @@ let ToSanString(legalMove : MoveSrc<LegalMove>) =
     if shortCastling then append "O-O"
     else if longCastling then append "O-O-O"
     else 
-        if data.Piece = Pawn then 
+        if legalMove.Piece = Pawn then 
             if capture then append (fileStr move.Start)
         else 
-            appendc (data.Piece |> typeToString)
+            appendc (legalMove.Piece |> typeToString)
             if ambiguous() then 
                 if unique file then append (fileStr move.Start)
                 else if unique rank then append (rankStr move.Start)
@@ -130,8 +129,8 @@ let ParseSanString str =
 
 type SanError = 
     | PieceNotFound of Piece
-    | AmbiguousChoice of MoveSrc<LegalMove> list
-    | ChoiceOfIllegalMoves of MoveSrc<IllegalMove> list
+    | AmbiguousChoice of LegalMove list
+    | ChoiceOfIllegalMoves of IllegalMove list
 
 type SanWarning = 
     | IsCapture
@@ -143,8 +142,8 @@ type SanWarning =
     | DisambiguationIsExcessive
 
 type SanMove = 
-    | LegalSan of MoveSrc<LegalMove> * SanWarning list
-    | IllegalSan of MoveSrc<IllegalMove>
+    | LegalSan of LegalMove * SanWarning list
+    | IllegalSan of IllegalMove
     | Nonsense of SanError
     | Unparsable of string
 
@@ -188,7 +187,7 @@ let FromSanString str board =
     let findPushingPawns, findCapturingPawns, findNonPawnPieces = 
         sanScanners board.Core
     
-    let addNotesToLegal notes capture warns (legalMove:MoveSrc<LegalMove>) =
+    let addNotesToLegal notes capture warns (legalMove:LegalMove) =
         let warnings = ref warns
         let warn w = warnings := w :: !warnings
         let obs = (CoreToPosition legalMove).Observations
@@ -204,7 +203,7 @@ let FromSanString str board =
         else if mateNote && not mateReal then warn IsNotMate
                     
         let captureNote = capture = Some(SanCapture)
-        let captureReal = legalMove.Data.Observations |> MyList.contains Capture
+        let captureReal = legalMove.Observations |> MyList.contains Capture
         if not captureNote && captureReal then warn IsCapture
         else if captureNote && not captureReal then warn IsNotCapture
             
@@ -230,14 +229,17 @@ let FromSanString str board =
     let validate promoteTo fromSquare toSquare = 
         ValidateMove (Move.Create fromSquare toSquare promoteTo) board
 
-    let disambiguate hint moves = 
-        let unique (m: MoveSrc<_>) = 
-            match hint with
-            | FileHint f -> m.Move.Start |> fst = f
-            | RankHint r -> m.Move.Start |> snd = r
-            | SquareHint s -> m.Move.Start = s
-            | NoHint -> true
-        moves |> List.filter unique
+    let y start hint = 
+        match hint with
+        | FileHint f -> start |> fst = f
+        | RankHint r -> start |> snd = r
+        | SquareHint s -> start = s
+        | NoHint -> true
+
+    let legal (m : LegalMove) = y m.Move.Start
+    let illegal (m : IllegalMove) = y m.Move.Start
+    let disambiguate fn hint moves = 
+        moves |> List.filter (fun x -> fn x hint)
 
     let findAndSeparate find toSquare validate () = 
         let separateToLegalAndIllegal list =
@@ -255,8 +257,8 @@ let FromSanString str board =
 
     let toSanMove find hint pieceType addNotes = 
         let validCandidates, invalidCandidates = find()
-        let valid = disambiguate hint validCandidates
-        let invalid = disambiguate hint invalidCandidates
+        let valid = disambiguate legal hint validCandidates
+        let invalid = disambiguate illegal hint invalidCandidates
 
         let warnings = 
             if validCandidates |> List.length = 1 && hint <> NoHint then 

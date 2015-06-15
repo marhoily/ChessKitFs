@@ -14,7 +14,7 @@ let after move position =
     |> ParseFen
     |> unwrap
     |> ValidateLegalMove(_cn move)
-    |> fun vm -> { EmptyPosition with Core = vm.Data.ResultPosition }
+    |> fun vm -> { EmptyPosition with Core = vm.ResultPosition }
     |> ToFen
 
 [<Fact>]
