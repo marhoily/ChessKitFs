@@ -53,7 +53,7 @@
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
-    <Compile Include="Fs4.fs" />
+    <Compile Include="CommonUtils.fs" />
     <Compile Include="Definitions.fs" />
     <Compile Include="Dump.fs" />
     <Compile Include="FenPrinter.fs" />
