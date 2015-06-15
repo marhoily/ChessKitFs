@@ -1,4 +1,4 @@
-﻿module MyList
+﻿module internal MyList
 
 open System.Collections.Generic
 

@@ -9,7 +9,7 @@
     <ProjectGuid>2d1f007e-ac65-4372-9d61-f9dc9004557e</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>Chess.UnitTests</RootNamespace>
-    <AssemblyName>Chess.UnitTests</AssemblyName>
+    <AssemblyName>ChessLogic.UnitTests</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.3.1.0</TargetFSharpCoreVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

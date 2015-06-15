@@ -10,7 +10,7 @@ let GetSquareColor(c : int) =
     if (file % 2) = (rank % 2) then White
     else Black
 
-let CountMaterial(board : PositionCore) = 
+let internal CountMaterial(board : PositionCore) = 
     let white = Array.zeroCreate 5
     let black = Array.zeroCreate 5
     for i in 0..63 do
