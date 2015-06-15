@@ -17,7 +17,7 @@ cache:
 - packages -> **\packages.config
 
 test_script:
-  - xunit.console.clr4.exe ChessLogic.UnitTests\bin\release\Chess.UnitTests.dll /appveyor
+  - xunit.console.clr4.exe ChessLogic.UnitTests\bin\release\ChessLogic.UnitTests.dll /appveyor
 
 after_test:
   - nuget pack ChessLogic\ChessLogic.nuspec -Version "%APPVEYOR_BUILD_VERSION%"
