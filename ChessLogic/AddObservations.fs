@@ -63,7 +63,7 @@ let CoreToPosition(move : LegalMove) =
         prev.FullMoveNumber + if color = Black then 1
                               else 0
     
-    let newAt x = core.Placement.[x |> ToIndex]
+    let newAt x = core.Placement.[x |> to64]
     let isCheck = IsInCheck core.ActiveColor newAt
     
     let noMoves = 

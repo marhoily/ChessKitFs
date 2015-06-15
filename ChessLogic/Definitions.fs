@@ -205,6 +205,11 @@ module X88 =
     let toX88 = function 
         | (x, y) -> x + y * 16
     let fromX88 i = (i % 16, i / 16)
-    let ToIndex = function 
+    let from64 i = (i % 8, i / 8)
+    let to64 = function 
         | (file, rank) -> rank * 8 + file
-    let PieceAt coordinate position = position.Placement.[ToIndex coordinate]
+    let PieceAt coordinate position = position.Placement.[to64 coordinate]
+    type Position with
+        member this.at c = this.Core.Placement.[c |> to64]
+        member this.at64 c64 = this.Core.Placement.[c64]
+        member this.atX88 cX88 = this.Core.Placement.[cX88 |> fromX88 |> to64]

@@ -161,17 +161,17 @@ let ValidateMove move position =
             let increment = 
                 if color = White then +8
                 else -8
-            newPlacement.[(moveTo |> ToIndex) + increment] <- None
+            newPlacement.[(moveTo |> to64) + increment] <- None
         // Remove the piece from the old square and put it to the new square
         let effectivePiece : PieceType = 
             if !observations |> List.contains Promotion then promoteTo
             else pieceType.Value
-        newPlacement.[moveTo |> ToIndex] <- Some((color, effectivePiece))
-        newPlacement.[moveFrom |> ToIndex] <- None
+        newPlacement.[moveTo |> to64] <- Some((color, effectivePiece))
+        newPlacement.[moveFrom |> to64] <- None
         // Move the rook if it was a castling
         let moveCastlingRook f t = 
-            let x88toIndex = fromX88 >> ToIndex
-            let rook = newPlacement.[fromX88 f |> ToIndex]
+            let x88toIndex = fromX88 >> to64
+            let rook = newPlacement.[fromX88 f |> to64]
             newPlacement.[f |> x88toIndex] <- None
             newPlacement.[t |> x88toIndex] <- rook
         match !castling with
