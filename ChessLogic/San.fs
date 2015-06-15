@@ -229,17 +229,18 @@ let FromSanString str board =
     let validate promoteTo fromSquare toSquare = 
         ValidateMove (Move.Create fromSquare toSquare promoteTo) board
 
-    let y start hint = 
-        match hint with
-        | FileHint f -> start |> fst = f
-        | RankHint r -> start |> snd = r
-        | SquareHint s -> start = s
-        | NoHint -> true
+    let legal (m : LegalMove) = m.Move.Start
+    let illegal (m : IllegalMove) = m.Move.Start
 
-    let legal (m : LegalMove) = y m.Move.Start
-    let illegal (m : IllegalMove) = y m.Move.Start
-    let disambiguate fn hint moves = 
-        moves |> List.filter (fun x -> fn x hint)
+    let disambiguate getStart hint moves = 
+        let satisfyHint start = 
+            match hint with
+            | FileHint f -> start |> fst = f
+            | RankHint r -> start |> snd = r
+            | SquareHint s -> start = s
+            | NoHint -> true
+        
+        moves |> List.filter (getStart >> satisfyHint)
 
     let findAndSeparate find toSquare validate () = 
         let separateToLegalAndIllegal list =
