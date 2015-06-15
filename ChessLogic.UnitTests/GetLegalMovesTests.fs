@@ -8,13 +8,12 @@ open ChessKit.ChessLogic.MoveLegalityChecker
 open ChessKit.ChessLogic.FenParser
 open ChessKit.ChessLogic.CoordinateNotation
 open ChessKit.ChessLogic.Text
-open ChessKit.ChessLogic.Dump
 
 let toString (m : LegalMove) = CoordinateToString m.Move.End
 
 let check from (expected : string list) position = 
     let p = unwrap (position |> ParseFen)
-    printf "%s" (Print p)
+    printf "%s" (p.Dump())
     let f = _c from
     
     let actual = 
@@ -35,7 +34,7 @@ let check from (expected : string list) position =
 
 let checkAll expected position = 
     let p = unwrap (position |> ParseFen)
-    printf "%s" (Print p)
+    printf "%s" (p.Dump())
     let actual = 
         p
         |> GetLegalMoves.All

@@ -1,8 +1,9 @@
 ﻿module DumpTests
 
-open ChessKit.ChessLogic.Dump;
 open ChessKit.ChessLogic.FenParser;
 open ChessKit.ChessLogic.Parsing;
+open ChessKit.ChessLogic;
+open ChessKit.ChessLogic.Text;
 open Xunit;
 open FsUnit.Xunit
 
@@ -11,7 +12,7 @@ let printOut() =
     "1r2k2r/p2n1p1p/np4p1/2p1B1b1/7P/1P1P4/P1PN3P/RNQ2RK1 b k - 0 18"
     |> ParseFen
     |> unwrap
-    |> Print
+    |> (fun x -> x.Dump())
     |> should equal (
           " ╔═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╗\r\n" +
           "8║   │ r │   │   │ k │   │   │ r ║\r\n" +
