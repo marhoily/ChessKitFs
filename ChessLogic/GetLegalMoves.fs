@@ -23,7 +23,7 @@ let FromSquare from position =
     let gen v = 
         List.map (fun i -> f + i)
         >> List.filter (fun x -> (x &&& 0x88) = 0)
-        >> List.map (fun t -> validate v t)
+        >> List.map (validate v)
     
     let rec step start increment = 
         [ let curr = start + increment
@@ -31,7 +31,7 @@ let FromSquare from position =
               yield validate u curr
               if at88 curr = None then yield! step curr increment ]
     
-    let iter li = li |> List.collect (step f)
+    let iter = List.collect (step f)
     match position.Core |> PieceAt from with
     | Some(White, Pawn) -> 
         if snd from = rank7 then gen p [ -16; -15; -17 ]

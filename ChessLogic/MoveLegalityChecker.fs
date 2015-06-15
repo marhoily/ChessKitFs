@@ -128,7 +128,7 @@ let ValidateMove move position =
             let next = start + increment
             if next &&& 0x88 <> 0 then err DoesNotMoveThisWay
             else if next = stop then ()
-            else if (at next) <> None then err DoesNotJump
+            else if at next <> None then err DoesNotJump
             else iterate next stop increment
         
         let isMultipleOf n m = n % m = 0 && n / m < 8 && n / m >= 0
