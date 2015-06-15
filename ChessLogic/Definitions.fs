@@ -154,18 +154,6 @@ type Position =
       FullMoveNumber : int
       Observations : PositionObservation list
       Move : LegalMove option }
-    static member FromCore core = 
-        { Core = core
-          Move = None
-          HalfMoveClock = 0
-          FullMoveNumber = 0
-          Observations = [] }
-    static member FromCoreAndMove core move = 
-        { Core = core
-          Move = Some(move)
-          HalfMoveClock = 0
-          FullMoveNumber = 0
-          Observations = [] }
     override x.ToString() = 
         let errors = x.Observations |> List.map toString
         sprintf " (%s)" (String.concat ", " errors)
@@ -180,7 +168,6 @@ and
       Castling : CastlingHint option
       Observations : Observation list
       Warnings : Warning list }
-    member x.AsString = x.Move.AsString
 
 [<StructuredFormatDisplay("{AsString}")>]
 type IllegalMove = 
@@ -191,6 +178,25 @@ type IllegalMove =
       Observations : Observation list
       Warnings : Warning list
       Errors : Error list }
+
+type Position with
+    static member FromCore core = 
+        { Core = core
+          Move = None
+          HalfMoveClock = 0
+          FullMoveNumber = 0
+          Observations = [] }
+    static member FromCoreAndMove core move = 
+        { Core = core
+          Move = Some(move)
+          HalfMoveClock = 0
+          FullMoveNumber = 0
+          Observations = [] }
+
+type LegalMove with
+    member x.AsString = x.Move.AsString
+
+type IllegalMove with
     member x.AsString = 
         let errors = x.Errors |> List.map toString
         sprintf "%s (%s)" x.Move.AsString (String.concat ", " errors)

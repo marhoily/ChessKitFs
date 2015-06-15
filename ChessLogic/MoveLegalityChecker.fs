@@ -3,7 +3,6 @@
 open CoordinateNotation
 open Definitions
 open IsAttackedBy
-open MyList
 
 type MoveInfo = 
     | LegalMove of LegalMove
@@ -90,7 +89,7 @@ let ValidateMove move position =
         | _ -> err DoesNotMoveThisWay
     
     let validateKingMove fromSquare toSquare = 
-        let avail opt = positionCore.CastlingAvailability |> contains opt
+        let avail opt = positionCore.CastlingAvailability |> List.contains opt
         
         let long B C D E attacked castlingOpt = 
             if at D <> None || at B <> None then err DoesNotJump
@@ -157,14 +156,14 @@ let ValidateMove move position =
     let setupResultPosition() = 
         let newPlacement = Array.copy positionCore.Placement
         // Remove the pawn captured en-passant
-        if !observations |> contains EnPassant then 
+        if !observations |> List.contains EnPassant then 
             let increment = 
                 if color = White then +8
                 else -8
             newPlacement.[(moveTo |> ToIndex) + increment] <- None
         // Remove the piece from the old square and put it to the new square
         let effectivePiece : PieceType = 
-            if !observations |> contains Promotion then promoteTo
+            if !observations |> List.contains Promotion then promoteTo
             else pieceType.Value
         newPlacement.[moveTo |> ToIndex] <- Some((color, effectivePiece))
         newPlacement.[moveFrom |> ToIndex] <- None
@@ -193,12 +192,12 @@ let ValidateMove move position =
         
         let newCastlingAvailability = 
             positionCore.CastlingAvailability
-            |> except (optionsInvalidatedBy moveFrom)
-            |> except (optionsInvalidatedBy moveTo)
+            |> List.except (optionsInvalidatedBy moveFrom)
+            |> List.except (optionsInvalidatedBy moveTo)
         
         // Figure out new en-passant option
         let newEnPassant = 
-            if !observations |> contains DoublePush then Some(fst moveFrom)
+            if !observations |> List.contains DoublePush then Some(fst moveFrom)
             else None
         
         // Figure out new active color, and if the move gives check
@@ -219,7 +218,7 @@ let ValidateMove move position =
             newPosition := None
     
     let setRequiresPromotion() = 
-        let requiresPromotion = !observations |> contains Promotion
+        let requiresPromotion = !observations |> List.contains Promotion
         if move.PromoteTo = None then 
             if requiresPromotion then warn MissingPromotionHint
         else 

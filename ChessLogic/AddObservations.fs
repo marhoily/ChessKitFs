@@ -1,7 +1,6 @@
 ﻿module AddObservations
 
 open Definitions
-open MyList
 open CoordinateNotation
 open IsAttackedBy
 
@@ -43,7 +42,7 @@ let CoreToPosition(move : LegalMove) =
     let color = prev.Core.ActiveColor
     
     let newHalfMoveClock = 
-        if piece = Pawn || obs |> contains Capture then 0
+        if piece = Pawn || obs |> List.contains Capture then 0
         else prev.HalfMoveClock + 1
     
     let newMoveNumber = 

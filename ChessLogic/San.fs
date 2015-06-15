@@ -25,10 +25,10 @@ let ToSanString(legalMove : LegalMove) =
     let obs = (CoreToPosition legalMove).Observations
     let shortCastling = legalMove.Castling = Some(WK) || legalMove.Castling = Some(BK)
     let longCastling = legalMove.Castling = Some(WQ) || legalMove.Castling = Some(BQ)
-    let capture = legalMove.Observations |> MyList.contains Capture
-    let promotion = legalMove.Observations |> MyList.contains Promotion
-    let check = obs |> MyList.contains Check
-    let mate = obs |> MyList.contains Mate
+    let capture = legalMove.Observations |> List.contains Capture
+    let promotion = legalMove.Observations |> List.contains Promotion
+    let check = obs |> List.contains Check
+    let mate = obs |> List.contains Mate
     let append (str : string) = sb.Append(str) |> ignore
     let appendc (str : char) = sb.Append(str) |> ignore
     let file, rank, fileAndRankStr = fst, snd, CoordinateToString
@@ -193,17 +193,17 @@ let FromSanString str board =
         let obs = (CoreToPosition legalMove).Observations
 
         let checkNote = notes = Some(SanCheck)
-        let checkReal = obs |> MyList.contains Check
+        let checkReal = obs |> List.contains Check
         if not checkNote && checkReal then warn IsCheck
         else if checkNote && not checkReal then warn IsNotCheck
                     
         let mateNote = notes = Some(SanMate)
-        let mateReal = obs |> MyList.contains Mate
+        let mateReal = obs |> List.contains Mate
         if not mateNote && mateReal then warn IsMate
         else if mateNote && not mateReal then warn IsNotMate
                     
         let captureNote = capture = Some(SanCapture)
-        let captureReal = legalMove.Observations |> MyList.contains Capture
+        let captureReal = legalMove.Observations |> List.contains Capture
         if not captureNote && captureReal then warn IsCapture
         else if captureNote && not captureReal then warn IsNotCapture
             
