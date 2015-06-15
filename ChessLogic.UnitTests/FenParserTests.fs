@@ -39,7 +39,8 @@ Expecting: number 1..8 or piece symbol
 
 [<Fact>]
 let ``starting position print-out looks fine``() = 
-    StartingPosition.Dump()
+    StartingPosition
+    |> Dump
     |> should equal (
           " ╔═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╗\r\n" +
           "8║ r │ n │ b │ q │ k │ b │ n │ r ║\r\n" +

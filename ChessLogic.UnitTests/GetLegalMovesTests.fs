@@ -13,7 +13,7 @@ let toString (m : LegalMove) = CoordinateToString m.Move.End
 
 let check from (expected : string list) position = 
     let p = unwrap (position |> ParseFen)
-    printf "%s" (p.Dump())
+    printf "%s" (Dump p)
     let f = _c from
     
     let actual = 
@@ -34,7 +34,7 @@ let check from (expected : string list) position =
 
 let checkAll expected position = 
     let p = unwrap (position |> ParseFen)
-    printf "%s" (p.Dump())
+    printf "%s" (Dump p)
     let actual = 
         p
         |> GetLegalMoves.All

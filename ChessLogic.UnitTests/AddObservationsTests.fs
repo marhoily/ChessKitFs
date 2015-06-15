@@ -14,7 +14,7 @@ open ChessKit.ChessLogic.FenPrinter
 
 let check expectedObservations position = 
     printfn "%s" (ToFen position)
-    printfn "%s" (position.Dump())
+    printfn "%s" (Dump position)
     position.Observations
     |> listToString " | "
     |> should equal expectedObservations
@@ -35,7 +35,7 @@ let rec playFrom m p =
         | LegalSan(legal, _) -> playFrom tail (CoreToPosition legal)
         | x -> 
             printfn "%s" (ToFen p)
-            printfn "%s" (p.Dump())
+            printfn "%s" (Dump p)
             printfn "%s" head
             failwithf "%A" x
 

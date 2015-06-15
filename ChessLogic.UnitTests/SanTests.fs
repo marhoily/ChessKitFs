@@ -17,7 +17,7 @@ let check move expectedSan position =
         position
         |> ParseFen
         |> unwrap
-    printfn "%s" (p.Dump())
+    printfn "%s" (Dump p)
     p
     |> ValidateLegalMove(_cn move)
     |> ToSanString
