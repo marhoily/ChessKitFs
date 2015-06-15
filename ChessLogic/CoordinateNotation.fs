@@ -1,4 +1,4 @@
-﻿module CoordinateNotation
+﻿module ChessKit.ChessLogic.CoordinateNotation
 
 open Definitions
 open FParsec

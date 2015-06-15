@@ -1,4 +1,4 @@
-﻿module Parsing
+﻿module ChessKit.ChessLogic.Parsing
 
 open Definitions
 open FParsec.CharParsers

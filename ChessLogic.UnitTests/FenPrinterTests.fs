@@ -1,8 +1,8 @@
 ﻿module FenPrinterTests
 
 open Xunit
-open Definitions
-open FenPrinter
+open ChessKit.ChessLogic.Definitions
+open ChessKit.ChessLogic.FenPrinter
 open FsUnit.Xunit
 
 let toFenCore c = 

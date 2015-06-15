@@ -1,4 +1,4 @@
-﻿module FenParser
+﻿module ChessKit.ChessLogic.FenParser
 
 open Definitions
 open Parsing

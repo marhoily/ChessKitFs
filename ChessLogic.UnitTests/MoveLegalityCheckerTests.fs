@@ -1,13 +1,13 @@
 ﻿module MoveLegalityCheckerTests
 
 open FsUnit.Xunit
-open FenParser
+open ChessKit.ChessLogic.FenParser
 open Xunit
 open System
-open MoveLegalityChecker
-open CoordinateNotation
-open Parsing
-open Definitions
+open ChessKit.ChessLogic.MoveLegalityChecker
+open ChessKit.ChessLogic.CoordinateNotation
+open ChessKit.ChessLogic.Parsing
+open ChessKit.ChessLogic.Definitions
 
 let MoveToString (move : MoveInfo) = 
     let getStrings piece castling observations warnings errors = 

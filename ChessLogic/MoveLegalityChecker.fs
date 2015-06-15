@@ -1,4 +1,4 @@
-﻿module MoveLegalityChecker
+﻿module ChessKit.ChessLogic.MoveLegalityChecker
 
 open CoordinateNotation
 open Definitions

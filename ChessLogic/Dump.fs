@@ -1,4 +1,4 @@
-﻿module Dump
+﻿module ChessKit.ChessLogic.Dump
 
 open System.Text
 open Definitions

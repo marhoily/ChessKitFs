@@ -1,8 +1,8 @@
 ﻿module DumpTests
 
-open Dump;
-open FenParser;
-open Parsing;
+open ChessKit.ChessLogic.Dump;
+open ChessKit.ChessLogic.FenParser;
+open ChessKit.ChessLogic.Parsing;
 open Xunit;
 open FsUnit.Xunit
 

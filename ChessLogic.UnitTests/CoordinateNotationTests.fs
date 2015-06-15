@@ -1,10 +1,10 @@
 ﻿module CoordinateNotationTests
 
-open CoordinateNotation
+open ChessKit.ChessLogic.CoordinateNotation
 open Xunit
 open FsUnit.Xunit
 open Parsing
-open Definitions
+open ChessKit.ChessLogic.Definitions
 
 let positive = 
     ParseToStringShouldMatch ToCoordinateNotation ParseCoordinateNotation

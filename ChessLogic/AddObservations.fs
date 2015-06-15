@@ -1,4 +1,4 @@
-﻿module AddObservations
+﻿module ChessKit.ChessLogic.AddObservations
 
 open Definitions
 open CoordinateNotation

@@ -2,9 +2,10 @@
 
 open Xunit
 open FsUnit.Xunit
-open IsAttackedBy
-open CoordinateNotation
-open Definitions
+open ChessKit.ChessLogic
+open ChessKit.ChessLogic.IsAttackedBy
+open ChessKit.ChessLogic.CoordinateNotation
+open ChessKit.ChessLogic.Definitions
 
 let check square func fen = 
     func (fun i -> 

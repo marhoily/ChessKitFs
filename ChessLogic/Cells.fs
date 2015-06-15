@@ -1,5 +1,5 @@
 ﻿[<AutoOpen>]
-module Cells
+module ChessKit.ChessLogic.Cells
 
 [<Literal>]
 let A1 = 112

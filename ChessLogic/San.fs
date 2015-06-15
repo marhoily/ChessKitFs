@@ -1,4 +1,4 @@
-﻿module San
+﻿module ChessKit.ChessLogic.San
 
 open Definitions
 open MoveLegalityChecker

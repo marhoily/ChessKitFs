@@ -2,12 +2,13 @@
 
 open FsUnit.Xunit
 open Xunit
-open Parsing
-open MoveLegalityChecker
-open FenParser
-open CoordinateNotation
-open Definitions
-open Dump
+open ChessKit.ChessLogic
+open ChessKit.ChessLogic.Parsing
+open ChessKit.ChessLogic.MoveLegalityChecker
+open ChessKit.ChessLogic.FenParser
+open ChessKit.ChessLogic.CoordinateNotation
+open ChessKit.ChessLogic.Definitions
+open ChessKit.ChessLogic.Dump
 
 let toString (m : LegalMove) = CoordinateToString m.Move.End
 

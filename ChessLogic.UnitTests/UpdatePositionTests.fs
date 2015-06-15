@@ -2,12 +2,12 @@
 
 open FsUnit.Xunit
 open Xunit
-open Parsing
-open MoveLegalityChecker
-open FenParser
-open CoordinateNotation
-open FenPrinter
-open Definitions
+open ChessKit.ChessLogic.Parsing
+open ChessKit.ChessLogic.MoveLegalityChecker
+open ChessKit.ChessLogic.FenParser
+open ChessKit.ChessLogic.CoordinateNotation
+open ChessKit.ChessLogic.FenPrinter
+open ChessKit.ChessLogic.Definitions
 
 let after move position = 
     position

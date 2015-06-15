@@ -1,4 +1,4 @@
-﻿module Definitions
+﻿module ChessKit.ChessLogic.Definitions
 
 open System.Text
 open Microsoft.FSharp.Reflection

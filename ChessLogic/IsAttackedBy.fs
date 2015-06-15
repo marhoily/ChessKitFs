@@ -1,4 +1,4 @@
-﻿module IsAttackedBy
+﻿module ChessKit.ChessLogic.IsAttackedBy
 
 open Definitions
 

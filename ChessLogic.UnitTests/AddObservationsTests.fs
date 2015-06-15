@@ -1,15 +1,16 @@
 ﻿module AddObservationsTests
 
-open AddObservations
-open FenParser
-open Parsing
-open MoveLegalityChecker
 open FsUnit.Xunit
-open CoordinateNotation
-open Definitions
 open Xunit
-open San
-open FenPrinter
+open ChessKit.ChessLogic
+open ChessKit.ChessLogic.AddObservations
+open ChessKit.ChessLogic.FenParser
+open ChessKit.ChessLogic.Parsing
+open ChessKit.ChessLogic.MoveLegalityChecker
+open ChessKit.ChessLogic.CoordinateNotation
+open ChessKit.ChessLogic.Definitions
+open ChessKit.ChessLogic.San
+open ChessKit.ChessLogic.FenPrinter
 
 let check expectedObservations position = 
     printfn "%s" (ToFen position)

@@ -1,4 +1,4 @@
-﻿module FenPrinter
+﻿module ChessKit.ChessLogic.FenPrinter
 
 open Definitions
 open System

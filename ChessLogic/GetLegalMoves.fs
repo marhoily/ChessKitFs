@@ -1,4 +1,4 @@
-﻿module GetLegalMoves
+﻿module ChessKit.ChessLogic.GetLegalMoves
 
 open CoordinateNotation
 open Definitions
