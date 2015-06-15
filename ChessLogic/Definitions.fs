@@ -101,8 +101,8 @@ type IllegalMove =
 
 type Color with
     
-    static member OppositeOf = 
-        function 
+    member this.Invert = 
+        match this with 
         | White -> Black
         | Black -> White
 

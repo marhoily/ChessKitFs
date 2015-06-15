@@ -201,13 +201,10 @@ let ValidateMove move position =
             if !observations |> List.contains DoublePush then Some(fst moveFrom)
             else None
         
-        // Figure out new active color, and if the move gives check
-        let newActiveColor = Color.OppositeOf color
-        
         // Construct new position
         let updatedPosition = 
             { positionCore with Placement = newPlacement
-                                ActiveColor = newActiveColor
+                                ActiveColor = color.Invert
                                 EnPassant = newEnPassant
                                 CastlingAvailability = newCastlingAvailability }
         newPosition := Some(updatedPosition)
