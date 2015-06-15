@@ -16,7 +16,7 @@ let check expectedObservations position =
     printfn "%s" (ToFen position)
     printfn "%s" (Dump position)
     position.Observations
-    |> listToString " | "
+    |> concatFieldNames " | "
     |> should equal expectedObservations
 
 let checkObservations position move expectedObservations = 

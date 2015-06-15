@@ -13,11 +13,11 @@ open ChessKit.ChessLogic.Text
 let MoveToString (move : MoveInfo) = 
     let getStrings piece castling observations warnings errors = 
         seq { 
-            if piece <> None then yield toString piece.Value
-            if castling <> None then yield toString castling.Value
-            for x in observations -> toString x
-            for x in warnings -> toString x
-            for x in errors -> toString x
+            if piece <> None then yield fieldName piece.Value
+            if castling <> None then yield fieldName castling.Value
+            for x in observations -> fieldName x
+            for x in warnings -> fieldName x
+            for x in errors -> fieldName x
         }
     
     let strings = 

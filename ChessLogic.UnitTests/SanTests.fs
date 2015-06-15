@@ -235,9 +235,7 @@ let san move (expected : string) board =
         match FromSanString str board with
         | LegalSan(move, warns) -> 
             if not warns.IsEmpty then 
-                let strings = warns |> List.map toString
-                let actual = String.concat ", " strings
-                failwithf "%s" actual
+                failwithf "%s" (concatFieldNames ", " warns)
             move
         | x -> failwithf "%A" x
     
@@ -250,9 +248,7 @@ let warn move (expected : string) warnings board =
     let fromLegalSanString str board = 
         match FromSanString str board with
         | LegalSan(move, warns) -> 
-            let strings = warns |> List.map toString
-            let actual = String.concat ", " strings
-            actual |> should equal warnings
+            concatFieldNames ", " warns |> should equal warnings
             move
         | x -> failwithf "%A" x
     
@@ -266,12 +262,12 @@ let illegal move expected errors board =
         let getStrings piece castling observations warnings errors 
             resultObservations = 
             seq { 
-                if piece <> None then yield toString piece.Value
-                if castling <> None then yield toString castling.Value
-                for x in observations -> toString x
-                for x in warnings -> toString x
-                for x in errors -> toString x
-                for x in resultObservations -> toString x
+                if piece <> None then yield fieldName piece.Value
+                if castling <> None then yield fieldName castling.Value
+                for x in observations -> fieldName x
+                for x in warnings -> fieldName x
+                for x in errors -> fieldName x
+                for x in resultObservations -> fieldName x
             }
         
         getStrings m.Piece m.Castling m.Observations m.Warnings m.Errors [] 

@@ -169,13 +169,12 @@ module Text =
     let vectorToString = function 
         | (f, t) -> CoordinateToString f + "-" + CoordinateToString t
 
-    let toString (x : 'a) = 
+    let internal fieldName (x : 'a) = 
         match FSharpValue.GetUnionFields(x, typeof<'a>) with
         | case, _ -> case.Name
 
-    let listToString sep list = 
-        let strings = list |> List.map toString
-        String.concat sep strings
+    let internal concatFieldNames sep list = 
+        String.concat sep (list |> List.map fieldName)
 
     [<Extension>]
     let Dump board = 
@@ -211,7 +210,7 @@ module Text =
 open Text
 
 type Move with
-    member this.AsString = 
+    member internal this.AsString = 
         let vector = vectorToString (this.Start, this.End)
         if this.PromoteTo = None then vector
         else 
@@ -219,10 +218,10 @@ type Move with
             sprintf "%s=%c" vector p
 
 type LegalMove with
-    member x.AsString = x.Move.AsString
+    member internal x.AsString = x.Move.AsString
 
 type IllegalMove with
-    member x.AsString = 
-        let errors = x.Errors |> List.map toString
+    member internal x.AsString = 
+        let errors = x.Errors |> List.map fieldName
         sprintf "%s (%s)" x.Move.AsString (String.concat ", " errors)
 
