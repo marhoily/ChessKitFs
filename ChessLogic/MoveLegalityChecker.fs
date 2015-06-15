@@ -202,7 +202,7 @@ let ValidateMove move position =
             else None
         
         // Figure out new active color, and if the move gives check
-        let newActiveColor = Color.oppositeOf color
+        let newActiveColor = Color.OppositeOf color
         
         // Construct new position
         let updatedPosition = 

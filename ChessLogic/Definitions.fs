@@ -25,18 +25,16 @@ type Color =
     | Black
     | White
     
-    static member toString = 
-        function 
-        | White -> 'w'
-        | Black -> 'b'
+    override this.ToString() = 
+        match this with 
+        | White -> "w"
+        | Black -> "b"
     
-    static member opposite = 
+    static member OppositeOf = 
         function 
         | White -> Black
         | Black -> White
     
-    static member oppositeOf = Color.opposite
-
 type PieceType = 
     | Pawn
     | Knight

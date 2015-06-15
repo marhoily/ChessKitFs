@@ -43,5 +43,5 @@ let FindKing color at64 =
 let IsInCheck side at64 = 
     match FindKing side at64 with
     | Some(position) -> 
-        position |> IsAttackedBy (Color.opposite side) (fromX88 >> at64)
+        position |> IsAttackedBy (Color.OppositeOf side) (fromX88 >> at64)
     | None -> false
