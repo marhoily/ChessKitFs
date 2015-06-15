@@ -9,7 +9,7 @@ open ChessKit.ChessLogic.FenParser
 open ChessKit.ChessLogic.CoordinateNotation
 open ChessKit.ChessLogic.Text
 
-let toString (m : LegalMove) = CoordinateToString m.Move.End
+let toString (m : LegalMove) = squareToString m.Move.End
 
 let check from (expected : string list) position = 
     let p = Operators.getSuccess (position |> ParseFen)
@@ -28,7 +28,7 @@ let check from (expected : string list) position =
               let e = (i % 8, i / 8)
               let t = Move.Create f e None
               match ValidateMove t p with
-              | LegalMove _ -> yield CoordinateToString e
+              | LegalMove _ -> yield squareToString e
               | _ -> () ]
     actual |> should equal (expected2 |> List.sort)
 
@@ -48,7 +48,7 @@ let checkAll expected position =
                   let e = (i % 8, i / 8)
                   let t = Move.Create (j % 8, j / 8) e None
                   match ValidateMove t p with
-                  | LegalMove _ -> yield CoordinateToString e
+                  | LegalMove _ -> yield squareToString e
                   | _ -> () ]
     actual |> should equal (expected2 |> List.sort)
 

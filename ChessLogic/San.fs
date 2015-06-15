@@ -32,7 +32,7 @@ let ToSanString(legalMove : LegalMove) =
     let mate = obs |> List.contains Mate
     let append (str : string) = sb.Append(str) |> ignore
     let appendc (str : char) = sb.Append(str) |> ignore
-    let file, rank, fileAndRankStr = fst, snd, CoordinateToString
+    let file, rank, fileAndRankStr = fst, snd, squareToString
     let fileStr x = fileToStirng (x |> file)
     let rankStr x = rankToString (x |> rank)
     let at x = legalMove.OriginalPosition.Core |> PieceAt x
@@ -90,7 +90,6 @@ type Moves =
     | Usual of (PieceType * (Hint * (SanCapture option * Coordinate)))
 
 let ParseSanString str = 
-    let parseFile = LetterToFileNoCheck
     let parseRank (c : char) : Rank = (int '8') - (int c)
     
     let parsePiece = 

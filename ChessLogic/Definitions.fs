@@ -129,10 +129,10 @@ module Text =
     open System.Text
     open Microsoft.FSharp.Reflection
 
+    let parseFile(p : char) : File = int (p) - int ('a')
     let fileToStirng (f : File) = char (int 'a' + f) |> string
-    let LetterToFileNoCheck(p : char) : File = int (p) - int ('a')
     let rankToString (rank : Rank) = string (8 - rank)
-    let CoordinateToString = function 
+    let squareToString = function 
         | (file, rank) -> fileToStirng file + rankToString rank
 
     let PieceToString = 
@@ -151,7 +151,7 @@ module Text =
         | (Black, King) -> 'k'
 
     let vectorToString = function 
-        | (f, t) -> CoordinateToString f + "-" + CoordinateToString t
+        | (f, t) -> squareToString f + "-" + squareToString t
 
     let internal fieldName (x : 'a) = 
         match FSharpValue.GetUnionFields(x, typeof<'a>) with
