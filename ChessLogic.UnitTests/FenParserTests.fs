@@ -2,13 +2,14 @@
 
 open Xunit
 open Parsing
+open FsUnit.Xunit
+open Option
 open ChessKit.ChessLogic
 open ChessKit.ChessLogic.Text
 open ChessKit.ChessLogic.FenPrinter
 open ChessKit.ChessLogic.FenParser
 open ChessKit.ChessLogic.CoordinateNotation
-open FsUnit.Xunit
-open Option
+open ChessKit.ChessLogic.Extensions
 
 let positive = ParseToStringShouldMatch ToFen ParseFen
 let negative = ErrorMessageShouldMatch ParseFen
@@ -65,5 +66,5 @@ let ``starting position print-out looks fine``() =
 let ``d1 should refer to Q in starting position``() = 
     StartingPosition.Core
     |> PieceAt (_c "d1") |> get
-    |> PieceToString
+    |> pieceToChar
     |> should equal 'Q'

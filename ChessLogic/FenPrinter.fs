@@ -11,6 +11,10 @@ let ToFen p =
         | WK -> 'K'
         | BQ -> 'q'
         | BK -> 'k'
+    let colorAsString = 
+        function
+        | White -> "w"
+        | Black -> "b"
     
     let printOutCastling c = 
         let result = 
@@ -42,13 +46,13 @@ let ToFen p =
             if skip > 0 then 
                 sb.Append(skip) |> ignore
                 skip <- 0
-            sb.Append(PieceToString p) |> ignore
+            sb.Append(pieceToChar p) |> ignore
         | None -> skip <- skip + 1
         if file = 8 && skip > 0 then 
             sb.Append(skip) |> ignore
             skip <- 0
     sb.Append(' ') |> ignore
-    sb.Append(p.Core.ActiveColor.AsString) |> ignore
+    sb.Append(colorAsString p.Core.ActiveColor) |> ignore
     sb.Append(' ') |> ignore
     sb.Append(printOutCastling p.Core.CastlingAvailability) |> ignore
     sb.Append(' ') |> ignore

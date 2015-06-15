@@ -101,11 +101,6 @@ type IllegalMove =
 
 type Color with
     
-    member this.AsString = 
-        match this with
-        | White -> "w"
-        | Black -> "b"
-    
     static member OppositeOf = 
         function 
         | White -> Black
@@ -124,9 +119,7 @@ module X88 =
         | (x, y) -> x + y * 16
     let fromX88 i = (i % 16, i / 16)
 
-[<Extension>]
-module Text =
-    open System.Text
+module internal Text =
     open Microsoft.FSharp.Reflection
 
     let parseFile(p : char) : File = int (p) - int ('a')
@@ -135,7 +128,7 @@ module Text =
     let squareToString = function 
         | (file, rank) -> fileToStirng file + rankToString rank
 
-    let PieceToString = 
+    let pieceToChar = 
         function 
         | (White, Pawn) -> 'P'
         | (White, Knight) -> 'N'
@@ -150,16 +143,36 @@ module Text =
         | (Black, Queen) -> 'q'
         | (Black, King) -> 'k'
 
-    let vectorToString = function 
-        | (f, t) -> squareToString f + "-" + squareToString t
-
-    let internal fieldName (x : 'a) = 
+    let fieldName (x : 'a) = 
         match FSharpValue.GetUnionFields(x, typeof<'a>) with
         | case, _ -> case.Name
 
-    let internal concatFieldNames sep list = 
+    let concatFieldNames sep list = 
         String.concat sep (list |> List.map fieldName)
 
+open Text
+
+type Move with
+    member internal this.AsString = 
+        let vectorToString = function 
+            | (f, t) -> squareToString f + "-" + squareToString t
+        let vector = vectorToString (this.Start, this.End)
+        if this.PromoteTo = None then vector
+        else 
+            let p = pieceToChar(White, this.PromoteTo.Value)
+            sprintf "%s=%c" vector p
+
+type LegalMove with
+    member internal x.AsString = x.Move.AsString
+
+type IllegalMove with
+    member internal x.AsString = 
+        let errors = x.Errors |> List.map fieldName
+        sprintf "%s (%s)" x.Move.AsString (String.concat ", " errors)
+
+[<Extension>]
+module Extensions =
+    open System.Text
     [<Extension>]
     let Dump board = 
         let sb = 
@@ -188,24 +201,6 @@ module Text =
             let index = (rank * 2 + 1) * 36 + file * 4 + 3
             sb.[index] <- (match piece with
                             | None -> ' '
-                            | Some(p) -> PieceToString p)
+                            | Some(p) -> pieceToChar p)
         string sb
-
-open Text
-
-type Move with
-    member internal this.AsString = 
-        let vector = vectorToString (this.Start, this.End)
-        if this.PromoteTo = None then vector
-        else 
-            let p = PieceToString(White, this.PromoteTo.Value)
-            sprintf "%s=%c" vector p
-
-type LegalMove with
-    member internal x.AsString = x.Move.AsString
-
-type IllegalMove with
-    member internal x.AsString = 
-        let errors = x.Errors |> List.map fieldName
-        sprintf "%s (%s)" x.Move.AsString (String.concat ", " errors)
 

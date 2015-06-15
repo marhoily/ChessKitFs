@@ -10,6 +10,7 @@ open ChessKit.ChessLogic.CoordinateNotation
 open ChessKit.ChessLogic.San
 open ChessKit.ChessLogic.X88
 open ChessKit.ChessLogic.Text
+open ChessKit.ChessLogic.Extensions
 
 // ----- ToSanString --------
 let check move expectedSan position = 

@@ -8,6 +8,7 @@ open ChessKit.ChessLogic.MoveLegalityChecker
 open ChessKit.ChessLogic.FenParser
 open ChessKit.ChessLogic.CoordinateNotation
 open ChessKit.ChessLogic.Text
+open ChessKit.ChessLogic.Extensions
 
 let toString (m : LegalMove) = squareToString m.Move.End
 

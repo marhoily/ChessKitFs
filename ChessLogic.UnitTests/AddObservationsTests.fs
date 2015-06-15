@@ -11,6 +11,7 @@ open ChessKit.ChessLogic.CoordinateNotation
 open ChessKit.ChessLogic.Text
 open ChessKit.ChessLogic.San
 open ChessKit.ChessLogic.FenPrinter
+open ChessKit.ChessLogic.Extensions
 
 let check expectedObservations position = 
     printfn "%s" (ToFen position)
