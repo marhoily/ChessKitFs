@@ -1,7 +1,6 @@
 ﻿module ChessKit.ChessLogic.FenParser
 
 open Text
-open Parsing
 open FParsec
 
 type private Code = 
@@ -9,6 +8,22 @@ type private Code =
     | Gap of int
 
 let ParseFen str = 
+    let parsePieceLetter = 
+        function 
+        | 'P' -> (White, Pawn)
+        | 'N' -> (White, Knight)
+        | 'B' -> (White, Bishop)
+        | 'R' -> (White, Rook)
+        | 'Q' -> (White, Queen)
+        | 'K' -> (White, King)
+        | 'p' -> (Black, Pawn)
+        | 'n' -> (Black, Knight)
+        | 'b' -> (Black, Bishop)
+        | 'r' -> (Black, Rook)
+        | 'q' -> (Black, Queen)
+        | 'k' -> (Black, King)
+        | _ -> failwith ("unknown piece letter")
+    
     let parseGap c = Gap(int c - int '0')
     let parsePiece c = Piece(parsePieceLetter c)
     
@@ -19,7 +34,7 @@ let ParseFen str =
         | 'q' -> BQ
         | 'k' -> BK
         | _ -> failwith "unknown castling symbol"
-
+    
     let parsePlacement ranks = 
         [| for rank in ranks do
                for square in rank do

@@ -4,7 +4,6 @@ open FenPrinterTests
 open FsUnit.Xunit
 open Xunit
 open ChessKit.ChessLogic
-open ChessKit.ChessLogic.Parsing
 open ChessKit.ChessLogic.MoveLegalityChecker
 open ChessKit.ChessLogic.FenParser
 open ChessKit.ChessLogic.CoordinateNotation

@@ -5,7 +5,6 @@ open Xunit
 open ChessKit.ChessLogic
 open ChessKit.ChessLogic.AddObservations
 open ChessKit.ChessLogic.FenParser
-open ChessKit.ChessLogic.Parsing
 open ChessKit.ChessLogic.MoveLegalityChecker
 open ChessKit.ChessLogic.CoordinateNotation
 open ChessKit.ChessLogic.Text

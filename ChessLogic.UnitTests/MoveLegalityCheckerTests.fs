@@ -7,7 +7,6 @@ open ChessKit.ChessLogic
 open ChessKit.ChessLogic.FenParser
 open ChessKit.ChessLogic.MoveLegalityChecker
 open ChessKit.ChessLogic.CoordinateNotation
-open ChessKit.ChessLogic.Parsing
 open ChessKit.ChessLogic.Text
 
 let MoveToString (move : MoveInfo) = 

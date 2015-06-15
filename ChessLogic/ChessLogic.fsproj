@@ -56,7 +56,6 @@
     <Compile Include="CommonUtils.fs" />
     <Compile Include="Definitions.fs" />
     <Compile Include="FenPrinter.fs" />
-    <Compile Include="Parsing.fs" />
     <Compile Include="FenParser.fs" />
     <Compile Include="CoordinateNotation.fs" />
     <Compile Include="IsAttackedBy.fs" />

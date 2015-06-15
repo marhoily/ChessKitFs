@@ -5,7 +5,6 @@ open FsUnit.Xunit
 
 open ChessKit.ChessLogic;
 open ChessKit.ChessLogic.FenParser;
-open ChessKit.ChessLogic.Parsing;
 open ChessKit.ChessLogic.Text;
 open ChessKit.ChessLogic.Extensions
 

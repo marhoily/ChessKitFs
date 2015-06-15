@@ -2,7 +2,6 @@
 
 open FsUnit.Xunit
 open ChessKit.ChessLogic
-open ChessKit.ChessLogic.Parsing
 
 let shouldEqual (actual:string) (expected:string) = 
     let a = actual.Replace("\r\n", "\n")
