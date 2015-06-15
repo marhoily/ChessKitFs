@@ -60,4 +60,4 @@ let ParseFen str =
 
 let StartingPosition = 
     ParseFen "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" 
-    |> Operators.unwrap
+    |> Operators.getSuccess

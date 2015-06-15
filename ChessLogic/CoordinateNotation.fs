@@ -18,7 +18,7 @@ let private coordinate =
     file .>>. rank
 
 let ParseCoordinate str = run coordinate str
-let _c = ParseCoordinate >> Operators.unwrap
+let _c = ParseCoordinate >> Operators.getSuccess
 
 let ParseCoordinateNotation str = 
     let f = coordinate .>> (pchar '-' <|> pchar 'x')
@@ -27,4 +27,4 @@ let ParseCoordinateNotation str =
     let notation = pipe3 f coordinate p (Move.Create)
     run notation str
 
-let _cn = ParseCoordinateNotation >> Operators.unwrap
+let _cn = ParseCoordinateNotation >> Operators.getSuccess

@@ -12,7 +12,7 @@ open ChessKit.ChessLogic.Text
 let toString (m : LegalMove) = CoordinateToString m.Move.End
 
 let check from (expected : string list) position = 
-    let p = Operators.unwrap (position |> ParseFen)
+    let p = Operators.getSuccess (position |> ParseFen)
     printf "%s" (Dump p)
     let f = _c from
     
@@ -33,7 +33,7 @@ let check from (expected : string list) position =
     actual |> should equal (expected2 |> List.sort)
 
 let checkAll expected position = 
-    let p = Operators.unwrap (position |> ParseFen)
+    let p = Operators.getSuccess (position |> ParseFen)
     printf "%s" (Dump p)
     let actual = 
         p

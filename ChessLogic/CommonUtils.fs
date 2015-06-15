@@ -14,12 +14,12 @@ module internal List =
 module internal Operators = 
     open FParsec
     
-    let unwrap = 
+    let getSuccess = 
         function 
         | Success(x, _, _) -> x
         | Failure(x, _, _) -> failwith x
 
-    let getErrorMessage = 
+    let getError = 
         function 
         | Success(x, _, _) -> failwithf "expected error, but get: %A" x
         | Failure(x, _, _) -> x

@@ -13,7 +13,7 @@ open ChessKit.ChessLogic.Board
 let after move position = 
     position
     |> ParseFen
-    |> Operators.unwrap
+    |> Operators.getSuccess
     |> ValidateLegalMove(_cn move)
     |> fun vm -> { EmptyPosition with Core = vm.ResultPosition }
     |> ToFen

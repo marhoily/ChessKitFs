@@ -32,7 +32,7 @@ let MoveToString (move : MoveInfo) =
 let check position move expectedHint = 
     position
     |> ParseFen
-    |> Operators.unwrap
+    |> Operators.getSuccess
     |> ValidateMove(_cn move)
     |> MoveToString
     |> should equal expectedHint
@@ -1367,7 +1367,7 @@ module Queen =
                 let actual = 
                     fen
                     |> ParseFen
-                    |> Operators.unwrap
+                    |> Operators.getSuccess
                     |> ValidateMove(_cn move)
                     |> MoveToString
                 if expected <> actual then 

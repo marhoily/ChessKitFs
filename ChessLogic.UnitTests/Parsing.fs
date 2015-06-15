@@ -25,6 +25,6 @@ let shouldEqual (actual:string) (expected:string) =
 
         failwith "should equal failed"
 let ParseToStringShouldMatch toString parse input = 
-    toString (Operators.unwrap (parse input)) |> should equal input
+    toString (Operators.getSuccess (parse input)) |> should equal input
 let ErrorMessageShouldMatch parse (input : string) (msg : string) = 
-    Operators.getErrorMessage (parse input) |> shouldEqual msg
+    Operators.getError (parse input) |> shouldEqual msg
