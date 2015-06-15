@@ -60,6 +60,7 @@
     <Compile Include="FenParser.fs" />
     <Compile Include="CoordinateNotation.fs" />
     <Compile Include="IsAttackedBy.fs" />
+    <Compile Include="Cells.fs" />
     <Compile Include="MoveLegalityChecker.fs" />
     <Compile Include="GetLegalMoves.fs" />
     <Compile Include="AddObservations.fs" />
