@@ -17,14 +17,14 @@ let private coordinate =
     let rank = anyOf "12345678" |>> parseRank
     file .>>. rank
 
-let ParseCoordinate str = wrap (run coordinate str)
-let _c = ParseCoordinate >> unwrap
+let ParseCoordinate str = run coordinate str
+let _c = ParseCoordinate >> Operators.unwrap
 
 let ParseCoordinateNotation str = 
     let f = coordinate .>> (pchar '-' <|> pchar 'x')
     let hint = anyOf "NBRQK" |>> parsePromotionHint
     let p = opt ((pchar '=') >>. hint) 
     let notation = pipe3 f coordinate p (Move.Create)
-    wrap (run notation str)
+    run notation str
 
-let _cn = ParseCoordinateNotation >> unwrap
+let _cn = ParseCoordinateNotation >> Operators.unwrap

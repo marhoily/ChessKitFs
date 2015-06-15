@@ -1,6 +1,7 @@
 ﻿module Parsing
 
 open FsUnit.Xunit
+open ChessKit.ChessLogic
 open ChessKit.ChessLogic.Parsing
 
 let shouldEqual (actual:string) (expected:string) = 
@@ -24,6 +25,6 @@ let shouldEqual (actual:string) (expected:string) =
 
         failwith "should equal failed"
 let ParseToStringShouldMatch toString parse input = 
-    toString (unwrap (parse input)) |> should equal input
+    toString (Operators.unwrap (parse input)) |> should equal input
 let ErrorMessageShouldMatch parse (input : string) (msg : string) = 
-    getErrorMessage (parse input) |> shouldEqual msg
+    Operators.getErrorMessage (parse input) |> shouldEqual msg

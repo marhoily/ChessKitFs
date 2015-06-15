@@ -56,9 +56,8 @@ let ParseFen str =
     let core = pipe4 ranks color ca enPassant createCore
     let n = pint32
     let fenParser = pipe3 core (n .>> ws) n createPosition
-    wrap (run fenParser str)
+    run fenParser str
 
 let StartingPosition = 
-    ParseFen "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" |> function 
-    | Result.Ok(position) -> position
-    | Result.Error(error) -> failwith error
+    ParseFen "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" 
+    |> Operators.unwrap

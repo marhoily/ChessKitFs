@@ -1,9 +1,10 @@
 ﻿module MoveLegalityCheckerTests
 
-open FsUnit.Xunit
-open ChessKit.ChessLogic.FenParser
 open Xunit
 open System
+open FsUnit.Xunit
+open ChessKit.ChessLogic
+open ChessKit.ChessLogic.FenParser
 open ChessKit.ChessLogic.MoveLegalityChecker
 open ChessKit.ChessLogic.CoordinateNotation
 open ChessKit.ChessLogic.Parsing
@@ -31,7 +32,7 @@ let MoveToString (move : MoveInfo) =
 let check position move expectedHint = 
     position
     |> ParseFen
-    |> unwrap
+    |> Operators.unwrap
     |> ValidateMove(_cn move)
     |> MoveToString
     |> should equal expectedHint
@@ -1366,7 +1367,7 @@ module Queen =
                 let actual = 
                     fen
                     |> ParseFen
-                    |> unwrap
+                    |> Operators.unwrap
                     |> ValidateMove(_cn move)
                     |> MoveToString
                 if expected <> actual then 

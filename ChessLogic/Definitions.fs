@@ -243,7 +243,7 @@ type IllegalMove with
         sprintf "%s (%s)" x.Move.AsString (String.concat ", " errors)
 
 module Board =
-    let EmptyPosition = 
+    let internal EmptyPosition = 
         { Core = 
               { Placement = [||]
                 ActiveColor = White

@@ -2,6 +2,7 @@
 
 open FsUnit.Xunit
 open Xunit
+open ChessKit.ChessLogic
 open ChessKit.ChessLogic.Parsing
 open ChessKit.ChessLogic.MoveLegalityChecker
 open ChessKit.ChessLogic.FenParser
@@ -12,7 +13,7 @@ open ChessKit.ChessLogic.Board
 let after move position = 
     position
     |> ParseFen
-    |> unwrap
+    |> Operators.unwrap
     |> ValidateLegalMove(_cn move)
     |> fun vm -> { EmptyPosition with Core = vm.ResultPosition }
     |> ToFen

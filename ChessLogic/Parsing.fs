@@ -2,21 +2,21 @@
 
 open FParsec.CharParsers
 
-type Result<'a, 'b> = 
-    | Ok of 'a
-    | Error of 'b
-
-let unwrap = function 
-    | Ok(p) -> p
-    | Error(e) -> failwith (e.ToString())
-
-let wrap = function 
-    | Success(p, _, _) -> Ok(p)
-    | Failure(e, _, _) -> Error(e)
-
-let getErrorMessage = function 
-    | Ok(_) -> failwith "we expected error, but the result was actually a success"
-    | Error(e) -> e
+//type Result<'a, 'b> = 
+//    | Ok of 'a
+//    | Error of 'b
+//
+//let unwrap = function 
+//    | Ok(p) -> p
+//    | Error(e) -> failwith (e.ToString())
+//
+//let wrap = function 
+//    | Success(p, _, _) -> Ok(p)
+//    | Failure(e, _, _) -> Error(e)
+//
+//let getErrorMessage = function 
+//    | Ok(_) -> failwith "we expected error, but the result was actually a success"
+//    | Error(e) -> e
 
 let parsePieceLetter = function 
     | 'P' -> (White, Pawn)
