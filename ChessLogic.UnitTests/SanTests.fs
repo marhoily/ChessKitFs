@@ -4,7 +4,7 @@ open FsUnit.Xunit
 open Xunit
 open ChessKit.ChessLogic
 open ChessKit.ChessLogic.MoveLegalityChecker
-open ChessKit.ChessLogic.FenParser
+open ChessKit.ChessLogic.Fen
 open ChessKit.ChessLogic.CoordinateNotation
 open ChessKit.ChessLogic.San
 open ChessKit.ChessLogic.X88

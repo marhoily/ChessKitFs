@@ -10,7 +10,7 @@ open ChessKit.ChessLogic.X88
 let check square func fen = 
     func (fun i -> 
           fen
-          |> FenParser.ParseFen
+          |> Fen.ParseFen
           |> Operators.getSuccess
           |> (fun x -> x.Core)
           |> PieceAt (i |> fromX88)) (toX88 (_c square))
@@ -255,7 +255,7 @@ let ``a8 is attacked by white pawn on b7``() =
 let check2 func fen = 
     func (fun i -> 
           fen
-          |> FenParser.ParseFen
+          |> Fen.ParseFen
           |> Operators.getSuccess
           |> (fun x -> x.Core)
           |> PieceAt i) 

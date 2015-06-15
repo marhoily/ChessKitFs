@@ -6,8 +6,7 @@ open FsUnit.Xunit
 open Option
 open ChessKit.ChessLogic
 open ChessKit.ChessLogic.Text
-open ChessKit.ChessLogic.FenPrinter
-open ChessKit.ChessLogic.FenParser
+open ChessKit.ChessLogic.Fen
 open ChessKit.ChessLogic.CoordinateNotation
 open ChessKit.ChessLogic.Extensions
 

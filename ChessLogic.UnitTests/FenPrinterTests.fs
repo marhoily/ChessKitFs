@@ -2,7 +2,7 @@
 
 open Xunit
 open ChessKit.ChessLogic
-open ChessKit.ChessLogic.FenPrinter
+open ChessKit.ChessLogic.Fen
 open FsUnit.Xunit
 
 let internal EmptyPosition = 

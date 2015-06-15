@@ -3,9 +3,9 @@
 open Xunit;
 open FsUnit.Xunit
 
-open ChessKit.ChessLogic;
-open ChessKit.ChessLogic.FenParser;
-open ChessKit.ChessLogic.Text;
+open ChessKit.ChessLogic
+open ChessKit.ChessLogic.Fen
+open ChessKit.ChessLogic.Text
 open ChessKit.ChessLogic.Extensions
 
 [<Fact>]

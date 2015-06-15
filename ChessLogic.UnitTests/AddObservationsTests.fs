@@ -4,12 +4,11 @@ open FsUnit.Xunit
 open Xunit
 open ChessKit.ChessLogic
 open ChessKit.ChessLogic.AddObservations
-open ChessKit.ChessLogic.FenParser
+open ChessKit.ChessLogic.Fen
 open ChessKit.ChessLogic.MoveLegalityChecker
 open ChessKit.ChessLogic.CoordinateNotation
 open ChessKit.ChessLogic.Text
 open ChessKit.ChessLogic.San
-open ChessKit.ChessLogic.FenPrinter
 open ChessKit.ChessLogic.Extensions
 
 let check expectedObservations position = 

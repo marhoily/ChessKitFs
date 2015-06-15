@@ -55,8 +55,7 @@
   <ItemGroup>
     <Compile Include="CommonUtils.fs" />
     <Compile Include="Definitions.fs" />
-    <Compile Include="FenPrinter.fs" />
-    <Compile Include="FenParser.fs" />
+    <Compile Include="Fen.fs" />
     <Compile Include="CoordinateNotation.fs" />
     <Compile Include="IsAttackedBy.fs" />
     <Compile Include="Cells.fs" />
