@@ -2,14 +2,14 @@
 
 open FsUnit.Xunit
 open Xunit
-open Microsoft.FSharp.Reflection
 open ChessKit.ChessLogic
 open ChessKit.ChessLogic.Parsing
 open ChessKit.ChessLogic.MoveLegalityChecker
 open ChessKit.ChessLogic.FenParser
 open ChessKit.ChessLogic.CoordinateNotation
 open ChessKit.ChessLogic.San
-open ChessKit.ChessLogic.Definitions
+open ChessKit.ChessLogic.X88
+open ChessKit.ChessLogic.Text
 
 // ----- ToSanString --------
 let check move expectedSan position = 

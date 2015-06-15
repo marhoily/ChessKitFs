@@ -1,7 +1,7 @@
 ﻿module ChessKit.ChessLogic.Dump
 
 open System.Text
-open Definitions
+open Text
 
 let Print(board : Position) = 
     let sb = 

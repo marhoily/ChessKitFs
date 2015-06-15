@@ -1,4 +1,4 @@
-﻿module ChessKit.ChessLogic.Definitions
+﻿namespace ChessKit.ChessLogic
 
 open System.Text
 open Microsoft.FSharp.Reflection
@@ -100,16 +100,6 @@ type IllegalMove =
       Warnings : Warning list
       Errors : Error list }
 
-let fileToStirng (f : File) = char (int 'a' + f) |> string
-let LetterToFileNoCheck(p : char) : File = int (p) - int ('a')
-let rankToString (rank : Rank) = string (8 - rank)
-// https://chessprogramming.wikispaces.com/0x88
-let toX88 = function 
-    | (x, y) -> x + y * 16
-let fromX88 i = (i % 16, i / 16)
-let CoordinateToString = function 
-    | (file, rank) -> fileToStirng file + rankToString rank
-
 type Color with
     
     member this.AsString = 
@@ -121,21 +111,6 @@ type Color with
         function 
         | White -> Black
         | Black -> White
-
-let PieceToString = 
-    function 
-    | (White, Pawn) -> 'P'
-    | (White, Knight) -> 'N'
-    | (White, Bishop) -> 'B'
-    | (White, Rook) -> 'R'
-    | (White, Queen) -> 'Q'
-    | (White, King) -> 'K'
-    | (Black, Pawn) -> 'p'
-    | (Black, Knight) -> 'n'
-    | (Black, Bishop) -> 'b'
-    | (Black, Rook) -> 'r'
-    | (Black, Queen) -> 'q'
-    | (Black, King) -> 'k'
 
 type CastlingHint with
     
@@ -170,30 +145,60 @@ type Position with
           FullMoveNumber = 0
           Observations = [] }
 
-let vectorToString = function 
-    | (f, t) -> CoordinateToString f + "-" + CoordinateToString t
+type Move with
+    static member internal Create f t p = 
+        { Start = f
+          End = t
+          PromoteTo = p }
+
+module X88 =
+    // https://chessprogramming.wikispaces.com/0x88
+    let toX88 = function 
+        | (x, y) -> x + y * 16
+    let fromX88 i = (i % 16, i / 16)
+
+module Text =
+    let fileToStirng (f : File) = char (int 'a' + f) |> string
+    let LetterToFileNoCheck(p : char) : File = int (p) - int ('a')
+    let rankToString (rank : Rank) = string (8 - rank)
+    let CoordinateToString = function 
+        | (file, rank) -> fileToStirng file + rankToString rank
+
+    let PieceToString = 
+        function 
+        | (White, Pawn) -> 'P'
+        | (White, Knight) -> 'N'
+        | (White, Bishop) -> 'B'
+        | (White, Rook) -> 'R'
+        | (White, Queen) -> 'Q'
+        | (White, King) -> 'K'
+        | (Black, Pawn) -> 'p'
+        | (Black, Knight) -> 'n'
+        | (Black, Bishop) -> 'b'
+        | (Black, Rook) -> 'r'
+        | (Black, Queen) -> 'q'
+        | (Black, King) -> 'k'
+
+    let vectorToString = function 
+        | (f, t) -> CoordinateToString f + "-" + CoordinateToString t
+
+    let toString (x : 'a) = 
+        match FSharpValue.GetUnionFields(x, typeof<'a>) with
+        | case, _ -> case.Name
+
+    let listToString sep list = 
+        let strings = list |> List.map toString
+        String.concat sep strings
+
+open Text
 
 type Move with
-    
     member this.AsString = 
         let vector = vectorToString (this.Start, this.End)
         if this.PromoteTo = None then vector
         else 
             let p = PieceToString(White, this.PromoteTo.Value)
             sprintf "%s=%c" vector p
-    
-    static member Create f t p = 
-        { Start = f
-          End = t
-          PromoteTo = p }
-
-let toString (x : 'a) = 
-    match FSharpValue.GetUnionFields(x, typeof<'a>) with
-    | case, _ -> case.Name
-
-let listToString sep list = 
-    let strings = list |> List.map toString
-    String.concat sep strings
 
 type LegalMove with
     member x.AsString = x.Move.AsString
@@ -203,18 +208,14 @@ type IllegalMove with
         let errors = x.Errors |> List.map toString
         sprintf "%s (%s)" x.Move.AsString (String.concat ", " errors)
 
-let EmptyPosition = 
-    { Core = 
-          { Placement = [||]
-            ActiveColor = White
-            CastlingAvailability = [ WK; WQ; BK; BQ ]
-            EnPassant = None }
-      HalfMoveClock = 0
-      FullMoveNumber = 1
-      Observations = []
-      Move = None }
-
-let inline (?|?) a b = 
-    match a with
-    | Some(x) -> x
-    | None -> b
+module Board =
+    let EmptyPosition = 
+        { Core = 
+              { Placement = [||]
+                ActiveColor = White
+                CastlingAvailability = [ WK; WQ; BK; BQ ]
+                EnPassant = None }
+          HalfMoveClock = 0
+          FullMoveNumber = 1
+          Observations = []
+          Move = None }

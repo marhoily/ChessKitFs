@@ -5,7 +5,7 @@ open FsUnit.Xunit
 open ChessKit.ChessLogic
 open ChessKit.ChessLogic.IsAttackedBy
 open ChessKit.ChessLogic.CoordinateNotation
-open ChessKit.ChessLogic.Definitions
+open ChessKit.ChessLogic.X88
 
 let check square func fen = 
     func (fun i -> 

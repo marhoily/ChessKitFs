@@ -1,8 +1,9 @@
 ﻿module ChessKit.ChessLogic.MoveLegalityChecker
 
 open CoordinateNotation
-open Definitions
 open IsAttackedBy
+open Operators
+open X88
 
 type MoveInfo = 
     | LegalMove of LegalMove

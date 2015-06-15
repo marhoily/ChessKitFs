@@ -4,7 +4,7 @@ open ChessKit.ChessLogic.CoordinateNotation
 open Xunit
 open FsUnit.Xunit
 open Parsing
-open ChessKit.ChessLogic.Definitions
+open ChessKit.ChessLogic
 
 let positive = 
     ParseToStringShouldMatch ToCoordinateNotation ParseCoordinateNotation

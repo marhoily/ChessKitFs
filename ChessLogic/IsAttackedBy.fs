@@ -1,6 +1,6 @@
 ﻿module ChessKit.ChessLogic.IsAttackedBy
 
-open Definitions
+open X88
 
 let inline getScanners side at88 square = 
     let rec slide square pieceType increment () = 

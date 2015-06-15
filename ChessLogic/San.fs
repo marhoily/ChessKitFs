@@ -1,6 +1,7 @@
 ﻿module ChessKit.ChessLogic.San
 
-open Definitions
+open Text
+open X88
 open MoveLegalityChecker
 open System.Text
 open CoordinateNotation

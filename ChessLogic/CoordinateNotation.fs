@@ -1,6 +1,6 @@
 ﻿module ChessKit.ChessLogic.CoordinateNotation
 
-open Definitions
+open Text
 open FParsec
 open Parsing
 

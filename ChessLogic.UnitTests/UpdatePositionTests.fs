@@ -7,7 +7,7 @@ open ChessKit.ChessLogic.MoveLegalityChecker
 open ChessKit.ChessLogic.FenParser
 open ChessKit.ChessLogic.CoordinateNotation
 open ChessKit.ChessLogic.FenPrinter
-open ChessKit.ChessLogic.Definitions
+open ChessKit.ChessLogic.Board
 
 let after move position = 
     position

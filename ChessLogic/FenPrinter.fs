@@ -1,6 +1,6 @@
 ﻿module ChessKit.ChessLogic.FenPrinter
 
-open Definitions
+open Text
 open System
 open System.Text
 

@@ -1,7 +1,7 @@
 ﻿module ChessKit.ChessLogic.GetLegalMoves
 
 open CoordinateNotation
-open Definitions
+open X88
 open MoveLegalityChecker
 
 let FromSquare from position = 

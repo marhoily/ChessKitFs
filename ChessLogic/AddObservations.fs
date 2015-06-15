@@ -1,6 +1,5 @@
 ﻿module ChessKit.ChessLogic.AddObservations
 
-open Definitions
 open CoordinateNotation
 open IsAttackedBy
 

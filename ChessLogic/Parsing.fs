@@ -1,6 +1,5 @@
 ﻿module ChessKit.ChessLogic.Parsing
 
-open Definitions
 open FParsec.CharParsers
 
 type Result<'a, 'b> = 

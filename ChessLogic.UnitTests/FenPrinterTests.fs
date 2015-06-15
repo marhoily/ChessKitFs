@@ -1,7 +1,8 @@
 ﻿module FenPrinterTests
 
 open Xunit
-open ChessKit.ChessLogic.Definitions
+open ChessKit.ChessLogic
+open ChessKit.ChessLogic.Board
 open ChessKit.ChessLogic.FenPrinter
 open FsUnit.Xunit
 

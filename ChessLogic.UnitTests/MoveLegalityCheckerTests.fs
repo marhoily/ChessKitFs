@@ -7,7 +7,7 @@ open System
 open ChessKit.ChessLogic.MoveLegalityChecker
 open ChessKit.ChessLogic.CoordinateNotation
 open ChessKit.ChessLogic.Parsing
-open ChessKit.ChessLogic.Definitions
+open ChessKit.ChessLogic.Text
 
 let MoveToString (move : MoveInfo) = 
     let getStrings piece castling observations warnings errors = 

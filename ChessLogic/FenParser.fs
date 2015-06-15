@@ -1,6 +1,6 @@
 ﻿module ChessKit.ChessLogic.FenParser
 
-open Definitions
+open Text
 open Parsing
 open FParsec
 

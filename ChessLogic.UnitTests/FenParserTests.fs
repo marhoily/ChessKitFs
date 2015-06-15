@@ -3,10 +3,10 @@
 open Xunit
 open Parsing
 open ChessKit.ChessLogic
+open ChessKit.ChessLogic.Text
 open ChessKit.ChessLogic.FenPrinter
 open ChessKit.ChessLogic.FenParser
 open ChessKit.ChessLogic.CoordinateNotation
-open ChessKit.ChessLogic.Definitions
 open FsUnit.Xunit
 open Option
 
