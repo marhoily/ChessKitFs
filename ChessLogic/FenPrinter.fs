@@ -41,7 +41,7 @@ let ToFen p =
             sb.Append(skip) |> ignore
             skip <- 0
     sb.Append(' ') |> ignore
-    sb.Append(p.Core.ActiveColor.ToString()) |> ignore
+    sb.Append(p.Core.ActiveColor.AsString) |> ignore
     sb.Append(' ') |> ignore
     sb.Append(printOutCastling p.Core.CastlingAvailability) |> ignore
     sb.Append(' ') |> ignore

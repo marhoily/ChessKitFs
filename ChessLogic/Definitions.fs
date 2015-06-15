@@ -5,36 +5,14 @@ open Microsoft.FSharp.Reflection
 
 type File = int
 
-let fileToStirng (f : File) = char (int 'a' + f) |> string
-let LetterToFileNoCheck(p : char) : File = int (p) - int ('a')
-
 type Rank = int
 
-let rankToString (rank : Rank) = string (8 - rank)
-
 type Coordinate = File * Rank
-
-// https://chessprogramming.wikispaces.com/0x88
-let toX88 = function 
-    | (x, y) -> x + y * 16
-let fromX88 i = (i % 16, i / 16)
-let CoordinateToString = function 
-    | (file, rank) -> fileToStirng file + rankToString rank
 
 type Color = 
     | Black
     | White
-    
-    override this.ToString() = 
-        match this with 
-        | White -> "w"
-        | Black -> "b"
-    
-    static member OppositeOf = 
-        function 
-        | White -> Black
-        | Black -> White
-    
+
 type PieceType = 
     | Pawn
     | Knight
@@ -45,41 +23,11 @@ type PieceType =
 
 type Piece = Color * PieceType
 
-let PieceToString = 
-    function 
-    | (White, Pawn) -> 'P'
-    | (White, Knight) -> 'N'
-    | (White, Bishop) -> 'B'
-    | (White, Rook) -> 'R'
-    | (White, Queen) -> 'Q'
-    | (White, King) -> 'K'
-    | (Black, Pawn) -> 'p'
-    | (Black, Knight) -> 'n'
-    | (Black, Bishop) -> 'b'
-    | (Black, Rook) -> 'r'
-    | (Black, Queen) -> 'q'
-    | (Black, King) -> 'k'
-
 type CastlingHint = 
     | WQ
     | WK
     | BQ
     | BK
-    
-    static member toString = 
-        function 
-        | WQ -> 'Q'
-        | WK -> 'K'
-        | BQ -> 'q'
-        | BK -> 'k'
-    
-    static member parse = 
-        function 
-        | 'Q' -> WQ
-        | 'K' -> WK
-        | 'q' -> BQ
-        | 'k' -> BK
-        | _ -> failwith "unknown castling symbol"
 
 type PositionObservation = 
     | Check
@@ -89,26 +37,11 @@ type PositionObservation =
     | Stalemate
     | InsufficientMaterial
 
-let vectorToString = function 
-    | (f, t) -> CoordinateToString f + "-" + CoordinateToString t
-
 [<StructuredFormatDisplay("{AsString}")>]
 type Move = 
     { Start : Coordinate
       End : Coordinate
       PromoteTo : PieceType option }
-    
-    member this.AsString = 
-        let vector = vectorToString (this.Start, this.End)
-        if this.PromoteTo = None then vector
-        else 
-            let p = PieceToString(White, this.PromoteTo.Value)
-            sprintf "%s=%c" vector p
-    
-    static member Create f t p = 
-        { Start = f
-          End = t
-          PromoteTo = p }
 
 type Observation = 
     | Capture
@@ -134,33 +67,14 @@ type Error =
     | DoesNotMoveThisWay
     | CastleFromCheck
 
-let toString (x : 'a) = 
-    match FSharpValue.GetUnionFields(x, typeof<'a>) with
-    | case, _ -> case.Name
-
-let listToString sep list = 
-    let strings = list |> List.map toString
-    String.concat sep strings
-
 type PositionCore = 
     { Placement : Piece option array
       ActiveColor : Color
       CastlingAvailability : CastlingHint list
       EnPassant : File option }
 
-type Position = 
-    { Core : PositionCore
-      HalfMoveClock : int
-      FullMoveNumber : int
-      Observations : PositionObservation list
-      Move : LegalMove option }
-    override x.ToString() = 
-        let errors = x.Observations |> List.map toString
-        sprintf " (%s)" (String.concat ", " errors)
-
-and 
-    [<StructuredFormatDisplay("{AsString}")>]
-    LegalMove = 
+[<StructuredFormatDisplay("{AsString}")>]
+type LegalMove = 
     { Move : Move
       OriginalPosition : Position
       ResultPosition : PositionCore
@@ -168,6 +82,13 @@ and
       Castling : CastlingHint option
       Observations : Observation list
       Warnings : Warning list }
+
+and Position = 
+    { Core : PositionCore
+      HalfMoveClock : int
+      FullMoveNumber : int
+      Observations : PositionObservation list
+      Move : LegalMove option }
 
 [<StructuredFormatDisplay("{AsString}")>]
 type IllegalMove = 
@@ -179,19 +100,100 @@ type IllegalMove =
       Warnings : Warning list
       Errors : Error list }
 
+let fileToStirng (f : File) = char (int 'a' + f) |> string
+let LetterToFileNoCheck(p : char) : File = int (p) - int ('a')
+let rankToString (rank : Rank) = string (8 - rank)
+// https://chessprogramming.wikispaces.com/0x88
+let toX88 = function 
+    | (x, y) -> x + y * 16
+let fromX88 i = (i % 16, i / 16)
+let CoordinateToString = function 
+    | (file, rank) -> fileToStirng file + rankToString rank
+
+type Color with
+    
+    member this.AsString = 
+        match this with
+        | White -> "w"
+        | Black -> "b"
+    
+    static member OppositeOf = 
+        function 
+        | White -> Black
+        | Black -> White
+
+let PieceToString = 
+    function 
+    | (White, Pawn) -> 'P'
+    | (White, Knight) -> 'N'
+    | (White, Bishop) -> 'B'
+    | (White, Rook) -> 'R'
+    | (White, Queen) -> 'Q'
+    | (White, King) -> 'K'
+    | (Black, Pawn) -> 'p'
+    | (Black, Knight) -> 'n'
+    | (Black, Bishop) -> 'b'
+    | (Black, Rook) -> 'r'
+    | (Black, Queen) -> 'q'
+    | (Black, King) -> 'k'
+
+type CastlingHint with
+    
+    static member toString = 
+        function 
+        | WQ -> 'Q'
+        | WK -> 'K'
+        | BQ -> 'q'
+        | BK -> 'k'
+    
+    static member parse = 
+        function 
+        | 'Q' -> WQ
+        | 'K' -> WK
+        | 'q' -> BQ
+        | 'k' -> BK
+        | _ -> failwith "unknown castling symbol"
+
 type Position with
+    
     static member FromCore core = 
         { Core = core
           Move = None
           HalfMoveClock = 0
           FullMoveNumber = 0
           Observations = [] }
+    
     static member FromCoreAndMove core move = 
         { Core = core
           Move = Some(move)
           HalfMoveClock = 0
           FullMoveNumber = 0
           Observations = [] }
+
+let vectorToString = function 
+    | (f, t) -> CoordinateToString f + "-" + CoordinateToString t
+
+type Move with
+    
+    member this.AsString = 
+        let vector = vectorToString (this.Start, this.End)
+        if this.PromoteTo = None then vector
+        else 
+            let p = PieceToString(White, this.PromoteTo.Value)
+            sprintf "%s=%c" vector p
+    
+    static member Create f t p = 
+        { Start = f
+          End = t
+          PromoteTo = p }
+
+let toString (x : 'a) = 
+    match FSharpValue.GetUnionFields(x, typeof<'a>) with
+    | case, _ -> case.Name
+
+let listToString sep list = 
+    let strings = list |> List.map toString
+    String.concat sep strings
 
 type LegalMove with
     member x.AsString = x.Move.AsString
