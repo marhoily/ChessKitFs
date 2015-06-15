@@ -100,12 +100,10 @@ type IllegalMove =
       Errors : Error list }
 
 type Color with
-    
     member this.Invert = 
-        match this with 
+        match this with
         | White -> Black
         | Black -> White
-
 
 type Move with
     static member internal Create f t p = 
@@ -113,21 +111,21 @@ type Move with
           End = t
           PromoteTo = p }
 
-module X88 =
+module X88 = 
     // https://chessprogramming.wikispaces.com/0x88
     let toX88 = function 
         | (x, y) -> x + y * 16
     let fromX88 i = (i % 16, i / 16)
 
-module internal Text =
+module internal Text = 
     open Microsoft.FSharp.Reflection
-
-    let parseFile(p : char) : File = int (p) - int ('a')
+    
+    let parseFile (p : char) : File = int (p) - int ('a')
     let fileToStirng (f : File) = char (int 'a' + f) |> string
     let rankToString (rank : Rank) = string (8 - rank)
     let squareToString = function 
         | (file, rank) -> fileToStirng file + rankToString rank
-
+    
     let pieceToChar = 
         function 
         | (White, Pawn) -> 'P'
@@ -142,11 +140,11 @@ module internal Text =
         | (Black, Rook) -> 'r'
         | (Black, Queen) -> 'q'
         | (Black, King) -> 'k'
-
+    
     let fieldName (x : 'a) = 
         match FSharpValue.GetUnionFields(x, typeof<'a>) with
         | case, _ -> case.Name
-
+    
     let concatFieldNames sep list = 
         String.concat sep (list |> List.map fieldName)
 
@@ -159,7 +157,7 @@ type Move with
         let vector = vectorToString (this.Start, this.End)
         if this.PromoteTo = None then vector
         else 
-            let p = pieceToChar(White, this.PromoteTo.Value)
+            let p = pieceToChar (White, this.PromoteTo.Value)
             sprintf "%s=%c" vector p
 
 type LegalMove with
@@ -171,36 +169,37 @@ type IllegalMove with
         sprintf "%s (%s)" x.Move.AsString (String.concat ", " errors)
 
 [<Extension>]
-module Extensions =
+module Extensions = 
     open System.Text
+    
     [<Extension>]
     let Dump board = 
         let sb = 
-            StringBuilder(" ╔═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╗\r\n" 
-                        + "8║   │ r │   │   │ k │   │   │ r ║\r\n" 
-                        + " ╟───┼───┼───┼───┼───┼───┼───┼───╢\r\n" 
-                        + "7║ p │   │   │ n │   │ p │   │ p ║\r\n" 
-                        + " ╟───┼───┼───┼───┼───┼───┼───┼───╢\r\n" 
-                        + "6║ n │ p │   │   │   │   │ p │   ║\r\n" 
-                        + " ╟───┼───┼───┼───┼───┼───┼───┼───╢\r\n" 
-                        + "5║   │   │ p │   │ B │   │ b │   ║\r\n" 
-                        + " ╟───┼───┼───┼───┼───┼───┼───┼───╢\r\n" 
-                        + "4║   │   │   │   │   │   │   │ P ║\r\n" 
-                        + " ╟───┼───┼───┼───┼───┼───┼───┼───╢\r\n" 
-                        + "3║   │ P │   │ P │   │   │   │   ║\r\n" 
-                        + " ╟───┼───┼───┼───┼───┼───┼───┼───╢\r\n" 
-                        + "2║ P │   │ P │ N │   │   │   │ P ║\r\n" 
-                        + " ╟───┼───┼───┼───┼───┼───┼───┼───╢\r\n" 
-                        + "1║ R │ N │ Q │   │   │ R │ K │   ║\r\n" 
-                        + " ╚═══╧═══╧═══╧═══╧═══╧═══╧═══╧═══╝\r\n" 
-                        + "   A   B   C   D   E   F   G   H  \r\n")
+            StringBuilder
+                (" ╔═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╗\r\n" 
+                 + "8║   │ r │   │   │ k │   │   │ r ║\r\n" 
+                 + " ╟───┼───┼───┼───┼───┼───┼───┼───╢\r\n" 
+                 + "7║ p │   │   │ n │   │ p │   │ p ║\r\n" 
+                 + " ╟───┼───┼───┼───┼───┼───┼───┼───╢\r\n" 
+                 + "6║ n │ p │   │   │   │   │ p │   ║\r\n" 
+                 + " ╟───┼───┼───┼───┼───┼───┼───┼───╢\r\n" 
+                 + "5║   │   │ p │   │ B │   │ b │   ║\r\n" 
+                 + " ╟───┼───┼───┼───┼───┼───┼───┼───╢\r\n" 
+                 + "4║   │   │   │   │   │   │   │ P ║\r\n" 
+                 + " ╟───┼───┼───┼───┼───┼───┼───┼───╢\r\n" 
+                 + "3║   │ P │   │ P │   │   │   │   ║\r\n" 
+                 + " ╟───┼───┼───┼───┼───┼───┼───┼───╢\r\n" 
+                 + "2║ P │   │ P │ N │   │   │   │ P ║\r\n" 
+                 + " ╟───┼───┼───┼───┼───┼───┼───┼───╢\r\n" 
+                 + "1║ R │ N │ Q │   │   │ R │ K │   ║\r\n" 
+                 + " ╚═══╧═══╧═══╧═══╧═══╧═══╧═══╧═══╝\r\n" 
+                 + "   A   B   C   D   E   F   G   H  \r\n")
         for position = 0 to 63 do
             let piece = board.Core.Placement.[position]
             let file = position % 8
             let rank = position / 8
             let index = (rank * 2 + 1) * 36 + file * 4 + 3
             sb.[index] <- (match piece with
-                            | None -> ' '
-                            | Some(p) -> pieceToChar p)
+                           | None -> ' '
+                           | Some(p) -> pieceToChar p)
         string sb
-
