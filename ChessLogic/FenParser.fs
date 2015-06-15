@@ -12,6 +12,14 @@ let ParseFen str =
     let parseGap c = Gap(int c - int '0')
     let parsePiece c = Piece(parsePieceLetter c)
     
+    let castlingHintParse = 
+        function 
+        | 'Q' -> WQ
+        | 'K' -> WK
+        | 'q' -> BQ
+        | 'k' -> BK
+        | _ -> failwith "unknown castling symbol"
+
     let parsePlacement ranks = 
         [| for rank in ranks do
                for square in rank do
@@ -46,7 +54,7 @@ let ParseFen str =
     let black = pchar 'b' >>% Black
     let white = pchar 'w' >>% White
     let color = black <|> white .>> ws
-    let castlingHint = anyOf "KQkq" |>> CastlingHint.parse
+    let castlingHint = anyOf "KQkq" |>> castlingHintParse
     let noCastling = pchar '-' >>% []
     let ca = noCastling <|> many1 castlingHint .>> ws
     let file = anyOf "abcdefgh" |>> LetterToFileNoCheck

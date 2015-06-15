@@ -5,13 +5,20 @@ open System
 open System.Text
 
 let ToFen p = 
+    let castlingHintToString = 
+        function 
+        | WQ -> 'Q'
+        | WK -> 'K'
+        | BQ -> 'q'
+        | BK -> 'k'
+    
     let printOutCastling c = 
         let result = 
             c
-            |> List.map CastlingHint.toString
+            |> List.map castlingHintToString
             |> List.toArray
             // This can be just "System.String" in F# 4.0
-            |> (fun arr -> (String(arr))) 
+            |> (fun arr -> (String(arr)))
         if result = "" then "-"
         else result
     
@@ -19,7 +26,7 @@ let ToFen p =
         match e with
         | Some(file) -> 
             (fileToStirng file) + (if c = Black then "3"
-                                else "6")
+                                   else "6")
         | None -> "-"
     
     let sb = new StringBuilder()

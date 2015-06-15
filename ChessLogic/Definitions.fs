@@ -111,22 +111,6 @@ type Color with
         | White -> Black
         | Black -> White
 
-type CastlingHint with
-    
-    static member toString = 
-        function 
-        | WQ -> 'Q'
-        | WK -> 'K'
-        | BQ -> 'q'
-        | BK -> 'k'
-    
-    static member parse = 
-        function 
-        | 'Q' -> WQ
-        | 'K' -> WK
-        | 'q' -> BQ
-        | 'k' -> BK
-        | _ -> failwith "unknown castling symbol"
 
 type Move with
     static member internal Create f t p = 
