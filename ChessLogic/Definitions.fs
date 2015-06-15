@@ -111,12 +111,6 @@ type Move with
           End = t
           PromoteTo = p }
 
-module X88 = 
-    // https://chessprogramming.wikispaces.com/0x88
-    let toX88 = function 
-        | (x, y) -> x + y * 16
-    let fromX88 i = (i % 16, i / 16)
-
 module internal Text = 
     open Microsoft.FSharp.Reflection
     
@@ -148,10 +142,7 @@ module internal Text =
     let concatFieldNames sep list = 
         String.concat sep (list |> List.map fieldName)
 
-open Text
-
-type Move with
-    member internal this.AsString = 
+    let moveToString this =
         let vectorToString = function 
             | (f, t) -> squareToString f + "-" + squareToString t
         let vector = vectorToString (this.Start, this.End)
@@ -159,6 +150,11 @@ type Move with
         else 
             let p = pieceToChar (White, this.PromoteTo.Value)
             sprintf "%s=%c" vector p
+
+open Text
+
+type Move with
+    member internal this.AsString = moveToString this
 
 type LegalMove with
     member internal x.AsString = x.Move.AsString
@@ -203,3 +199,12 @@ module Extensions =
                            | None -> ' '
                            | Some(p) -> pieceToChar p)
         string sb
+
+module X88 = 
+    // https://chessprogramming.wikispaces.com/0x88
+    let toX88 = function 
+        | (x, y) -> x + y * 16
+    let fromX88 i = (i % 16, i / 16)
+    let ToIndex = function 
+        | (file, rank) -> rank * 8 + file
+    let PieceAt coordinate position = position.Placement.[ToIndex coordinate]

@@ -2,6 +2,7 @@
 
 open CoordinateNotation
 open IsAttackedBy
+open X88
 
 let GetSquareColor(c : int) = 
     let file, rank = c % 8, c / 8

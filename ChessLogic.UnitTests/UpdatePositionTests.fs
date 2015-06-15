@@ -12,7 +12,7 @@ let after move position =
     position
     |> ParseFen
     |> Operators.getSuccess
-    |> ValidateLegalMove(_cn move)
+    |> ValidateLegalMove(ParseCoordinateNotation move)
     |> fun vm -> { EmptyPosition with Core = vm.ResultPosition }
     |> ToFen
 

@@ -1,25 +1,25 @@
 ﻿module CoordinateNotationTests
 
-open ChessKit.ChessLogic.CoordinateNotation
 open Xunit
 open FsUnit.Xunit
 open Parsing
 open ChessKit.ChessLogic
+open ChessKit.ChessLogic.CoordinateNotation
 
 let positive = 
-    ParseToStringShouldMatch ToCoordinateNotation ParseCoordinateNotation
-let negative = ErrorMessageShouldMatch ParseCoordinateNotation
+    ParseToStringShouldMatch Text.moveToString TryParseCoordinateNotation
+let negative = ErrorMessageShouldMatch TryParseCoordinateNotation
 
 [<Fact>]
 let ``(4,6) -> (4,4) should read "e2-e4"``() = 
     Move.Create (4, 6) (4, 4) None
-    |> ToCoordinateNotation
+    |> Text.moveToString
     |> should equal "e2-e4"
 
 [<Fact>]
 let ``Promotion move should read correctly``() = 
     Move.Create (4, 6) (4, 4) (Some(Queen))
-    |> ToCoordinateNotation
+    |> Text.moveToString
     |> should equal "e2-e4=Q"
 
 [<Fact>]

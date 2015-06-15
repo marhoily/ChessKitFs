@@ -21,7 +21,7 @@ V 1.0 is going to [include](https://trello.com/b/80MHIZWN/chess-f):
 ### What it might also be
 Versions after 1 can include:
  * [PGN] (http://en.wikipedia.org/wiki/Portable_Game_Notation) load\save
- * [UCI] (http://en.wikipedia.org/wiki/Universal_Chess_Interface) interfaces
+ * [UCI] (http://en.wikipedia.org/wiki/UniversalParseCoordinatehess_Interface) interfaces
  * Chess game commenting facilities
  
 ### Known issues

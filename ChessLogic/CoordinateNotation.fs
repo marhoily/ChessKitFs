@@ -3,11 +3,6 @@
 open Text
 open FParsec
 
-let ToIndex = function 
-    | (file, rank) -> rank * 8 + file
-let PieceAt coordinate position = position.Placement.[ToIndex coordinate]
-let ToCoordinateNotation(m : Move) = m.AsString
-
 let private coordinate = 
     let parseFile (p : char) : File = int (p) - int ('a')
     let parseRank c = 8 - (int c - int '0')
@@ -15,10 +10,7 @@ let private coordinate =
     let rank = anyOf "12345678" |>> parseRank
     file .>>. rank
 
-let ParseCoordinate str = run coordinate str
-let _c = ParseCoordinate >> Operators.getSuccess
-
-let ParseCoordinateNotation str = 
+let TryParseCoordinateNotation str = 
     let parsePromotionHint = 
         function 
         | 'N' -> Knight
@@ -33,4 +25,6 @@ let ParseCoordinateNotation str =
     let notation = pipe3 f coordinate p (Move.Create)
     run notation str
 
-let _cn = ParseCoordinateNotation >> Operators.getSuccess
+let TryParseCoordinate str = run coordinate str
+let ParseCoordinate = TryParseCoordinate >> Operators.getSuccess
+let ParseCoordinateNotation = TryParseCoordinateNotation >> Operators.getSuccess

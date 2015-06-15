@@ -13,7 +13,7 @@ let check square func fen =
           |> Fen.ParseFen
           |> Operators.getSuccess
           |> (fun x -> x.Core)
-          |> PieceAt (i |> fromX88)) (toX88 (_c square))
+          |> PieceAt (i |> fromX88)) (toX88 (ParseCoordinate square))
 
 [<Fact>]
 let ``c6 is attacked by black pawn on b7``() = 

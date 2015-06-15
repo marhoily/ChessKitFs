@@ -22,7 +22,7 @@ let checkObservations position move expectedObservations =
     position
     |> ParseFen
     |> Operators.getSuccess
-    |> ValidateLegalMove(_cn move)
+    |> ValidateLegalMove(ParseCoordinateNotation move)
     |> CoreToPosition
     |> check expectedObservations
 

@@ -9,6 +9,7 @@ open ChessKit.ChessLogic.Text
 open ChessKit.ChessLogic.Fen
 open ChessKit.ChessLogic.CoordinateNotation
 open ChessKit.ChessLogic.Extensions
+open ChessKit.ChessLogic.X88
 
 let positive = ParseToStringShouldMatch ToFen ParseFen
 let negative = ErrorMessageShouldMatch ParseFen
@@ -64,6 +65,6 @@ let ``starting position print-out looks fine``() =
 [<Fact>]
 let ``d1 should refer to Q in starting position``() = 
     StartingPosition.Core
-    |> PieceAt (_c "d1") |> get
+    |> PieceAt (ParseCoordinate "d1") |> get
     |> pieceToChar
     |> should equal 'Q'

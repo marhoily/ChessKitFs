@@ -223,7 +223,7 @@ let FromSanString str board =
             | Black, LongCastling -> "e8-c8"
             | _ -> failwith "unexpected"
         board 
-        |> ValidateMove(_cn (move))
+        |> ValidateMove(ParseCoordinateNotation (move))
         |> addNotesToAny notes None []
     
     let validate promoteTo fromSquare toSquare = 

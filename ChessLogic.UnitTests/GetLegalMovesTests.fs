@@ -14,7 +14,7 @@ let toString (m : LegalMove) = squareToString m.Move.End
 let check from (expected : string list) position = 
     let p = Operators.getSuccess (position |> ParseFen)
     printf "%s" (Dump p)
-    let f = _c from
+    let f = ParseCoordinate from
     
     let actual = 
         p

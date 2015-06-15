@@ -58,7 +58,7 @@ dlldata.c
 *.scc
 
 # Chutzpah Test files
-_Chutzpah*
+ParseCoordinatehutzpah*
 
 # Visual C++ cache files
 ipch/
@@ -159,10 +159,10 @@ ClientBin/
 *.pfx
 *.publishsettings
 node_modules/
-bower_components/
+bowerParseCoordinateomponents/
 
 # RIA/Silverlight projects
-Generated_Code/
+GeneratedParseCoordinateode/
 
 # Backup & report files from converting an old project file
 # to a newer Visual Studio version. Backup files are not needed,
