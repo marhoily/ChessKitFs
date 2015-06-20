@@ -6,8 +6,6 @@ type File = int
 
 type Rank = int
 
-type Coordinate = File * Rank
-
 type Color = 
     | Black
     | White
@@ -38,8 +36,8 @@ type PositionObservation =
 
 [<StructuredFormatDisplay("{AsString}")>]
 type Move = 
-    { Start : Coordinate
-      End : Coordinate
+    { Start : File * Rank
+      End : File * Rank
       PromoteTo : PieceType option }
 
 type Observation = 
@@ -156,16 +154,16 @@ open Text
 open FParsec
 
 [<RequireQualifiedAccess>]
-module internal CoordinateNotation = 
-    let coordinate = 
+module Coordinate = 
+    let internal parser = 
         let parseFile (p : char) : File = int (p) - int ('a')
         let parseRank c = 8 - (int c - int '0')
         let file = anyOf "abcdefgh" |>> parseFile
         let rank = anyOf "12345678" |>> parseRank
         file .>>. rank
     
-    let TryParseCoordinate str = run coordinate str
-    let ParseCoordinate = TryParseCoordinate >> Operators.getSuccess
+    let TryParse str = run parser str
+    let Parse = TryParse >> Operators.getSuccess
 
 type Move with
     member internal this.AsString = moveToString this
@@ -179,10 +177,10 @@ type Move with
             | 'Q' -> Queen
             | _ -> failwith ("unknown promotion hint")
         
-        let f = CoordinateNotation.coordinate .>> (pchar '-' <|> pchar 'x')
+        let f = Coordinate.parser .>> (pchar '-' <|> pchar 'x')
         let hint = anyOf "NBRQK" |>> parsePromotionHint
         let p = opt (pchar '=' >>. hint)
-        let notation = pipe3 f CoordinateNotation.coordinate p (Move.Create)
+        let notation = pipe3 f Coordinate.parser p (Move.Create)
         run notation str
     
     static member Parse(str : string) = 

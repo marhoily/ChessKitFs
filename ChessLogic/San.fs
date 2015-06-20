@@ -78,15 +78,15 @@ type SanCapture =
 type Hint = 
     | FileHint of File
     | RankHint of Rank
-    | SquareHint of Coordinate
+    | SquareHint of (File * Rank)
     | NoHint
 
 type Moves = 
     | ShortCastling
     | LongCastling
-    | PawnPush of Coordinate * PieceType option
-    | PawnCapture of File * (Coordinate * PieceType option)
-    | Usual of (PieceType * (Hint * (SanCapture option * Coordinate)))
+    | PawnPush of (File * Rank) * PieceType option
+    | PawnCapture of File * ((File * Rank) * PieceType option)
+    | Usual of (PieceType * (Hint * (SanCapture option * (File * Rank))))
 
 let ParseSanString str = 
     let parseRank (c : char) : Rank = (int '8') - (int c)

@@ -12,7 +12,7 @@ let toString (m : LegalMove) = squareToString m.Move.End
 let check from (expected : string list) position = 
     let p = position |> Fen.Parse
     printf "%s" (Dump p)
-    let f = CoordinateNotation.ParseCoordinate from
+    let f = Coordinate.Parse from
     
     let actual = 
         p

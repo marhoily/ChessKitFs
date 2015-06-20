@@ -63,6 +63,6 @@ let ``starting position print-out looks fine``() =
 [<Fact>]
 let ``d1 should refer to Q in starting position``() = 
     Fen.StartingPosition.Core
-    |> PieceAt (CoordinateNotation.ParseCoordinate "d1") |> get
+    |> PieceAt (Coordinate.Parse "d1") |> get
     |> pieceToChar
     |> should equal 'Q'
