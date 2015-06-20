@@ -10,7 +10,7 @@ let check expectedObservations position =
     printfn "%s" (Fen.Print position)
     printfn "%s" (Dump position)
     position.Observations
-    |> concatFieldNames " | "
+    |> sprintf "%A"//concatFieldNames " | "
     |> should equal expectedObservations
 
 let checkObservations position move expectedObservations = 
@@ -79,7 +79,7 @@ let ``Draw by threefold repetition``() =
               "Bg5"; "Be6"; "Qf3"; "Be7"; "Rfe1"; "h6"; "Bxh6"; "gxh6"; "Rxe6"; 
               "fxe6"; "Qg3+"; "Kh8"; "Qg6"; "Qe8"; "Qxh6+"; "Kg8"; "Qg5+"; "Kh8"; 
               "Qh6+"; "Kg8"; "Qg5+"; "Kh8"; "Qh6+" ]
-    res |> check "Check | Repetition"
+    res |> check "Check, Repetition"
 
 [<Fact>]
 let ``50 moves rule clock increments after move``() = 

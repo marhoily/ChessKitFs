@@ -1,6 +1,7 @@
 ﻿namespace ChessKit.ChessLogic
 
 open System.Runtime.CompilerServices
+open System
 
 type File = int
 
@@ -26,13 +27,16 @@ type CastlingHint =
     | BQ
     | BK
 
+[<Flags>]    
 type PositionObservation = 
-    | Check
-    | Mate
-    | Repetition
-    | FiftyMoveRule
-    | Stalemate
-    | InsufficientMaterial
+    | None                 = 0b0000000
+    | Check                = 0b0000001
+    | Mate                 = 0b0000010
+    | Draw                 = 0b0000100
+    | Repetition           = 0b0001100
+    | FiftyMoveRule        = 0b0010100
+    | Stalemate            = 0b0100100
+    | InsufficientMaterial = 0b1000100
 
 [<StructuredFormatDisplay("{AsString}")>]
 type Move = 
@@ -84,7 +88,7 @@ and Position =
     { Core : PositionCore
       HalfMoveClock : int
       FullMoveNumber : int
-      Observations : PositionObservation list
+      Observations : PositionObservation
       Move : LegalMove option }
 
 [<StructuredFormatDisplay("{AsString}")>]

@@ -8,6 +8,7 @@ open ChessKit.ChessLogic.PositionCoreExt
 open System.Text
 open FParsec
 open ChessKit.ChessLogic
+open Operators
 
 let ToString(legalMove : LegalMove) = 
     //     _______________________
@@ -28,8 +29,8 @@ let ToString(legalMove : LegalMove) =
     let longCastling = legalMove.Castling = Some(WQ) || legalMove.Castling = Some(BQ)
     let capture = legalMove.Observations |> List.contains Capture
     let promotion = legalMove.Observations |> List.contains Promotion
-    let check = obs |> List.contains Check
-    let mate = obs |> List.contains Mate
+    let check = obs |> test PositionObservation.Check
+    let mate = obs |> test PositionObservation.Mate
     let append (str : string) = sb.Append(str) |> ignore
     let appendc (str : char) = sb.Append(str) |> ignore
     let file, rank, fileAndRankStr = fst, snd, Coordinate.ToString
@@ -190,14 +191,14 @@ let TryParse str board =
         let warnings = ref warns
         let warn w = warnings := w :: !warnings
         let obs = (legalMove |> EndGame.ToPosition).Observations
-
+        
         let checkNote = notes = Some(SanCheck)
-        let checkReal = obs |> List.contains Check
+        let checkReal = obs |> test PositionObservation.Check
         if not checkNote && checkReal then warn IsCheck
         else if checkNote && not checkReal then warn IsNotCheck
                     
         let mateNote = notes = Some(SanMate)
-        let mateReal = obs |> List.contains Mate
+        let mateReal = obs |> test PositionObservation.Mate
         if not mateNote && mateReal then warn IsMate
         else if mateNote && not mateReal then warn IsNotMate
                     
@@ -293,7 +294,7 @@ let TryParse str board =
            
     match ParseSanString str with
     | Success(p, _, _) -> dispatch p
-    | Failure(e, _, _) -> Unparsable e
+    | ParserResult.Failure(e, _, _) -> Unparsable e
 
 let Parse str board = 
     match TryParse str board with

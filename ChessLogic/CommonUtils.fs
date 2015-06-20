@@ -28,3 +28,6 @@ module internal Operators =
         match a with
         | Some(x) -> x
         | None -> b
+
+    let inline test (a : 'U when 'U : enum<int32>) (b : 'U when 'U : enum<int32>) =
+        a &&& b <> enum<'U>(0)

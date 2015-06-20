@@ -122,7 +122,7 @@ let TryParse str =
         { Core = core
           HalfMoveClock = halfMoveClock
           FullMoveNumber = fullMoveNumber
-          Observations = []
+          Observations = PositionObservation.None
           Move = None }
     
     let piece = anyOf "pnbrqkPNBRQK" |>> parsePiece <?> "piece symbol"

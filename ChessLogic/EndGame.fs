@@ -43,7 +43,7 @@ let ToPosition(move : LegalMove) =
           Move = Some(move)
           HalfMoveClock = 0
           FullMoveNumber = 0
-          Observations = [] }
+          Observations = PositionObservation.None }
     
     let newHalfMoveClock = 
         if piece = Pawn || obs |> List.contains Capture then 0
@@ -83,15 +83,16 @@ let ToPosition(move : LegalMove) =
         isInsufficient a && isInsufficient b
     
     let newObs = 
-        [ if isCheck && noMoves then yield Mate
-          if isCheck && not noMoves then yield Check
-          if not isCheck && noMoves then yield Stalemate
-          if isRepetition then yield Repetition
-          if insufficientMaterial then yield InsufficientMaterial
-          if prev.HalfMoveClock >= 50 then yield FiftyMoveRule ]
+        [ if isCheck && noMoves then yield PositionObservation.Mate
+          if isCheck && not noMoves then yield PositionObservation.Check
+          if not isCheck && noMoves then yield PositionObservation.Stalemate
+          if isRepetition then yield PositionObservation.Repetition
+          if insufficientMaterial then yield PositionObservation.InsufficientMaterial
+          if prev.HalfMoveClock >= 50 then yield PositionObservation.FiftyMoveRule ]
+        |> List.fold (fun acc next -> acc ||| int(next)) 0
     
     { Core = core
       HalfMoveClock = newHalfMoveClock
       FullMoveNumber = newMoveNumber
       Move = Some(move)
-      Observations = newObs }
+      Observations = enum<PositionObservation>(newObs) }
