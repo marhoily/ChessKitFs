@@ -46,7 +46,7 @@ let CoreToPosition(move : LegalMove) =
     let obs = move.Observations
     let color = prev.Core.ActiveColor
     let position = positionFromCoreAndMove core move
-
+    
     let newHalfMoveClock = 
         if piece = Pawn || obs |> List.contains Capture then 0
         else prev.HalfMoveClock + 1
@@ -57,11 +57,7 @@ let CoreToPosition(move : LegalMove) =
     
     let newAt x = core.Placement.[x |> Coordinate.toIdx64]
     let isCheck = IsInCheck core.ActiveColor core
-    
-    let noMoves = 
-        position
-        |> GetLegalMoves.All
-        |> List.isEmpty
+    let noMoves = (position |> GetLegalMoves.All).IsEmpty
     
     let isRepetition = 
         let rec toSequence pos = 
