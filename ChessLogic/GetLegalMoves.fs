@@ -22,7 +22,7 @@ let FromSquare from position =
     let atX88 = position.Core.atX88
     
     let gen createMove = 
-        List.map (fun i -> fromX88 + i)
+        List.map ((+) fromX88)
         >> List.filter (fun x -> (x &&& 0x88) = 0)
         >> List.map (validate createMove)
     
