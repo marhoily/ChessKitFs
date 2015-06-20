@@ -1,4 +1,5 @@
-﻿module ChessKit.ChessLogic.San
+﻿[<RequireQualifiedAccess>]
+module ChessKit.ChessLogic.San
 
 open ChessKit.ChessLogic
 open ChessKit.ChessLogic.Text

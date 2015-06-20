@@ -4,7 +4,6 @@ open FsUnit.Xunit
 open Xunit
 open ChessKit.ChessLogic
 open ChessKit.ChessLogic.Text
-open ChessKit.ChessLogic.San
 open ChessKit.ChessLogic.BoardTextExtensions
 
 let check expectedObservations position = 
@@ -25,8 +24,8 @@ let rec playFrom m p =
     match m with
     | [] -> p
     | head :: tail -> 
-        match p |> FromSanString head with
-        | LegalSan(legal, _) -> playFrom tail (legal |> EndGame.ToPosition)
+        match p |> San.FromSanString head with
+        | San.LegalSan(legal, _) -> playFrom tail (legal |> EndGame.ToPosition)
         | x -> 
             printfn "%s" (Fen.Print p)
             printfn "%s" (Dump p)
