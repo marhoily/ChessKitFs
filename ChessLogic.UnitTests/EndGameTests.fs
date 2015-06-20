@@ -19,7 +19,7 @@ let checkObservations position move expectedObservations =
     position
     |> Fen.Parse
     |> MoveLegality.ParseLegal move
-    |> EndGame.CoreToPosition
+    |> (fun legalMove -> legalMove.ToPosition())
     |> check expectedObservations
 
 let rec playFrom m p = 
@@ -27,7 +27,7 @@ let rec playFrom m p =
     | [] -> p
     | head :: tail -> 
         match p |> FromSanString head with
-        | LegalSan(legal, _) -> playFrom tail (EndGame.CoreToPosition legal)
+        | LegalSan(legal, _) -> playFrom tail (legal.ToPosition())
         | x -> 
             printfn "%s" (Fen.Print p)
             printfn "%s" (Dump p)

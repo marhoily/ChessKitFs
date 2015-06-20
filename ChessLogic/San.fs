@@ -23,7 +23,7 @@ let ToSanString(legalMove : LegalMove) =
     
     let sb = new StringBuilder(6)
     let move = legalMove.Move
-    let obs = (CoreToPosition legalMove).Observations
+    let obs = legalMove.ToPosition().Observations
     let shortCastling = legalMove.Castling = Some(WK) || legalMove.Castling = Some(BK)
     let longCastling = legalMove.Castling = Some(WQ) || legalMove.Castling = Some(BQ)
     let capture = legalMove.Observations |> List.contains Capture
@@ -189,7 +189,7 @@ let FromSanString str board =
     let addNotesToLegal notes capture warns (legalMove:LegalMove) =
         let warnings = ref warns
         let warn w = warnings := w :: !warnings
-        let obs = (CoreToPosition legalMove).Observations
+        let obs = legalMove.ToPosition().Observations
 
         let checkNote = notes = Some(SanCheck)
         let checkReal = obs |> List.contains Check
