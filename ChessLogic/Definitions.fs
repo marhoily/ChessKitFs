@@ -29,14 +29,14 @@ type CastlingHint =
 
 [<Flags>]    
 type Properties = 
-    | None                 = 0b0000000
-    | Check                = 0b0000001
-    | Mate                 = 0b0000010
-    | Draw                 = 0b0000100
-    | Repetition           = 0b0001100
-    | FiftyMoveRule        = 0b0010100
-    | Stalemate            = 0b0100100
-    | InsufficientMaterial = 0b1000100
+    | None                 = 0b00000000
+    | Check                = 0b00000001
+    | Mate                 = 0b00000010
+    | Draw                 = 0b10000000
+    | Repetition           = 0b10000100
+    | FiftyMoveRule        = 0b10001000
+    | Stalemate            = 0b10010000
+    | InsufficientMaterial = 0b10100000
 
 [<StructuredFormatDisplay("{AsString}")>]
 type Move = 
