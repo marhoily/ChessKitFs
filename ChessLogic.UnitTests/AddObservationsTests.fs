@@ -18,7 +18,7 @@ let check expectedObservations position =
 let checkObservations position move expectedObservations = 
     position
     |> Fen.Parse
-    |> MoveLegality.ValidateLegalMove(Move.Parse move)
+    |> MoveLegality.ParseLegal move
     |> CoreToPosition
     |> check expectedObservations
 

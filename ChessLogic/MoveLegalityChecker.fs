@@ -242,7 +242,9 @@ let Validate move position =
                       Warnings = !warnings
                       Errors = !errors }
 
-let ValidateLegalMove move pos = 
+let ValidateLegal move pos = 
     match Validate move pos with
     | LegalMove m -> m
     | IllegalMove(_) -> failwith "move is illegal"
+
+let ParseLegal move pos = ValidateLegal (Move.Parse move) pos
