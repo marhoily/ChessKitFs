@@ -220,10 +220,10 @@ module Extensions =
                  + "1║ R │ N │ Q │   │   │ R │ K │   ║\r\n" 
                  + " ╚═══╧═══╧═══╧═══╧═══╧═══╧═══╧═══╝\r\n" 
                  + "   A   B   C   D   E   F   G   H  \r\n")
-        for position = 0 to 63 do
-            let piece = board.Core.Placement.[position]
-            let file = position % 8
-            let rank = position / 8
+        for index = 0 to 63 do
+            let piece = board.Core.Placement.[index]
+            let file = index % 8
+            let rank = index / 8
             let index = (rank * 2 + 1) * 36 + file * 4 + 3
             sb.[index] <- (match piece with
                            | None -> ' '
