@@ -6,7 +6,7 @@ open ChessKit.ChessLogic
 open ChessKit.ChessLogic.ScanningExtensions
 
 let check square func fen = 
-    func (Fen.Parse fen).Core (X88.parse square)
+    func (Fen.ParseCore fen) (X88.parse square)
 
 [<Fact>]
 let ``c6 is attacked by black pawn on b7``() = 
@@ -246,10 +246,7 @@ let ``a8 is attacked by white pawn on b7``() =
 // =============== Board.IsInCheck ===============
 
 let check2 func fen = 
-    let position = 
-        fen
-        |> Fen.Parse
-    func position.Core
+    func (fen |> Fen.ParseCore)
 
 [<Fact>]
 let ``black is in check when their king on c8 is attacked by pawn on b7``() = 

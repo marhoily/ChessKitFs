@@ -146,6 +146,7 @@ let TryParse str =
     run fenParser str
 
 let Parse = TryParse >> Operators.getSuccess
+let ParseCore str = (Parse str).Core
 
 let StartingPosition = 
     Parse "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" 

@@ -129,7 +129,7 @@ let ``parse gxe4``() = parse "gxe4" "(PawnCapture (6,((4, 4), null)), null)"
 
 // ----- Scanners --------
 let findPushingPawns square (expected : string list) board = 
-    let scan, _, _ = sanScanners (Fen.Parse board).Core
+    let scan, _, _ = sanScanners (Fen.ParseCore board)
     scan (X88.parse square)
     |> List.map squareToString
     |> should equal expected
@@ -177,7 +177,7 @@ let ``2 black pawns can capture``() =
     "8/8/8/8/8/8/2p1p3/8 b - - 0 1" |> findCapturingPawns "d1" [ "e2"; "c2" ]
 
 let findNonPawnPieces pieceType square (expected : string list) board = 
-    let _, _, scan = sanScanners (Fen.Parse board).Core
+    let _, _, scan = sanScanners (Fen.ParseCore board)
     scan pieceType (X88.parse square)
     |> List.map squareToString
     |> should equal expected
