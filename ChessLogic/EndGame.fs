@@ -1,6 +1,9 @@
-﻿module ChessKit.ChessLogic.EndGame
+﻿[<System.Runtime.CompilerServices.Extension>]
+[<RequireQualifiedAccess>]
+module ChessKit.ChessLogic.EndGame
 
 open ScanningExtensions
+open System.Runtime.CompilerServices
 
 let internal countMaterial (board : PositionCore) = 
     let white = Array.zeroCreate 5
@@ -27,69 +30,68 @@ let internal countMaterial (board : PositionCore) =
             arr.[idx] <- arr.[idx] + 1
     white, black
 
-type LegalMove with
-
-    member move.ToPosition() = 
-        let core = move.ResultPosition
-        let prev = move.OriginalPosition
-        let piece = move.Piece
-        let obs = move.Observations
-        let color = prev.Core.ActiveColor
+[<Extension>]
+let ToPosition(move : LegalMove) = 
+    let core = move.ResultPosition
+    let prev = move.OriginalPosition
+    let piece = move.Piece
+    let obs = move.Observations
+    let color = prev.Core.ActiveColor
     
-        let position = 
-            { Core = core
-              Move = Some(move)
-              HalfMoveClock = 0
-              FullMoveNumber = 0
-              Observations = [] }
-    
-        let newHalfMoveClock = 
-            if piece = Pawn || obs |> List.contains Capture then 0
-            else prev.HalfMoveClock + 1
-    
-        let newMoveNumber = 
-            prev.FullMoveNumber + if color = Black then 1
-                                  else 0
-    
-        let isCheck = IsInCheck core.ActiveColor core
-        let noMoves = (position |> GetLegalMoves.All).IsEmpty
-    
-        let isRepetition = 
-            let rec toSequence pos = 
-                seq { 
-                    yield pos.Core
-                    if pos.Move <> None then 
-                        let next = pos.Move.Value.OriginalPosition
-                        yield! toSequence next
-                }
-            toSequence position
-            |> Seq.countBy id
-            |> Seq.map snd
-            |> Seq.max
-            > 2
-    
-        let insufficientMaterial = 
-            let isInsufficient material = 
-                // Other, Knight, White Bishop, Black Bishop, King
-                match material with
-                | [| 0; 0; 0; _; 1 |] -> true // any number of black bishops
-                | [| 0; 0; _; 0; 1 |] -> true // any number of white bishops
-                | [| 0; 1; 0; 0; 1 |] -> true // one knight
-                | _ -> false
-        
-            let a, b = core |> countMaterial
-            isInsufficient a && isInsufficient b
-    
-        let newObs = 
-            [ if isCheck && noMoves then yield Mate
-              if isCheck && not noMoves then yield Check
-              if not isCheck && noMoves then yield Stalemate
-              if isRepetition then yield Repetition
-              if insufficientMaterial then yield InsufficientMaterial
-              if prev.HalfMoveClock >= 50 then yield FiftyMoveRule ]
-    
+    let position = 
         { Core = core
-          HalfMoveClock = newHalfMoveClock
-          FullMoveNumber = newMoveNumber
           Move = Some(move)
-          Observations = newObs }
+          HalfMoveClock = 0
+          FullMoveNumber = 0
+          Observations = [] }
+    
+    let newHalfMoveClock = 
+        if piece = Pawn || obs |> List.contains Capture then 0
+        else prev.HalfMoveClock + 1
+    
+    let newMoveNumber = 
+        prev.FullMoveNumber + if color = Black then 1
+                              else 0
+    
+    let isCheck = IsInCheck core.ActiveColor core
+    let noMoves = (position |> GetLegalMoves.All).IsEmpty
+    
+    let isRepetition = 
+        let rec toSequence pos = 
+            seq { 
+                yield pos.Core
+                if pos.Move <> None then 
+                    let next = pos.Move.Value.OriginalPosition
+                    yield! toSequence next
+            }
+        toSequence position
+        |> Seq.countBy id
+        |> Seq.map snd
+        |> Seq.max
+        > 2
+    
+    let insufficientMaterial = 
+        let isInsufficient material = 
+            // Other, Knight, White Bishop, Black Bishop, King
+            match material with
+            | [| 0; 0; 0; _; 1 |] -> true // any number of black bishops
+            | [| 0; 0; _; 0; 1 |] -> true // any number of white bishops
+            | [| 0; 1; 0; 0; 1 |] -> true // one knight
+            | _ -> false
+        
+        let a, b = core |> countMaterial
+        isInsufficient a && isInsufficient b
+    
+    let newObs = 
+        [ if isCheck && noMoves then yield Mate
+          if isCheck && not noMoves then yield Check
+          if not isCheck && noMoves then yield Stalemate
+          if isRepetition then yield Repetition
+          if insufficientMaterial then yield InsufficientMaterial
+          if prev.HalfMoveClock >= 50 then yield FiftyMoveRule ]
+    
+    { Core = core
+      HalfMoveClock = newHalfMoveClock
+      FullMoveNumber = newMoveNumber
+      Move = Some(move)
+      Observations = newObs }

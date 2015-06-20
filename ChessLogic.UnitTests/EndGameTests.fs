@@ -3,7 +3,6 @@
 open FsUnit.Xunit
 open Xunit
 open ChessKit.ChessLogic
-open ChessKit.ChessLogic.EndGame
 open ChessKit.ChessLogic.Text
 open ChessKit.ChessLogic.San
 open ChessKit.ChessLogic.BoardTextExtensions
@@ -19,7 +18,7 @@ let checkObservations position move expectedObservations =
     position
     |> Fen.Parse
     |> MoveLegality.ParseLegal move
-    |> (fun legalMove -> legalMove.ToPosition())
+    |> EndGame.ToPosition
     |> check expectedObservations
 
 let rec playFrom m p = 
@@ -27,7 +26,7 @@ let rec playFrom m p =
     | [] -> p
     | head :: tail -> 
         match p |> FromSanString head with
-        | LegalSan(legal, _) -> playFrom tail (legal.ToPosition())
+        | LegalSan(legal, _) -> playFrom tail (legal |> EndGame.ToPosition)
         | x -> 
             printfn "%s" (Fen.Print p)
             printfn "%s" (Dump p)
@@ -122,7 +121,7 @@ let Stalemate() =
 
 [<Fact>]
 let ``count material``() = 
-    (countMaterial Fen.StartingPosition.Core |> sprintf "%A") 
+    (EndGame.countMaterial Fen.StartingPosition.Core |> sprintf "%A") 
     |> should equal 
            (([| 11; 2; 1; 1; 1 |], [| 11; 2; 1; 1; 1 |]) |> sprintf "%A")
 
