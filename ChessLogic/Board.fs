@@ -1,16 +1,30 @@
-﻿[<RequireQualifiedAccess>]
-module ChessKit.ChessLogic.Board
+﻿[<System.Runtime.CompilerServices.Extension>]
+[<RequireQualifiedAccess>]
+module ChessKit.ChessLogic.BoardExtensions
 
-let IsAttackedBy (side : Color) (position : PositionCore) coordinate = 
+open System.Runtime.CompilerServices
+
+[<Extension>]
+let IsAttackedBy (position : PositionCore) (side : Color) coordinate = 
     ScanningExtensions.IsAttackedBy side position 
         (coordinate |> X88.fromCoordinate)
-let FindKing (color : Color) (position : PositionCore) = 
+
+[<Extension>]
+let FindKing (position : PositionCore) (color : Color) = 
     ScanningExtensions.FindKing color position
-let IsInCheck (side : Color) (position : PositionCore) = 
+
+[<Extension>]
+let IsInCheck (position : PositionCore) (side : Color) = 
     ScanningExtensions.IsInCheck side position
-let ValidateMove (move : Move) (position : Position) = 
+
+[<Extension>]
+let ValidateMove (position : Position) (move : Move) = 
     MoveLegality.Validate move position
-let ValidateLegalMove (move : Move) (position : Position) = 
+
+[<Extension>]
+let ValidateLegalMove (position : Position) (move : Move) = 
     MoveLegality.ValidateLegal move position
-let ParseLegalMove (move : string) (position : Position) = 
+
+[<Extension>]
+let ParseLegalMove (position : Position) (move : string) = 
     MoveLegality.ParseLegal move position

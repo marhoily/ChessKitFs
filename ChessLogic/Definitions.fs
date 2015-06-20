@@ -206,7 +206,7 @@ type IllegalMove with
         sprintf "%s (%s)" x.Move.AsString (String.concat ", " errors)
 
 [<Extension>]
-module Extensions = 
+module BoardTextExtensions = 
     open System.Text
     
     [<Extension>]
