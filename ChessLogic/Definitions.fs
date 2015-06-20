@@ -9,8 +9,8 @@ type File = int
 type Rank = int
 
 type Color = 
-    | Black //= 1
-    | White //= 2
+    | Black = 16
+    | White = 32
 
 type PieceType = 
     | None   = 0
@@ -124,8 +124,9 @@ type MoveInfo =
 module Side =
     let Invert = 
         function
-        | White -> Black
-        | Black -> White
+        | Color.White -> Color.Black
+        | Color.Black -> Color.White
+        | _ -> failwith "unexpected"
 
 type Move with
     static member internal Create f t p = 
@@ -142,18 +143,18 @@ module internal Text =
     
     let pieceToChar = 
         function 
-        | (White, PieceType.Pawn) -> 'P'
-        | (White, PieceType.Knight) -> 'N'
-        | (White, PieceType.Bishop) -> 'B'
-        | (White, PieceType.Rook) -> 'R'
-        | (White, PieceType.Queen) -> 'Q'
-        | (White, PieceType.King) -> 'K'
-        | (Black, PieceType.Pawn) -> 'p'
-        | (Black, PieceType.Knight) -> 'n'
-        | (Black, PieceType.Bishop) -> 'b'
-        | (Black, PieceType.Rook) -> 'r'
-        | (Black, PieceType.Queen) -> 'q'
-        | (Black, PieceType.King) -> 'k'
+        | (Color.White, PieceType.Pawn) -> 'P'
+        | (Color.White, PieceType.Knight) -> 'N'
+        | (Color.White, PieceType.Bishop) -> 'B'
+        | (Color.White, PieceType.Rook) -> 'R'
+        | (Color.White, PieceType.Queen) -> 'Q'
+        | (Color.White, PieceType.King) -> 'K'
+        | (Color.Black, PieceType.Pawn) -> 'p'
+        | (Color.Black, PieceType.Knight) -> 'n'
+        | (Color.Black, PieceType.Bishop) -> 'b'
+        | (Color.Black, PieceType.Rook) -> 'r'
+        | (Color.Black, PieceType.Queen) -> 'q'
+        | (Color.Black, PieceType.King) -> 'k'
         | _ -> failwith "Unexpected"
     
     let fieldName (x : 'a) = 
@@ -187,8 +188,8 @@ module Coordinate =
 module Idx64 = 
     let GetColor(c : int) = 
         let file, rank = c % 8, c / 8
-        if (file % 2) = (rank % 2) then White
-        else Black
+        if (file % 2) = (rank % 2) then Color.White
+        else Color.Black
 
 type Move with
     
@@ -198,7 +199,7 @@ type Move with
         let vector = vectorToString (this.Start, this.End)
         if this.PromoteTo = PieceType.None then vector
         else 
-            let p = pieceToChar (White, this.PromoteTo)
+            let p = pieceToChar (Color.White, this.PromoteTo)
             sprintf "%s=%c" vector p
     
     member internal this.AsString = Move.toString this

@@ -17,15 +17,16 @@ let internal countMaterial (board : PositionCore) =
             
             let arr = 
                 match piece |> fst with
-                | White -> white
-                | Black -> black
+                | Color.White -> white
+                | Color.Black -> black
+                | _ -> failwith "unexpected"
             
             let idx = 
                 match piece |> snd, square with
                 | PieceType.Pawn, _ | PieceType.Rook, _ | PieceType.Queen, _ -> 0
                 | PieceType.Knight, _ -> 1
-                | PieceType.Bishop, White -> 2
-                | PieceType.Bishop, Black -> 3
+                | PieceType.Bishop, Color.White -> 2
+                | PieceType.Bishop, Color.Black -> 3
                 | PieceType.King, _ -> 4
                 | _ -> failwith "unexpected"
             
@@ -52,7 +53,7 @@ let ToPosition(move : LegalMove) =
         else prev.HalfMoveClock + 1
     
     let newMoveNumber = 
-        prev.FullMoveNumber + if color = Black then 1
+        prev.FullMoveNumber + if color = Color.Black then 1
                               else 0
     
     let isCheck = IsInCheck core.ActiveColor core

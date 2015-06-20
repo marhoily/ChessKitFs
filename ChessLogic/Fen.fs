@@ -9,8 +9,9 @@ open Operators
 let Print p = 
     let color = 
         match p.Core.ActiveColor with
-        | White -> "w"
-        | Black -> "b"
+        | Color.White -> "w"
+        | Color.Black -> "b"
+        | _ -> failwith "unexpected"
     
     let options = 
         [ (Castlings.WK, 'K');
@@ -31,7 +32,7 @@ let Print p =
     let enPassant = 
         match p.Core.EnPassant with
         | Some(file) -> 
-            (fileToStirng file) + (if p.Core.ActiveColor = Black then "3"
+            (fileToStirng file) + (if p.Core.ActiveColor = Color.Black then "3"
                                    else "6")
         | None -> "-"
     
@@ -78,18 +79,18 @@ type private Code =
 let TryParse str = 
     let parsePieceLetter = 
         function 
-        | 'P' -> (White, PieceType.Pawn)
-        | 'N' -> (White, PieceType.Knight)
-        | 'B' -> (White, PieceType.Bishop)
-        | 'R' -> (White, PieceType.Rook)
-        | 'Q' -> (White, PieceType.Queen)
-        | 'K' -> (White, PieceType.King)
-        | 'p' -> (Black, PieceType.Pawn)
-        | 'n' -> (Black, PieceType.Knight)
-        | 'b' -> (Black, PieceType.Bishop)
-        | 'r' -> (Black, PieceType.Rook)
-        | 'q' -> (Black, PieceType.Queen)
-        | 'k' -> (Black, PieceType.King)
+        | 'P' -> (Color.White, PieceType.Pawn)
+        | 'N' -> (Color.White, PieceType.Knight)
+        | 'B' -> (Color.White, PieceType.Bishop)
+        | 'R' -> (Color.White, PieceType.Rook)
+        | 'Q' -> (Color.White, PieceType.Queen)
+        | 'K' -> (Color.White, PieceType.King)
+        | 'p' -> (Color.Black, PieceType.Pawn)
+        | 'n' -> (Color.Black, PieceType.Knight)
+        | 'b' -> (Color.Black, PieceType.Bishop)
+        | 'r' -> (Color.Black, PieceType.Rook)
+        | 'q' -> (Color.Black, PieceType.Queen)
+        | 'k' -> (Color.Black, PieceType.King)
         | _ -> failwith ("unknown piece letter")
     
     let parseGap c = Gap(int c - int '0')
@@ -129,15 +130,15 @@ let TryParse str =
     let rank = many1 (piece <|> gap)
     let ws = pchar ' '
     let ranks = sepBy1 rank (pchar '/') .>> ws
-    let black = pchar 'b' >>% Black
-    let white = pchar 'w' >>% White
+    let black = pchar 'b' >>% Color.Black
+    let white = pchar 'w' >>% Color.White
     let color = black <|> white .>> ws
     let castlingHint = anyOf "KQkq" |>> castlingHintParse
     let castlings = many1 castlingHint |>> fold
     let noCastling = pchar '-' >>% Castlings.None
     let ca = noCastling <|> castlings .>> ws
     let file = anyOf "abcdefgh" |>> parseFile
-    let enColor = (pchar '3' >>% Black) <|> (pchar '6' >>% White)
+    let enColor = (pchar '3' >>% Color.Black) <|> (pchar '6' >>% Color.White)
     let en = (file .>>. enColor) |>> Some
     let enPassant = ((pchar '-' >>% None) <|> en) .>> ws
     let core = pipe4 ranks color ca enPassant createCore

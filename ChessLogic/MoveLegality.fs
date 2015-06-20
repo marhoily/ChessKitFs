@@ -74,14 +74,14 @@ let Validate move position =
             fromSquare / 16 = c1 && at (fromSquare + c2) = None 
             && at (fromSquare + c3) = (Some(clr, PieceType.Pawn))
         match (color, (toSquare - fromSquare)) with
-        | (White, -32) -> validateDoublePush -16 6
-        | (Black, +32) -> validateDoublePush +16 1
-        | (White, -16) -> validatePush 1
-        | (Black, +16) -> validatePush 6
-        | (White, -15) -> validateCapture 1 (looksEnPassanty 3 -31 +1 Black)
-        | (White, -17) -> validateCapture 1 (looksEnPassanty 3 -33 -1 Black)
-        | (Black, +17) -> validateCapture 6 (looksEnPassanty 4 +33 +1 White)
-        | (Black, +15) -> validateCapture 6 (looksEnPassanty 4 +31 -1 White)
+        | (Color.White, -32) -> validateDoublePush -16 6
+        | (Color.Black, +32) -> validateDoublePush +16 1
+        | (Color.White, -16) -> validatePush 1
+        | (Color.Black, +16) -> validatePush 6
+        | (Color.White, -15) -> validateCapture 1 (looksEnPassanty 3 -31 +1 Color.Black)
+        | (Color.White, -17) -> validateCapture 1 (looksEnPassanty 3 -33 -1 Color.Black)
+        | (Color.Black, +17) -> validateCapture 6 (looksEnPassanty 4 +33 +1 Color.White)
+        | (Color.Black, +15) -> validateCapture 6 (looksEnPassanty 4 +31 -1 Color.White)
         | _ -> err MoveErrors.DoesNotMoveThisWay
     
     let validateKnightMove f t = 
@@ -110,8 +110,8 @@ let Validate move position =
                 if attacked F then err MoveErrors.CastleThroughCheck
             castling := castlingOpt
         
-        let w = position.Core |> IsAttackedBy Black
-        let b = position.Core |> IsAttackedBy White
+        let w = position.Core |> IsAttackedBy Color.Black
+        let b = position.Core |> IsAttackedBy Color.White
         match (toSquare - fromSquare) with
         | 1 | 15 | 16 | 17 | -1 | -15 | -16 | -17 -> ()
         | -2 | +2 -> 
@@ -162,7 +162,7 @@ let Validate move position =
         // Remove the pawn captured en-passant
         if !observations |> test MoveObservations.EnPassant then 
             let increment = 
-                if color = White then +8
+                if color = Color.White then +8
                 else -8
             newPlacement.[(moveTo |> Coordinate.toIdx64) + increment] <- None
         // Remove the piece from the old square and put it to the new square

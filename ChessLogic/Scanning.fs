@@ -22,7 +22,7 @@ let getScanners side at88 square =
 
 let IsAttackedBy side (position : PositionCore) c88 = 
     let jump, slide = getScanners side position.atX88 c88
-    [ jump  PieceType.Pawn (if side = Black then [ -15; -17 ]
+    [ jump  PieceType.Pawn (if side = Color.Black then [ -15; -17 ]
                             else [ +15; +17 ])
       jump  PieceType.Knight [ -33; -31; -18; -14; +33; +31; +18; +14 ]
       slide PieceType.Queen [ +15; +17; -15; -17; +16; +01; -16; -01 ]

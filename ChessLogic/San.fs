@@ -160,15 +160,17 @@ let internal sanScanners board =
     let findPushingPawns square = 
         let _, slide = getScanners color board.atX88 square
         match color with
-        | Black -> slide PieceType.Pawn [ -16; ]
-        | White -> slide PieceType.Pawn [ +16; ]
+        | Color.Black -> slide PieceType.Pawn [ -16; ]
+        | Color.White -> slide PieceType.Pawn [ +16; ]
+        | _ -> failwith "unexpected"
         |> project
 
     let findCapturingPawns square = 
         let jump, _ = getScanners color board.atX88 square
         match color with
-        | Black -> jump PieceType.Pawn [ -15; -17 ]
-        | White -> jump PieceType.Pawn [ +15; +17 ]
+        | Color.Black -> jump PieceType.Pawn [ -15; -17 ]
+        | Color.White -> jump PieceType.Pawn [ +15; +17 ]
+        | _ -> failwith "unexpected"
         |> project
 
     let findNonPawnPieces ofType square = 
@@ -218,10 +220,10 @@ let TryParse str board =
     let castlingToSanMove opt notes = 
         let move = 
             match color, opt with
-            | White, ShortCastling -> "e1-g1"
-            | White, LongCastling -> "e1-c1"
-            | Black, ShortCastling -> "e8-g8"
-            | Black, LongCastling -> "e8-c8"
+            | Color.White, ShortCastling -> "e1-g1"
+            | Color.White, LongCastling -> "e1-c1"
+            | Color.Black, ShortCastling -> "e8-g8"
+            | Color.Black, LongCastling -> "e8-c8"
             | _ -> failwith "unexpected"
         board 
         |> MoveLegality.Validate(Move.Parse (move))

@@ -126,10 +126,10 @@ let ``count material``() =
 
 [<Fact>]
 let ``get square color``() = 
-    Idx64.GetColor 0 |> should equal White
-    Idx64.GetColor 1 |> should equal Black
-    Idx64.GetColor 8 |> should equal Black
-    Idx64.GetColor 63 |> should equal White
+    Idx64.GetColor 0 |> should equal Color.White
+    Idx64.GetColor 1 |> should equal Color.Black
+    Idx64.GetColor 8 |> should equal Color.Black
+    Idx64.GetColor 63 |> should equal Color.White
 
 [<Fact>]
 let ``insufficient material``() = 
