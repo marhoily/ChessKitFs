@@ -29,7 +29,7 @@ let ValidateMove move position =
     let moveFrom, moveTo, promoteTo = 
         (move.Start, move.End, move.PromoteTo ?|? Queen)
     let positionCore = position.Core
-    let at i = positionCore |> Coordinate.PieceAt(i % 16, i / 16)
+    let at = positionCore.atX88
     let color = positionCore.ActiveColor
     match positionCore.at moveTo with
     | Some(clr, _) when clr = color -> err ToOccupiedCell

@@ -7,6 +7,7 @@ open Option
 open ChessKit.ChessLogic
 open ChessKit.ChessLogic.Text
 open ChessKit.ChessLogic.Extensions
+open ChessKit.ChessLogic.PositionCoreExt
 
 let positive = ParseToStringShouldMatch Fen.Print Fen.Parse
 let negative = ErrorMessageShouldMatch Fen.TryParse
@@ -61,7 +62,7 @@ let ``starting position print-out looks fine``() =
 
 [<Fact>]
 let ``d1 should refer to Q in starting position``() = 
-    Fen.StartingPosition.Core
-    |> Coordinate.PieceAt (Coordinate.Parse "d1") |> get
+    Fen.StartingPosition.Core.atStr "d1"
+    |> get
     |> pieceToChar
     |> should equal 'Q'

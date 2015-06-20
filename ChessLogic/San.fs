@@ -34,7 +34,7 @@ let ToSanString(legalMove : LegalMove) =
     let file, rank, fileAndRankStr = fst, snd, squareToString
     let fileStr x = fileToStirng (x |> file)
     let rankStr x = rankToString (x |> rank)
-    let at x = legalMove.OriginalPosition.Core |> Coordinate.PieceAt x
+    let at = legalMove.OriginalPosition.Core.at
     let isSimilarTo (a:LegalMove) (b:LegalMove) = 
         let x, y = a.Move, b.Move
         (x.Start <> y.Start) && (x.End = y.End) && (at x.Start = at y.Start)

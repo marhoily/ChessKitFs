@@ -248,3 +248,4 @@ module internal PositionCoreExt =
         member this.at c = Coordinate.PieceAt c this
         member this.atIdx64 c64 = this.Placement.[c64]
         member this.atX88 cX88 = X88.PieceAt cX88 this
+        member this.atStr = Coordinate.Parse >> this.at
