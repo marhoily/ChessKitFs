@@ -1,5 +1,6 @@
 ﻿using System;
 using ChessKit.ChessLogic;
+using FluentAssertions;
 using Xunit;
 
 namespace ChessLogic.Usability
@@ -16,7 +17,7 @@ namespace ChessLogic.Usability
                 .MakeMove("g4")
                 .MakeMove("Qh4#");
             Console.WriteLine(position.Dump());
-            Console.WriteLine(position.Properties);
+            position.Properties.Should().Be(Properties.Mate);
         }
 
         [Fact]
@@ -27,8 +28,8 @@ namespace ChessLogic.Usability
                 .Parse("8/1P6/8/8/8/8/8/8 w - - 0 1")
                 .ValidateLegalMove(move);
             var nextPosition = legalMove.ToPosition();
-            Console.WriteLine(Fen.Print(nextPosition));
+            Fen.Print(nextPosition)
+                .Should().Be("1Q6/8/8/8/8/8/8/8 b - - 0 1");
         }
-
     }
 }
