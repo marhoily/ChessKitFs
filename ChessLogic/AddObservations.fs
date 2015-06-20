@@ -1,6 +1,5 @@
 ﻿module ChessKit.ChessLogic.AddObservations
 
-open IsAttackedBy
 open X88
 
 let GetSquareColor(c : int) = 
@@ -57,7 +56,7 @@ let CoreToPosition(move : LegalMove) =
                               else 0
     
     let newAt x = core.Placement.[x |> to64]
-    let isCheck = IsInCheck core.ActiveColor core
+    let isCheck = Board.IsInCheck core.ActiveColor core
     
     let noMoves = 
         position

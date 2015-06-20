@@ -5,7 +5,6 @@ open ChessKit.ChessLogic.X88
 open ChessKit.ChessLogic.MoveLegalityChecker
 open System.Text
 open FParsec
-open IsAttackedBy
 open AddObservations
 
 let ToSanString(legalMove : LegalMove) = 
@@ -156,21 +155,21 @@ let sanScanners board =
         >> Seq.toList
 
     let findPushingPawns square = 
-        let _, slide = getScanners color at88 square
+        let _, slide = Board.getScanners color at88 square
         match color with
         | Black -> slide Pawn [ -16; ]
         | White -> slide Pawn [ +16; ]
         |> project
 
     let findCapturingPawns square = 
-        let jump, _ = getScanners color at88 square
+        let jump, _ = Board.getScanners color at88 square
         match color with
         | Black -> jump Pawn [ -15; -17 ]
         | White -> jump Pawn [ +15; +17 ]
         |> project
 
     let findNonPawnPieces ofType square = 
-        let jump, slide = getScanners color at88 square
+        let jump, slide = Board.getScanners color at88 square
         match ofType with
         | Knight -> jump Knight [ -33; -31; -18; -14; +33; +31; +18; +14 ]
         | Queen -> slide Queen [ +15; +17; -15; -17; +16; +01; -16; -01 ]

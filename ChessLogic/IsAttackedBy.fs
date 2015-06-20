@@ -1,4 +1,5 @@
-﻿module ChessKit.ChessLogic.IsAttackedBy
+﻿[<RequireQualifiedAccess>]
+module ChessKit.ChessLogic.Board
 
 open X88
 

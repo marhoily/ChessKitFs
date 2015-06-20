@@ -1,6 +1,5 @@
 ﻿module ChessKit.ChessLogic.MoveLegalityChecker
 
-open IsAttackedBy
 open Operators
 open X88
 
@@ -109,8 +108,8 @@ let ValidateMove move position =
                 if attacked F then err CastleThroughCheck
             castle castlingOpt
         
-        let w = position.Core |> IsAttackedBy Black
-        let b = position.Core |> IsAttackedBy White
+        let w = position.Core |> Board.IsAttackedBy Black
+        let b = position.Core |> Board.IsAttackedBy White
         match (toSquare - fromSquare) with
         | 1 | 15 | 16 | 17 | -1 | -15 | -16 | -17 -> ()
         | -2 | +2 -> 
@@ -209,7 +208,7 @@ let ValidateMove move position =
         newPosition := Some(updatedPosition)
     
     let setMoveToCheck() = 
-        if IsInCheck color (!newPosition).Value then 
+        if Board.IsInCheck color (!newPosition).Value then 
             err MoveToCheck
             newPosition := None
     
