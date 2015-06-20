@@ -270,9 +270,7 @@ let illegal move expected errors board =
     |> function 
     | San.Illegal il -> 
         il.Move.AsString |> should equal expected
-        il
-        |> MoveToString
-        |> should equal errors
+        MoveToString il |> should equal errors
     | x -> failwithf "Unexpected: %A" x
 
 let nonsense move errors board = 
