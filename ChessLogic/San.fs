@@ -283,7 +283,7 @@ let TryParse str board =
             toSanMove find NoHint Pawn addNotes
 
         | PawnCapture(fromFile, (toSquare, promoteTo)), notes -> 
-            let addNotes = addNotesToLegal notes (Some(SanCapture))
+            let addNotes = addNotesToLegal notes (Some SanCapture)
             let find = findAndSeparate findCapturingPawns toSquare (validate promoteTo) 
             toSanMove find (FileHint fromFile) Pawn addNotes
 

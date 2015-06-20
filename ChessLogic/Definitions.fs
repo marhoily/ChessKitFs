@@ -27,7 +27,7 @@ type CastlingHint =
     | BQ
     | BK
 
-[<Flags>]    
+[<Flags>]
 type Properties = 
     | None                 = 0b00000000
     | Check                = 0b00000001
@@ -54,7 +54,7 @@ type Warning =
     | MissingPromotionHint
     | PromotionHintIsNotNeeded
 
-[<Flags>]    
+[<Flags>]
 type MoveErrors = 
     | None                  = 0b000000000000
     | MoveToCheck           = 0b000000000001
@@ -69,7 +69,7 @@ type MoveErrors =
     | CastleThroughCheck    = 0b001000000000
     | DoesNotMoveThisWay    = 0b010000000000
     | CastleFromCheck       = 0b100000000000
-                            
+
 type PositionCore = 
     { Placement : Piece option array
       ActiveColor : Color
@@ -164,6 +164,7 @@ module Coordinate =
     let TryParse(str : string) = run parser str
     let Parse(str : string) = TryParse str |> Operators.getSuccess
     let internal fromX88 i = (i % 16, i / 16)
+    let internal fromIdx64 i = (i % 8, i / 8)
     let internal toIdx64 = function 
         | (file, rank) -> rank * 8 + file
     let At coordinate position = position.Placement.[toIdx64 coordinate]
@@ -172,7 +173,7 @@ module Coordinate =
 
 [<RequireQualifiedAccess>]
 module Idx64 = 
-    let GetColor (c : int) = 
+    let GetColor(c : int) = 
         let file, rank = c % 8, c / 8
         if (file % 2) = (rank % 2) then White
         else Black
@@ -180,10 +181,8 @@ module Idx64 =
 type Move with
     
     static member internal toString this = 
-        let vectorToString = 
-            function 
-            | (f, t) -> 
-                Coordinate.ToString f + "-" + Coordinate.ToString t
+        let vectorToString = function 
+            | (f, t) -> Coordinate.ToString f + "-" + Coordinate.ToString t
         let vector = vectorToString (this.Start, this.End)
         if this.PromoteTo = None then vector
         else 
@@ -246,12 +245,11 @@ module BoardTextExtensions =
                  + "   A   B   C   D   E   F   G   H  \r\n")
         for index = 0 to 63 do
             let piece = board.Core.Placement.[index]
-            let file = index % 8
-            let rank = index / 8
-            let index = (rank * 2 + 1) * 36 + file * 4 + 3
-            sb.[index] <- (match piece with
-                           | None -> ' '
-                           | Some(p) -> pieceToChar p)
+            let file, rank = Coordinate.fromIdx64 index
+            let i = (rank * 2 + 1) * 36 + file * 4 + 3
+            sb.[i] <- (match piece with
+                       | None -> ' '
+                       | Some(p) -> pieceToChar p)
         string sb
 
 [<RequireQualifiedAccess>]

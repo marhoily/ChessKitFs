@@ -12,25 +12,27 @@ let FromSquare from position =
     
     let rank7 = 1
     let rank2 = 6
+    let p (f, t) = Move.Create f t (Some Queen)
+    let u (f, t) = Move.Create f t None
+    let fromX88 = from |> X88.fromCoordinate
+    let validate createMove toX88 = 
+        let toCoordinate = toX88 |> Coordinate.fromX88
+        let move = createMove (from, toCoordinate)
+        position |> MoveLegality.Validate(move)
+    let atX88 = position.Core.atX88
     
-    let p (f,t) = Move.Create f t (Some(Queen))
-    let u (f,t) = Move.Create f t None
-    let f = from |> X88.fromCoordinate
-    let validate v t = position |> MoveLegality.Validate(v (from, t |> Coordinate.fromX88))
-    let at88 = position.Core.atX88
-    
-    let gen v = 
-        List.map (fun i -> f + i)
+    let gen createMove = 
+        List.map (fun i -> fromX88 + i)
         >> List.filter (fun x -> (x &&& 0x88) = 0)
-        >> List.map (validate v)
+        >> List.map (validate createMove)
     
     let rec step start increment = 
         [ let curr = start + increment
           if curr &&& 0x88 = 0 then 
               yield validate u curr
-              if at88 curr = None then yield! step curr increment ]
+              if atX88 curr = None then yield! step curr increment ]
     
-    let iter = List.collect (step f)
+    let iter = List.collect (step fromX88)
     match position.Core.at from with
     | Some(White, Pawn) -> 
         if snd from = rank7 then gen p [ -16; -15; -17 ]
@@ -46,11 +48,11 @@ let FromSquare from position =
     | None -> []
     |> legalOnly
 
-let All (position : Position) = 
+let All(position : Position) = 
     [ for i = 0 to 63 do
-          let square = (i % 8, i / 8)
-          match position.Core.at square with
+          let coordinate = Coordinate.fromIdx64 i
+          match position.Core.at coordinate with
           | Some(color, _) -> 
               if color = position.Core.ActiveColor then 
-                  yield! position |> FromSquare square
+                  yield! position |> FromSquare coordinate
           | _ -> () ]
