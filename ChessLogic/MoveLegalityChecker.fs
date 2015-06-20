@@ -1,6 +1,5 @@
 ﻿module ChessKit.ChessLogic.MoveLegalityChecker
 
-open CoordinateNotation
 open IsAttackedBy
 open Operators
 open X88

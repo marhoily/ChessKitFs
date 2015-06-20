@@ -4,11 +4,10 @@ open Xunit
 open FsUnit.Xunit
 open ChessKit.ChessLogic
 open ChessKit.ChessLogic.IsAttackedBy
-open ChessKit.ChessLogic.CoordinateNotation
 open ChessKit.ChessLogic.X88
 
 let check square func fen = 
-    func (fen |> Fen.Parse).Core (ParseCoordinate square |> toX88)
+    func (fen |> Fen.Parse).Core (CoordinateNotation.ParseCoordinate square |> toX88)
 
 [<Fact>]
 let ``c6 is attacked by black pawn on b7``() = 

@@ -1,6 +1,5 @@
 ﻿module ChessKit.ChessLogic.AddObservations
 
-open CoordinateNotation
 open IsAttackedBy
 open X88
 

@@ -3,6 +3,9 @@
 open Text
 open FParsec
 
+type Move with
+    static member Parse = ()
+
 let private coordinate = 
     let parseFile (p : char) : File = int (p) - int ('a')
     let parseRank c = 8 - (int c - int '0')

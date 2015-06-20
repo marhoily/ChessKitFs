@@ -4,7 +4,6 @@ open FsUnit.Xunit
 open Xunit
 open ChessKit.ChessLogic
 open ChessKit.ChessLogic.MoveLegalityChecker
-open ChessKit.ChessLogic.CoordinateNotation
 open ChessKit.ChessLogic.San
 open ChessKit.ChessLogic.X88
 open ChessKit.ChessLogic.Text
@@ -15,7 +14,7 @@ let check move expectedSan position =
     let p = position |> Fen.Parse
     printfn "%s" (Dump p)
     p
-    |> ValidateLegalMove(ParseCoordinateNotation move)
+    |> ValidateLegalMove(Move.Parse move)
     |> ToSanString
     |> should equal expectedSan
 
@@ -132,7 +131,7 @@ let ``parse gxe4``() = parse "gxe4" "(PawnCapture (6,((4, 4), null)), null)"
 // ----- Scanners --------
 let findPushingPawns square (expected : string list) board = 
     let scan, _, _ = sanScanners (Fen.Parse board).Core
-    scan (ParseCoordinate square |> toX88)
+    scan (CoordinateNotation.ParseCoordinate square |> toX88)
     |> List.map squareToString
     |> should equal expected
 
@@ -154,7 +153,7 @@ let ``push white pawn: e2-e4``() =
 
 let findCapturingPawns square (expected : string list) board = 
     let _, scan, _ = sanScanners (Fen.Parse board).Core
-    scan (ParseCoordinate square |> toX88)
+    scan (CoordinateNotation.ParseCoordinate square |> toX88)
     |> List.map squareToString
     |> should equal expected
 
@@ -180,7 +179,7 @@ let ``2 black pawns can capture``() =
 
 let findNonPawnPieces pieceType square (expected : string list) board = 
     let _, _, scan = sanScanners (Fen.Parse board).Core
-    scan pieceType (ParseCoordinate square |> toX88)
+    scan pieceType (CoordinateNotation.ParseCoordinate square |> toX88)
     |> List.map squareToString
     |> should equal expected
 

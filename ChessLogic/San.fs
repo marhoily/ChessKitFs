@@ -1,10 +1,9 @@
 ﻿module ChessKit.ChessLogic.San
 
-open Text
-open X88
-open MoveLegalityChecker
+open ChessKit.ChessLogic.Text
+open ChessKit.ChessLogic.X88
+open ChessKit.ChessLogic.MoveLegalityChecker
 open System.Text
-open CoordinateNotation
 open FParsec
 open IsAttackedBy
 open AddObservations
@@ -223,7 +222,7 @@ let FromSanString str board =
             | Black, LongCastling -> "e8-c8"
             | _ -> failwith "unexpected"
         board 
-        |> ValidateMove(ParseCoordinateNotation (move))
+        |> ValidateMove(Move.Parse (move))
         |> addNotesToAny notes None []
     
     let validate promoteTo fromSquare toSquare = 

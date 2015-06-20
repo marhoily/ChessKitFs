@@ -1,6 +1,5 @@
 ﻿module ChessKit.ChessLogic.GetLegalMoves
 
-open CoordinateNotation
 open X88
 open MoveLegalityChecker
 

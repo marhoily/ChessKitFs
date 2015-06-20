@@ -6,7 +6,6 @@ open FsUnit.Xunit
 open Option
 open ChessKit.ChessLogic
 open ChessKit.ChessLogic.Text
-open ChessKit.ChessLogic.CoordinateNotation
 open ChessKit.ChessLogic.Extensions
 open ChessKit.ChessLogic.X88
 
@@ -64,6 +63,6 @@ let ``starting position print-out looks fine``() =
 [<Fact>]
 let ``d1 should refer to Q in starting position``() = 
     Fen.StartingPosition.Core
-    |> PieceAt (ParseCoordinate "d1") |> get
+    |> PieceAt (CoordinateNotation.ParseCoordinate "d1") |> get
     |> pieceToChar
     |> should equal 'Q'

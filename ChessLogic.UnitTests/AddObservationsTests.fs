@@ -5,7 +5,6 @@ open Xunit
 open ChessKit.ChessLogic
 open ChessKit.ChessLogic.AddObservations
 open ChessKit.ChessLogic.MoveLegalityChecker
-open ChessKit.ChessLogic.CoordinateNotation
 open ChessKit.ChessLogic.Text
 open ChessKit.ChessLogic.San
 open ChessKit.ChessLogic.Extensions
@@ -20,7 +19,7 @@ let check expectedObservations position =
 let checkObservations position move expectedObservations = 
     position
     |> Fen.Parse
-    |> ValidateLegalMove(ParseCoordinateNotation move)
+    |> ValidateLegalMove(Move.Parse move)
     |> CoreToPosition
     |> check expectedObservations
 
