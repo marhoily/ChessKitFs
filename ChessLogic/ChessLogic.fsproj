@@ -56,7 +56,7 @@
     <Compile Include="CommonUtils.fs" />
     <Compile Include="Definitions.fs" />
     <Compile Include="Fen.fs" />
-    <Compile Include="IsAttackedBy.fs" />
+    <Compile Include="ScanningExtensions.fs" />
     <Compile Include="Cells.fs" />
     <Compile Include="MoveLegalityChecker.fs" />
     <Compile Include="GetLegalMoves.fs" />

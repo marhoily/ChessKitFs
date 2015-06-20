@@ -1,6 +1,7 @@
 ﻿module ChessKit.ChessLogic.AddObservations
 
 open X88
+open ScanningExtensions
 
 let GetSquareColor(c : int) = 
     let file, rank = c % 8, c / 8
@@ -56,7 +57,7 @@ let CoreToPosition(move : LegalMove) =
                               else 0
     
     let newAt x = core.Placement.[x |> to64]
-    let isCheck = Board.IsInCheck core.ActiveColor core
+    let isCheck = IsInCheck core.ActiveColor core
     
     let noMoves = 
         position

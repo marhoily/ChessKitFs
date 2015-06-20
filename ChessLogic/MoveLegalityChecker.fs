@@ -2,6 +2,7 @@
 
 open Operators
 open X88
+open ScanningExtensions
 
 type MoveInfo = 
     | LegalMove of LegalMove
@@ -108,8 +109,8 @@ let ValidateMove move position =
                 if attacked F then err CastleThroughCheck
             castle castlingOpt
         
-        let w = position.Core |> Board.IsAttackedBy Black
-        let b = position.Core |> Board.IsAttackedBy White
+        let w = position.Core |> IsAttackedBy Black
+        let b = position.Core |> IsAttackedBy White
         match (toSquare - fromSquare) with
         | 1 | 15 | 16 | 17 | -1 | -15 | -16 | -17 -> ()
         | -2 | +2 -> 
@@ -208,7 +209,7 @@ let ValidateMove move position =
         newPosition := Some(updatedPosition)
     
     let setMoveToCheck() = 
-        if Board.IsInCheck color (!newPosition).Value then 
+        if IsInCheck color (!newPosition).Value then 
             err MoveToCheck
             newPosition := None
     

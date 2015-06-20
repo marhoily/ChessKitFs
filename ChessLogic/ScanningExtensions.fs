@@ -1,5 +1,4 @@
-﻿[<RequireQualifiedAccess>]
-module ChessKit.ChessLogic.Board
+﻿module ChessKit.ChessLogic.ScanningExtensions
 
 open X88
 
