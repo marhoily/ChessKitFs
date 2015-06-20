@@ -33,7 +33,7 @@ let ToSanString(legalMove : LegalMove) =
     let file, rank, fileAndRankStr = fst, snd, squareToString
     let fileStr x = fileToStirng (x |> file)
     let rankStr x = rankToString (x |> rank)
-    let at x = legalMove.OriginalPosition.Core |> X88.PieceAt x
+    let at x = legalMove.OriginalPosition.Core |> Coordinate.PieceAt x
     let isSimilarTo (a:LegalMove) (b:LegalMove) = 
         let x, y = a.Move, b.Move
         (x.Start <> y.Start) && (x.End = y.End) && (at x.Start = at y.Start)
@@ -146,7 +146,7 @@ type SanMove =
     | Unparsable of string
 
 let sanScanners board = 
-    let at88 i = board |> X88.PieceAt(i |> Coordinate.fromX88)
+    let at88 i = board |> Coordinate.PieceAt(i |> Coordinate.fromX88)
     let color = board.ActiveColor
     let project = 
         Seq.map (fun f -> f())
@@ -250,7 +250,7 @@ let FromSanString str board =
                 | IllegalMove m -> invalid <- m::invalid
             (valid, invalid)
 
-        find (toSquare |> X88.fromTuple)
+        find (toSquare |> X88.fromCoordinate)
         |> List.map (fun x -> validate x toSquare)
         |> separateToLegalAndIllegal
 

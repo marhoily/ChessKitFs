@@ -38,7 +38,7 @@ let FindKing color (position: PositionCore) =
         |> Seq.tryFindIndex 
                (fun i -> i = (Some(color, King)))
     match index with
-    | Some(i) -> Some((i % 8, i / 8) |> X88.fromTuple)
+    | Some(i) -> Some((i % 8, i / 8) |> X88.fromCoordinate)
     | None -> None
 
 let IsInCheck (side:Color) (position: PositionCore) = 

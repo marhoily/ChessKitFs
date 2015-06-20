@@ -14,9 +14,9 @@ let FromSquare from position =
     
     let p (f,t) = Move.Create f t (Some(Queen))
     let u (f,t) = Move.Create f t None
-    let f = from |> X88.fromTuple
+    let f = from |> X88.fromCoordinate
     let validate v t = position |> ValidateMove(v (from, t |> Coordinate.fromX88))
-    let at88 i = position.Core |> X88.PieceAt(i |> Coordinate.fromX88)
+    let at88 i = position.Core |> Coordinate.PieceAt(i |> Coordinate.fromX88)
     
     let gen v = 
         List.map (fun i -> f + i)
@@ -30,7 +30,7 @@ let FromSquare from position =
               if at88 curr = None then yield! step curr increment ]
     
     let iter = List.collect (step f)
-    match position.Core |> X88.PieceAt from with
+    match position.Core |> Coordinate.PieceAt from with
     | Some(White, Pawn) -> 
         if snd from = rank7 then gen p [ -16; -15; -17 ]
         else gen u [ -16; -32; -15; -17 ]
@@ -48,7 +48,7 @@ let FromSquare from position =
 let All (position : Position) = 
     [ for i = 0 to 63 do
           let square = (i % 8, i / 8)
-          match position.Core |> X88.PieceAt square with
+          match position.Core |> Coordinate.PieceAt square with
           | Some(color, _) -> 
               if color = position.Core.ActiveColor then 
                   yield! position |> FromSquare square

@@ -165,6 +165,9 @@ module Coordinate =
     let TryParse(str : string) = run parser str
     let Parse(str : string) = TryParse str |> Operators.getSuccess
     let internal fromX88 i = (i % 16, i / 16)
+    let internal toIdx64 = function 
+        | (file, rank) -> rank * 8 + file
+    let PieceAt coordinate position = position.Placement.[toIdx64 coordinate]
 
 type Move with
     member internal this.AsString = moveToString this
@@ -234,15 +237,12 @@ module Extensions =
 [<RequireQualifiedAccess>]
 module internal X88 = 
     // https://chessprogramming.wikispaces.com/0x88
-    let fromTuple = function 
+    let fromCoordinate = function 
         | (x, y) -> x + y * 16
-    let to64 = function 
-        | (file, rank) -> rank * 8 + file
-    let PieceAt coordinate position = position.Placement.[to64 coordinate]
 module internal PositionCoreExt = 
     type PositionCore with
-        member this.at c = this.Placement.[c |> X88.to64]
+        member this.at c = this.Placement.[c |> Coordinate.toIdx64]
         member this.at64 c64 = this.Placement.[c64]
         member this.atX88 cX88 = this.Placement.[cX88
                                                  |> Coordinate.fromX88
-                                                 |> X88.to64]
+                                                 |> Coordinate.toIdx64]
