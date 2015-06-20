@@ -162,8 +162,8 @@ module Coordinate =
         let rank = anyOf "12345678" |>> parseRank
         file .>>. rank
     
-    let TryParse str = run parser str
-    let Parse = TryParse >> Operators.getSuccess
+    let TryParse(str : string) = run parser str
+    let Parse(str : string) = TryParse str |> Operators.getSuccess
 
 type Move with
     member internal this.AsString = moveToString this
