@@ -131,7 +131,7 @@ let ``ToFen prints en-passant for black correctly``() =
 
 [<Fact>]
 let ``ToFen prints castling availability correctly when some unavailable``() = 
-    toFenCore { ec with CastlingAvailability = [] } 
+    toFenCore { ec with CastlingAvailability = Castlings.None } 
     |> should equal " w - - 0 1"
 
 let positive = ParseToStringShouldMatch Fen.Print Fen.Parse

@@ -10,11 +10,10 @@ let MoveToString (move : MoveInfo) =
     let getStrings piece castling observations warnings errors = 
         seq { 
             if piece <> None then yield fieldName piece.Value
-            if castling <> None then yield fieldName castling.Value
+            if castling <> Castlings.None then yield sprintf "%A" castling
             for x in observations -> fieldName x
             for x in warnings -> fieldName x
-            if errors = MoveErrors.None then ()
-            else yield sprintf "%A" errors
+            if errors <> MoveErrors.None then yield sprintf "%A" errors
         }
     
     let strings = 

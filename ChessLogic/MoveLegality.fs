@@ -9,13 +9,12 @@ let Validate move position =
     let errors = ref MoveErrors.None
     let observations = ref []
     let warnings = ref []
-    let castling = ref None
+    let castling = ref Castlings.None
     let newPosition = ref None
     let err e = errors := e ||| !errors
     let warn w = warnings := w :: !warnings
     let info i = observations := i :: !observations
     let enPassant() = observations := Capture :: EnPassant :: !observations
-    let castle x = castling := Some(x)
     
     let hasNoEnPassant() = 
         err MoveErrors.HasNoEnPassant
@@ -86,7 +85,7 @@ let Validate move position =
         | _ -> err MoveErrors.DoesNotMoveThisWay
     
     let validateKingMove fromSquare toSquare = 
-        let avail opt = positionCore.CastlingAvailability |> List.contains opt
+        let avail = test positionCore.CastlingAvailability
         
         let long B C D E attacked castlingOpt = 
             if at D <> None || at B <> None then err MoveErrors.DoesNotJump
@@ -95,7 +94,7 @@ let Validate move position =
             else if attacked E then err MoveErrors.CastleFromCheck
             else 
                 if attacked D then err MoveErrors.CastleThroughCheck
-            castle castlingOpt
+            castling := castlingOpt
         
         let short E F G attacked castlingOpt = 
             if at F <> None then err MoveErrors.DoesNotJump
@@ -104,7 +103,7 @@ let Validate move position =
             else if attacked E then err MoveErrors.CastleFromCheck
             else 
                 if attacked F then err MoveErrors.CastleThroughCheck
-            castle castlingOpt
+            castling := castlingOpt
         
         let w = position.Core |> IsAttackedBy Black
         let b = position.Core |> IsAttackedBy White
@@ -112,10 +111,10 @@ let Validate move position =
         | 1 | 15 | 16 | 17 | -1 | -15 | -16 | -17 -> ()
         | -2 | +2 -> 
             match (fromSquare, toSquare) with
-            | (E1, C1) -> long B1 C1 D1 E1 w WQ
-            | (E8, C8) -> long B8 C8 D8 E8 b BQ
-            | (E1, G1) -> short E1 F1 G1 w WK
-            | (E8, G8) -> short E8 F8 G8 b BK
+            | (E1, C1) -> long B1 C1 D1 E1 w Castlings.WQ
+            | (E8, C8) -> long B8 C8 D8 E8 b Castlings.BQ
+            | (E1, G1) -> short E1 F1 G1 w   Castlings.WK
+            | (E8, G8) -> short E8 F8 G8 b   Castlings.BK
             | _ -> err MoveErrors.DoesNotMoveThisWay
         | _ -> err MoveErrors.DoesNotMoveThisWay
     
@@ -174,26 +173,26 @@ let Validate move position =
             newPlacement.[f |> X88.toIdx64] <- None
             newPlacement.[t |> X88.toIdx64] <- rook
         match !castling with
-        | Some(WK) -> moveCastlingRook H1 F1
-        | Some(WQ) -> moveCastlingRook A1 D1
-        | Some(BK) -> moveCastlingRook H8 F8
-        | Some(BQ) -> moveCastlingRook A8 D8
-        | None -> ()
+        | Castlings.WK -> moveCastlingRook H1 F1
+        | Castlings.WQ -> moveCastlingRook A1 D1
+        | Castlings.BK -> moveCastlingRook H8 F8
+        | Castlings.BQ -> moveCastlingRook A8 D8
+        | _ -> ()
         // Figure out new castling availability
         let optionsInvalidatedBy p = 
             match p |> X88.fromCoordinate with
-            | A1 -> [ WQ ]
-            | E1 -> [ WQ; WK ]
-            | H1 -> [ WK ]
-            | A8 -> [ BQ ]
-            | E8 -> [ BQ; BK ]
-            | H8 -> [ BK ]
-            | _ -> []
+            | A1 -> Castlings.WQ
+            | E1 -> Castlings.W 
+            | H1 -> Castlings.WK
+            | A8 -> Castlings.BQ
+            | E8 -> Castlings.B 
+            | H8 -> Castlings.BK
+            | _ -> Castlings.None
         
         let newCastlingAvailability = 
-            positionCore.CastlingAvailability
-            |> List.except (optionsInvalidatedBy moveFrom)
-            |> List.except (optionsInvalidatedBy moveTo)
+            positionCore.CastlingAvailability &&&
+            ~~~((optionsInvalidatedBy moveFrom) 
+            ||| (optionsInvalidatedBy moveTo))
         
         // Figure out new en-passant option
         let newEnPassant = 

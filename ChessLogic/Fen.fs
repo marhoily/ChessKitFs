@@ -4,6 +4,7 @@ module ChessKit.ChessLogic.Fen
 open Text
 open System
 open System.Text
+open Operators
 
 let Print p = 
     let color = 
@@ -11,15 +12,17 @@ let Print p =
         | White -> "w"
         | Black -> "b"
     
+    let options = 
+        [ (Castlings.WK, 'K');
+          (Castlings.WQ, 'Q');
+          (Castlings.BK, 'k');
+          (Castlings.BQ, 'q') ]
+
     let castling = 
         let result = 
-            p.Core.CastlingAvailability
-            |> List.map (function 
-                   | WQ -> 'Q'
-                   | WK -> 'K'
-                   | BQ -> 'q'
-                   | BK -> 'k')
-            |> List.toArray
+            [| for o in options do
+                   if fst o |> test p.Core.CastlingAvailability then
+                       yield (snd o) |]
             // This can be just "String" in F# 4.0
             |> (fun arr -> (String(arr)))
         if result = "" then "-"
@@ -91,13 +94,14 @@ let TryParse str =
     
     let parseGap c = Gap(int c - int '0')
     let parsePiece c = Piece(parsePieceLetter c)
-    
+    let fold = List.fold (|||) Castlings.None
+
     let castlingHintParse = 
         function 
-        | 'Q' -> WQ
-        | 'K' -> WK
-        | 'q' -> BQ
-        | 'k' -> BK
+        | 'Q' -> Castlings.WQ
+        | 'K' -> Castlings.WK
+        | 'q' -> Castlings.BQ
+        | 'k' -> Castlings.BK
         | _ -> failwith "unknown castling symbol"
     
     let parsePlacement ranks = 
@@ -129,8 +133,9 @@ let TryParse str =
     let white = pchar 'w' >>% White
     let color = black <|> white .>> ws
     let castlingHint = anyOf "KQkq" |>> castlingHintParse
-    let noCastling = pchar '-' >>% []
-    let ca = noCastling <|> many1 castlingHint .>> ws
+    let castlings = many1 castlingHint |>> fold
+    let noCastling = pchar '-' >>% Castlings.None
+    let ca = noCastling <|> castlings .>> ws
     let file = anyOf "abcdefgh" |>> parseFile
     let enColor = (pchar '3' >>% Black) <|> (pchar '6' >>% White)
     let en = (file .>>. enColor) |>> Some

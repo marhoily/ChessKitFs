@@ -21,11 +21,18 @@ type PieceType =
 
 type Piece = Color * PieceType
 
-type CastlingHint = 
-    | WQ
-    | WK
-    | BQ
-    | BK
+[<Flags>]
+type Castlings = 
+    | None = 0b0000
+    | Q    = 0b0101
+    | K    = 0b1010
+    | W    = 0b0011
+    | B    = 0b1100
+    | WQ   = 0b0001 
+    | WK   = 0b0010 
+    | BQ   = 0b0100 
+    | BK   = 0b1000 
+    | All  = 0b1111
 
 [<Flags>]
 type Properties = 
@@ -73,7 +80,7 @@ type MoveErrors =
 type PositionCore = 
     { Placement : Piece option array
       ActiveColor : Color
-      CastlingAvailability : CastlingHint list
+      CastlingAvailability : Castlings
       EnPassant : File option }
 
 [<StructuredFormatDisplay("{AsString}")>]
@@ -82,7 +89,7 @@ type LegalMove =
       OriginalPosition : Position
       ResultPosition : PositionCore
       Piece : PieceType
-      Castling : CastlingHint option
+      Castling : Castlings
       Observations : Observation list
       Warnings : Warning list }
 
@@ -98,7 +105,7 @@ type IllegalMove =
     { Move : Move
       OriginalPosition : Position
       Piece : PieceType option
-      Castling : CastlingHint option
+      Castling : Castlings
       Observations : Observation list
       Warnings : Warning list
       Errors : MoveErrors }

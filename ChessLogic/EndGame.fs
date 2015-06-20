@@ -89,10 +89,10 @@ let ToPosition(move : LegalMove) =
           if isRepetition then yield Properties.Repetition
           if insufficientMaterial then yield Properties.InsufficientMaterial
           if prev.HalfMoveClock >= 50 then yield Properties.FiftyMoveRule ]
-        |> List.fold (fun acc next -> acc ||| int(next)) 0
+        |> List.fold (|||) Properties.None
     
     { Core = core
       HalfMoveClock = newHalfMoveClock
       FullMoveNumber = newMoveNumber
       Move = Some(move)
-      Properties = enum<Properties>(newObs) }
+      Properties = newObs }
