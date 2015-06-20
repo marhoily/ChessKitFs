@@ -152,14 +152,11 @@ module internal Text =
             let p = pieceToChar (White, this.PromoteTo.Value)
             sprintf "%s=%c" vector p
 
+open Text
+open FParsec
+
 [<RequireQualifiedAccess>]
 module internal CoordinateNotation = 
-    open Text
-    open FParsec
-    
-    type Move with
-        static member Parse = ()
-    
     let coordinate = 
         let parseFile (p : char) : File = int (p) - int ('a')
         let parseRank c = 8 - (int c - int '0')
@@ -169,9 +166,6 @@ module internal CoordinateNotation =
     
     let TryParseCoordinate str = run coordinate str
     let ParseCoordinate = TryParseCoordinate >> Operators.getSuccess
-
-open Text
-open FParsec
 
 type Move with
     member internal this.AsString = moveToString this
@@ -187,7 +181,7 @@ type Move with
         
         let f = CoordinateNotation.coordinate .>> (pchar '-' <|> pchar 'x')
         let hint = anyOf "NBRQK" |>> parsePromotionHint
-        let p = opt ((pchar '=') >>. hint)
+        let p = opt (pchar '=' >>. hint)
         let notation = pipe3 f CoordinateNotation.coordinate p (Move.Create)
         run notation str
     
