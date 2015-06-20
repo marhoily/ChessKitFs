@@ -6,7 +6,7 @@ open ChessKit.ChessLogic
 open ChessKit.ChessLogic.ScanningExtensions
 
 let check square func fen = 
-    func (fen |> Fen.Parse).Core (Coordinate.Parse square |> X88.fromCoordinate)
+    func (Fen.Parse fen).Core (X88.parse square)
 
 [<Fact>]
 let ``c6 is attacked by black pawn on b7``() = 

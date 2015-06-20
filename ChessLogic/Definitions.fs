@@ -239,6 +239,8 @@ module internal X88 =
     // https://chessprogramming.wikispaces.com/0x88
     let fromCoordinate = function 
         | (x, y) -> x + y * 16
+    let parse = Coordinate.Parse >> fromCoordinate
+
 module internal PositionCoreExt = 
     type PositionCore with
         member this.at c = this.Placement.[c |> Coordinate.toIdx64]
