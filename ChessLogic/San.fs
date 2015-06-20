@@ -147,7 +147,7 @@ type Move =
     | Nonsense of Error
     | Unparsable of string
 
-let sanScanners board = 
+let internal sanScanners board = 
     let color = board.ActiveColor
     let project = 
         Seq.map (fun f -> f())
