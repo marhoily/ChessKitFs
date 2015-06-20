@@ -3,6 +3,7 @@
 open ChessKit.ChessLogic.Text
 open ChessKit.ChessLogic.MoveLegalityChecker
 open ChessKit.ChessLogic.ScanningExtensions
+open ChessKit.ChessLogic.PositionCoreExt
 open System.Text
 open FParsec
 open AddObservations
@@ -146,7 +147,6 @@ type SanMove =
     | Unparsable of string
 
 let sanScanners board = 
-    let at88 i = board |> X88.PieceAt(i)
     let color = board.ActiveColor
     let project = 
         Seq.map (fun f -> f())
@@ -155,21 +155,21 @@ let sanScanners board =
         >> Seq.toList
 
     let findPushingPawns square = 
-        let _, slide = getScanners color at88 square
+        let _, slide = getScanners color board.atX88 square
         match color with
         | Black -> slide Pawn [ -16; ]
         | White -> slide Pawn [ +16; ]
         |> project
 
     let findCapturingPawns square = 
-        let jump, _ = getScanners color at88 square
+        let jump, _ = getScanners color board.atX88 square
         match color with
         | Black -> jump Pawn [ -15; -17 ]
         | White -> jump Pawn [ +15; +17 ]
         |> project
 
     let findNonPawnPieces ofType square = 
-        let jump, slide = getScanners color at88 square
+        let jump, slide = getScanners color board.atX88 square
         match ofType with
         | Knight -> jump Knight [ -33; -31; -18; -14; +33; +31; +18; +14 ]
         | Queen -> slide Queen [ +15; +17; -15; -17; +16; +01; -16; -01 ]

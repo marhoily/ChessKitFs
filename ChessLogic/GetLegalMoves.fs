@@ -31,7 +31,7 @@ let FromSquare from position =
               if at88 curr = None then yield! step curr increment ]
     
     let iter = List.collect (step f)
-    match position.Core |> Coordinate.PieceAt from with
+    match position.Core.at from with
     | Some(White, Pawn) -> 
         if snd from = rank7 then gen p [ -16; -15; -17 ]
         else gen u [ -16; -32; -15; -17 ]
@@ -49,7 +49,7 @@ let FromSquare from position =
 let All (position : Position) = 
     [ for i = 0 to 63 do
           let square = (i % 8, i / 8)
-          match position.Core |> Coordinate.PieceAt square with
+          match position.Core.at square with
           | Some(color, _) -> 
               if color = position.Core.ActiveColor then 
                   yield! position |> FromSquare square
