@@ -15,8 +15,8 @@ let FromSquare from position =
     let p (f,t) = Move.Create f t (Some(Queen))
     let u (f,t) = Move.Create f t None
     let f = from |> X88.fromTuple
-    let validate v t = position |> ValidateMove(v (from, t |> X88.fromX88))
-    let at88 i = position.Core |> X88.PieceAt(i |> X88.fromX88)
+    let validate v t = position |> ValidateMove(v (from, t |> Coordinate.fromX88))
+    let at88 i = position.Core |> X88.PieceAt(i |> Coordinate.fromX88)
     
     let gen v = 
         List.map (fun i -> f + i)

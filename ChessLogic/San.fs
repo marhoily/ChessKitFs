@@ -146,12 +146,12 @@ type SanMove =
     | Unparsable of string
 
 let sanScanners board = 
-    let at88 i = board |> X88.PieceAt(i |> X88.fromX88)
+    let at88 i = board |> X88.PieceAt(i |> Coordinate.fromX88)
     let color = board.ActiveColor
     let project = 
         Seq.map (fun f -> f())
         >> Seq.filter (fun x -> x <> -1)
-        >> Seq.map X88.fromX88
+        >> Seq.map Coordinate.fromX88
         >> Seq.toList
 
     let findPushingPawns square = 

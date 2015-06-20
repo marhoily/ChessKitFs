@@ -168,8 +168,8 @@ let ValidateMove move position =
         newPlacement.[moveFrom |> X88.to64] <- None
         // Move the rook if it was a castling
         let moveCastlingRook f t = 
-            let x88toIndex = X88.fromX88 >> X88.to64
-            let rook = newPlacement.[X88.fromX88 f |> X88.to64]
+            let x88toIndex = Coordinate.fromX88 >> X88.to64
+            let rook = newPlacement.[Coordinate.fromX88 f |> X88.to64]
             newPlacement.[f |> x88toIndex] <- None
             newPlacement.[t |> x88toIndex] <- rook
         match !castling with
