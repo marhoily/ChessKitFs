@@ -3,7 +3,6 @@
 open FsUnit.Xunit
 open Xunit
 open ChessKit.ChessLogic
-open ChessKit.ChessLogic.MoveLegalityChecker
 open ChessKit.ChessLogic.San
 open ChessKit.ChessLogic.Text
 open ChessKit.ChessLogic.Extensions
@@ -13,7 +12,7 @@ let check move expectedSan position =
     let p = position |> Fen.Parse
     printfn "%s" (Dump p)
     p
-    |> ValidateLegalMove(Move.Parse move)
+    |> MoveLegalityChecker.ValidateLegalMove(Move.Parse move)
     |> ToSanString
     |> should equal expectedSan
 

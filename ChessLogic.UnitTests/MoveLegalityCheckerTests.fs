@@ -4,7 +4,6 @@ open Xunit
 open System
 open FsUnit.Xunit
 open ChessKit.ChessLogic
-open ChessKit.ChessLogic.MoveLegalityChecker
 open ChessKit.ChessLogic.Text
 
 let MoveToString (move : MoveInfo) = 
@@ -29,7 +28,7 @@ let MoveToString (move : MoveInfo) =
 let check position move expectedHint = 
     position
     |> Fen.Parse
-    |> ValidateMove(Move.Parse move)
+    |> MoveLegalityChecker.ValidateMove(Move.Parse move)
     |> MoveToString
     |> should equal expectedHint
 
@@ -1363,7 +1362,7 @@ module Queen =
                 let actual = 
                     fen
                     |> Fen.Parse
-                    |> ValidateMove(Move.Parse move)
+                    |> MoveLegalityChecker.ValidateMove(Move.Parse move)
                     |> MoveToString
                 if expected <> actual then 
                     errCounter <- errCounter + 1

@@ -4,12 +4,11 @@ open FenPrinterTests
 open FsUnit.Xunit
 open Xunit
 open ChessKit.ChessLogic
-open ChessKit.ChessLogic.MoveLegalityChecker
 
 let after move position = 
     position
     |> Fen.Parse
-    |> ValidateLegalMove(Move.Parse move)
+    |> MoveLegalityChecker.ValidateLegalMove(Move.Parse move)
     |> fun vm -> { EmptyPosition with Core = vm.ResultPosition }
     |> Fen.Print
 

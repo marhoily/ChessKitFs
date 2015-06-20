@@ -97,6 +97,10 @@ type IllegalMove =
       Warnings : Warning list
       Errors : Error list }
 
+type MoveInfo = 
+    | LegalMove of LegalMove
+    | IllegalMove of IllegalMove
+
 // --------------------------------------------------
 type Color with
     member this.Invert = 

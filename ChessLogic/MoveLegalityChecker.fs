@@ -1,12 +1,9 @@
-﻿module ChessKit.ChessLogic.MoveLegalityChecker
+﻿[<RequireQualifiedAccess>]
+module ChessKit.ChessLogic.MoveLegalityChecker
 
 open Operators
 open ScanningExtensions
 open PositionCoreExt
-
-type MoveInfo = 
-    | LegalMove of LegalMove
-    | IllegalMove of IllegalMove
 
 let ValidateMove move position = 
     let errors = ref []

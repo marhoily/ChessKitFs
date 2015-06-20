@@ -1,12 +1,13 @@
 ﻿module ChessKit.ChessLogic.San
 
+open ChessKit.ChessLogic
 open ChessKit.ChessLogic.Text
-open ChessKit.ChessLogic.MoveLegalityChecker
 open ChessKit.ChessLogic.ScanningExtensions
 open ChessKit.ChessLogic.PositionCoreExt
 open System.Text
 open FParsec
 open AddObservations
+open ChessKit.ChessLogic
 
 let ToSanString(legalMove : LegalMove) = 
     //     _______________________
@@ -221,11 +222,11 @@ let FromSanString str board =
             | Black, LongCastling -> "e8-c8"
             | _ -> failwith "unexpected"
         board 
-        |> ValidateMove(Move.Parse (move))
+        |> MoveLegalityChecker.ValidateMove(Move.Parse (move))
         |> addNotesToAny notes None []
     
     let validate promoteTo fromSquare toSquare = 
-        ValidateMove (Move.Create fromSquare toSquare promoteTo) board
+        MoveLegalityChecker.ValidateMove (Move.Create fromSquare toSquare promoteTo) board
 
     let legal (m : LegalMove) = m.Move.Start
     let illegal (m : IllegalMove) = m.Move.Start
@@ -246,7 +247,7 @@ let FromSanString str board =
             let mutable invalid = []
             for move in list do
                 match move with
-                | LegalMove m -> valid <- m::valid
+                | MoveInfo.LegalMove m -> valid <- m::valid
                 | IllegalMove m -> invalid <- m::invalid
             (valid, invalid)
 
