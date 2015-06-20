@@ -28,7 +28,7 @@ let MoveToString (move : MoveInfo) =
 let check position move expectedHint = 
     position
     |> Fen.Parse
-    |> MoveLegalityChecker.ValidateMove(Move.Parse move)
+    |> MoveLegality.Validate(Move.Parse move)
     |> MoveToString
     |> should equal expectedHint
 
@@ -1362,7 +1362,7 @@ module Queen =
                 let actual = 
                     fen
                     |> Fen.Parse
-                    |> MoveLegalityChecker.ValidateMove(Move.Parse move)
+                    |> MoveLegality.Validate(Move.Parse move)
                     |> MoveToString
                 if expected <> actual then 
                     errCounter <- errCounter + 1

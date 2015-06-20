@@ -222,11 +222,11 @@ let FromSanString str board =
             | Black, LongCastling -> "e8-c8"
             | _ -> failwith "unexpected"
         board 
-        |> MoveLegalityChecker.ValidateMove(Move.Parse (move))
+        |> MoveLegality.Validate(Move.Parse (move))
         |> addNotesToAny notes None []
     
     let validate promoteTo fromSquare toSquare = 
-        MoveLegalityChecker.ValidateMove (Move.Create fromSquare toSquare promoteTo) board
+        MoveLegality.Validate (Move.Create fromSquare toSquare promoteTo) board
 
     let legal (m : LegalMove) = m.Move.Start
     let illegal (m : IllegalMove) = m.Move.Start

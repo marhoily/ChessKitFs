@@ -8,7 +8,7 @@ open ChessKit.ChessLogic
 let after move position = 
     position
     |> Fen.Parse
-    |> MoveLegalityChecker.ValidateLegalMove(Move.Parse move)
+    |> MoveLegality.ValidateLegalMove(Move.Parse move)
     |> fun vm -> { EmptyPosition with Core = vm.ResultPosition }
     |> Fen.Print
 

@@ -1,11 +1,11 @@
 ﻿[<RequireQualifiedAccess>]
-module ChessKit.ChessLogic.MoveLegalityChecker
+module internal ChessKit.ChessLogic.MoveLegality
 
 open Operators
 open ScanningExtensions
 open PositionCoreExt
 
-let ValidateMove move position = 
+let Validate move position = 
     let errors = ref []
     let observations = ref []
     let warnings = ref []
@@ -243,6 +243,6 @@ let ValidateMove move position =
                       Errors = !errors }
 
 let ValidateLegalMove move pos = 
-    match ValidateMove move pos with
+    match Validate move pos with
     | LegalMove m -> m
     | IllegalMove(_) -> failwith "move is illegal"

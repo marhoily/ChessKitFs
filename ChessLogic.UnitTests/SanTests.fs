@@ -12,7 +12,7 @@ let check move expectedSan position =
     let p = position |> Fen.Parse
     printfn "%s" (Dump p)
     p
-    |> MoveLegalityChecker.ValidateLegalMove(Move.Parse move)
+    |> MoveLegality.ValidateLegalMove(Move.Parse move)
     |> ToSanString
     |> should equal expectedSan
 
