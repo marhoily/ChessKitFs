@@ -60,7 +60,7 @@
     <Compile Include="CellsX88.fs" />
     <Compile Include="MoveLegality.fs" />
     <Compile Include="GetLegalMoves.fs" />
-    <Compile Include="AddObservations.fs" />
+    <Compile Include="EndGame.fs" />
     <Compile Include="San.fs" />
     <Content Include="packages.config" />
     <Content Include="app.config" />

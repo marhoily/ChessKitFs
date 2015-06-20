@@ -6,7 +6,7 @@ open ChessKit.ChessLogic.ScanningExtensions
 open ChessKit.ChessLogic.PositionCoreExt
 open System.Text
 open FParsec
-open AddObservations
+open EndGame
 open ChessKit.ChessLogic
 
 let ToSanString(legalMove : LegalMove) = 

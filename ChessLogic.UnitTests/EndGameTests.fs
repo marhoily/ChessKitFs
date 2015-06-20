@@ -1,9 +1,9 @@
-﻿module AddObservationsTests
+﻿module EndGameTests
 
 open FsUnit.Xunit
 open Xunit
 open ChessKit.ChessLogic
-open ChessKit.ChessLogic.AddObservations
+open ChessKit.ChessLogic.EndGame
 open ChessKit.ChessLogic.Text
 open ChessKit.ChessLogic.San
 open ChessKit.ChessLogic.BoardTextExtensions
@@ -19,7 +19,7 @@ let checkObservations position move expectedObservations =
     position
     |> Fen.Parse
     |> MoveLegality.ParseLegal move
-    |> CoreToPosition
+    |> EndGame.CoreToPosition
     |> check expectedObservations
 
 let rec playFrom m p = 
@@ -27,7 +27,7 @@ let rec playFrom m p =
     | [] -> p
     | head :: tail -> 
         match p |> FromSanString head with
-        | LegalSan(legal, _) -> playFrom tail (CoreToPosition legal)
+        | LegalSan(legal, _) -> playFrom tail (EndGame.CoreToPosition legal)
         | x -> 
             printfn "%s" (Fen.Print p)
             printfn "%s" (Dump p)

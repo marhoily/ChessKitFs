@@ -1,4 +1,4 @@
-﻿module ChessKit.ChessLogic.AddObservations
+﻿module ChessKit.ChessLogic.EndGame
 
 open ScanningExtensions
 
