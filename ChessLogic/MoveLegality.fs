@@ -8,11 +8,11 @@ open PositionCoreExt
 let Validate move position = 
     let errors = ref MoveErrors.None
     let observations = ref []
-    let warnings = ref []
+    let warnings = ref Warning.None
     let castling = ref Castlings.None
     let newPosition = ref None
     let err e = errors := e ||| !errors
-    let warn w = warnings := w :: !warnings
+    let warn w = warnings := w ||| !warnings
     let info i = observations := i :: !observations
     let enPassant() = observations := Capture :: EnPassant :: !observations
     
@@ -216,9 +216,9 @@ let Validate move position =
     let setRequiresPromotion() = 
         let requiresPromotion = !observations |> List.contains Promotion
         if move.PromoteTo = None then 
-            if requiresPromotion then warn MissingPromotionHint
+            if requiresPromotion then warn Warning.MissingPromotionHint
         else 
-            if not requiresPromotion then warn PromotionHintIsNotNeeded
+            if not requiresPromotion then warn Warning.PromotionHintIsNotNeeded
     
     //   __________
     //__/ Do steps \______________________________________________________    

@@ -57,9 +57,11 @@ type Observation =
     | Promotion
     | DoublePush
 
+[<Flags>]
 type Warning = 
-    | MissingPromotionHint
-    | PromotionHintIsNotNeeded
+    | None                     = 0b000000000000
+    | MissingPromotionHint     = 0b000000000001
+    | PromotionHintIsNotNeeded = 0b000000000010
 
 [<Flags>]
 type MoveErrors = 
@@ -91,7 +93,7 @@ type LegalMove =
       Piece : PieceType
       Castling : Castlings
       Observations : Observation list
-      Warnings : Warning list }
+      Warnings : Warning }
 
 and Position = 
     { Core : PositionCore
@@ -107,7 +109,7 @@ type IllegalMove =
       Piece : PieceType option
       Castling : Castlings
       Observations : Observation list
-      Warnings : Warning list
+      Warnings : Warning
       Errors : MoveErrors }
 
 type MoveInfo = 
