@@ -224,8 +224,8 @@ let ``findNonPawnPieces throws when given pawn``() =
 // ----- toSanMove --------
 let san move (expected : string) board = 
     let fromLegalSanString str board = 
-        match San.FromSanString str board with
-        | San.LegalSan(move, warns) -> 
+        match San.TryParse str board with
+        | San.Legal(move, warns) -> 
             if not warns.IsEmpty then 
                 failwithf "%s" (concatFieldNames ", " warns)
             move
@@ -238,8 +238,8 @@ let san move (expected : string) board =
 
 let warn move (expected : string) warnings board = 
     let fromLegalSanString str board = 
-        match San.FromSanString str board with
-        | San.LegalSan(move, warns) -> 
+        match San.TryParse str board with
+        | San.Legal(move, warns) -> 
             concatFieldNames ", " warns |> should equal warnings
             move
         | x -> failwithf "%A" x
@@ -265,9 +265,9 @@ let illegal move expected errors board =
         getStrings m.Piece m.Castling m.Observations m.Warnings m.Errors [] 
         |> String.concat " | "
     Fen.Parse board
-    |> San.FromSanString move
+    |> San.TryParse move
     |> function 
-    | San.IllegalSan il -> 
+    | San.Illegal il -> 
         il.Move.AsString |> should equal expected
         il
         |> MoveToString
@@ -276,7 +276,7 @@ let illegal move expected errors board =
 
 let nonsense move errors board = 
     Fen.Parse board
-    |> San.FromSanString move
+    |> San.TryParse move
     |> function 
     | San.Nonsense x -> (sprintf "%A" x) |> should equal errors
     | x -> failwithf "Unexpected: %A" x

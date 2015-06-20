@@ -24,8 +24,8 @@ let rec playFrom m p =
     match m with
     | [] -> p
     | head :: tail -> 
-        match p |> San.FromSanString head with
-        | San.LegalSan(legal, _) -> playFrom tail (legal |> EndGame.ToPosition)
+        match p |> San.TryParse head with
+        | San.Legal(legal, _) -> playFrom tail (legal |> EndGame.ToPosition)
         | x -> 
             printfn "%s" (Fen.Print p)
             printfn "%s" (Dump p)

@@ -127,12 +127,12 @@ let internal ParseSanString str =
     let san = moves .>>. opt ending
     run san str
 
-type SanError = 
+type Error = 
     | PieceNotFound of Piece
     | AmbiguousChoice of LegalMove list
     | ChoiceOfIllegalMoves of IllegalMove list
 
-type SanWarning = 
+type Warning = 
     | IsCapture
     | IsNotCapture
     | IsCheck
@@ -141,10 +141,10 @@ type SanWarning =
     | IsNotMate
     | DisambiguationIsExcessive
 
-type SanMove = 
-    | LegalSan of LegalMove * SanWarning list
-    | IllegalSan of IllegalMove
-    | Nonsense of SanError
+type Move = 
+    | Legal of LegalMove * Warning list
+    | Illegal of IllegalMove
+    | Nonsense of Error
     | Unparsable of string
 
 let sanScanners board = 
@@ -181,7 +181,7 @@ let sanScanners board =
         |> project
     (findPushingPawns, findCapturingPawns, findNonPawnPieces)
 
-let FromSanString str board = 
+let TryParse str board = 
     let color = board.Core.ActiveColor
     let findPushingPawns, findCapturingPawns, findNonPawnPieces = 
         sanScanners board.Core
@@ -206,12 +206,12 @@ let FromSanString str board =
         if not captureNote && captureReal then warn IsCapture
         else if captureNote && not captureReal then warn IsNotCapture
             
-        LegalSan(legalMove, !warnings)
+        Legal(legalMove, !warnings)
 
     let addNotesToAny notes capture warns moveInfo =
         match moveInfo with
         | LegalMove m -> addNotesToLegal notes capture warns m
-        | IllegalMove m -> IllegalSan m
+        | IllegalMove m -> Illegal m
 
     let castlingToSanMove opt notes = 
         let move = 
@@ -267,7 +267,7 @@ let FromSanString str board =
 
         match valid, invalid with
         | [], _::_::[] -> Nonsense (ChoiceOfIllegalMoves invalid)
-        | [], only::[] -> IllegalSan only
+        | [], only::[] -> Illegal only
         | [], [] -> Nonsense (PieceNotFound (color, pieceType))
         | validMove::[], _ -> validMove |> addNotes warnings
         | tooMany, _ -> Nonsense (AmbiguousChoice tooMany)
@@ -295,7 +295,7 @@ let FromSanString str board =
     | Success(p, _, _) -> dispatch p
     | Failure(e, _, _) -> Unparsable e
 
-let FromLegalSanString str board = 
-    match FromSanString str board with
-    | LegalSan (move, _) -> move
+let Parse str board = 
+    match TryParse str board with
+    | Legal (move, _) -> move
     | x -> failwithf "%A" x
