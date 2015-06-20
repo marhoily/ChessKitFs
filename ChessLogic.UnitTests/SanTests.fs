@@ -249,8 +249,7 @@ let warn move (expected : string) warnings board =
 
 let illegal move expected errors board = 
     let MoveToString m = 
-        let getStrings piece castling observations warnings errors 
-            resultObservations = 
+        let getStrings piece castling observations warnings errors = 
             seq { 
                 if piece <> None then yield fieldName piece.Value
                 if castling <> Castlings.None then yield sprintf "%A" castling
@@ -259,9 +258,8 @@ let illegal move expected errors board =
                 if warnings <> MoveWarnings.None then 
                     yield sprintf "%A" warnings
                 if errors <> MoveErrors.None then yield sprintf "%A" errors
-                for x in resultObservations -> fieldName x
             }
-        getStrings m.Piece m.Castling m.Observations m.Warnings m.Errors []
+        getStrings m.Piece m.Castling m.Observations m.Warnings m.Errors
         |> String.concat " | "
     Fen.Parse board
     |> San.TryParse move
