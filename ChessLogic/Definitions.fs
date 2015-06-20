@@ -262,6 +262,7 @@ module internal X88 =
     let parse = Coordinate.Parse >> fromCoordinate
     let toIdx64 = Coordinate.fromX88 >> Coordinate.toIdx64
     let at cX88 position = position.Placement.[toIdx64 cX88]
+    let fromIdx64 i = (i % 8, i / 8) |> fromCoordinate
 
 module internal PositionCoreExt = 
     type PositionCore with

@@ -1,6 +1,7 @@
 ﻿module internal ChessKit.ChessLogic.ScanningExtensions
 
 open PositionCoreExt
+open Microsoft.FSharp.Core.Option
 
 let getScanners side at88 square = 
     let rec slide square pieceType increment () = 
@@ -37,11 +38,8 @@ let FindKing color (position: PositionCore) =
         |> Seq.map position.atIdx64
         |> Seq.tryFindIndex 
                (fun i -> i = (Some(color, King)))
-    match index with
-    | Some(i) -> Some((i % 8, i / 8) |> X88.fromCoordinate)
-    | None -> None
+    index |> map X88.fromIdx64
 
 let IsInCheck (side:Color) (position: PositionCore) = 
-    match FindKing side position with
-    | Some c -> IsAttackedBy side.Invert position c
-    | None -> false
+    FindKing side position
+    |> exists (IsAttackedBy side.Invert position)
