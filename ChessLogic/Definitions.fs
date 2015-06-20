@@ -54,20 +54,22 @@ type Warning =
     | MissingPromotionHint
     | PromotionHintIsNotNeeded
 
+[<Flags>]    
 type Error = 
-    | MoveToCheck
-    | EmptyCell
-    | WrongSideToMove
-    | HasNoCastling
-    | ToOccupiedCell
-    | HasNoEnPassant
-    | DoesNotJump
-    | OnlyCapturesThisWay
-    | DoesNotCaptureThisWay
-    | CastleThroughCheck
-    | DoesNotMoveThisWay
-    | CastleFromCheck
-
+    | None                  = 0b000000000000
+    | MoveToCheck           = 0b000000000001
+    | EmptyCell             = 0b000000000010
+    | WrongSideToMove       = 0b000000000100
+    | HasNoCastling         = 0b000000001000
+    | ToOccupiedCell        = 0b000000010000
+    | HasNoEnPassant        = 0b000000100000
+    | DoesNotJump           = 0b000001000000
+    | OnlyCapturesThisWay   = 0b000010000000
+    | DoesNotCaptureThisWay = 0b000100000000
+    | CastleThroughCheck    = 0b001000000000
+    | DoesNotMoveThisWay    = 0b010000000000
+    | CastleFromCheck       = 0b100000000000
+                            
 type PositionCore = 
     { Placement : Piece option array
       ActiveColor : Color
@@ -99,7 +101,7 @@ type IllegalMove =
       Castling : CastlingHint option
       Observations : Observation list
       Warnings : Warning list
-      Errors : Error list }
+      Errors : Error }
 
 type MoveInfo = 
     | LegalMove of LegalMove
@@ -213,7 +215,7 @@ type LegalMove with
 
 type IllegalMove with
     member internal x.AsString = 
-        let errors = x.Errors |> concatFieldNames ", "
+        let errors = x.Errors |> sprintf "%A"
         sprintf "%s (%s)" x.Move.AsString errors
 
 [<Extension>]

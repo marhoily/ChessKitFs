@@ -6,19 +6,19 @@ open ScanningExtensions
 open PositionCoreExt
 
 let Validate move position = 
-    let errors = ref []
+    let errors = ref Error.None
     let observations = ref []
     let warnings = ref []
     let castling = ref None
     let newPosition = ref None
-    let err e = errors := e :: !errors
+    let err e = errors := e ||| !errors
     let warn w = warnings := w :: !warnings
     let info i = observations := i :: !observations
     let enPassant() = observations := Capture :: EnPassant :: !observations
     let castle x = castling := Some(x)
     
     let hasNoEnPassant() = 
-        err HasNoEnPassant
+        err Error.HasNoEnPassant
         enPassant()
     
     //   ___________
@@ -29,29 +29,29 @@ let Validate move position =
     let at = positionCore.atX88
     let color = positionCore.ActiveColor
     match positionCore.at moveTo with
-    | Some(clr, _) when clr = color -> err ToOccupiedCell
+    | Some(clr, _) when clr = color -> err Error.ToOccupiedCell
     | Some(_) -> info Capture
     | None -> ()
     let pieceType : PieceType option = 
         match positionCore.at moveFrom with
         | Some(pieceColor, fPt) -> 
-            if color <> pieceColor then err WrongSideToMove
+            if color <> pieceColor then err Error.WrongSideToMove
             Some(fPt)
         | None -> 
-            err EmptyCell
+            err Error.EmptyCell
             None
     
     //   _______________________
     //__/ Validateion functions \_________________________________________
     let validatePawnMove fromSquare toSquare = 
         let validateDoublePush v c = 
-            if fromSquare / 16 <> c then err DoesNotMoveThisWay
-            else if at toSquare <> None then err DoesNotCaptureThisWay
-            else if at (fromSquare + v) <> None then err DoesNotJump
+            if fromSquare / 16 <> c then err Error.DoesNotMoveThisWay
+            else if at toSquare <> None then err Error.DoesNotCaptureThisWay
+            else if at (fromSquare + v) <> None then err Error.DoesNotJump
             else info DoublePush
         
         let validatePush c = 
-            if at toSquare <> None then err DoesNotCaptureThisWay
+            if at toSquare <> None then err Error.DoesNotCaptureThisWay
             else 
                 if fromSquare / 16 = c then info Promotion
         
@@ -61,7 +61,7 @@ let Validate move position =
                     if positionCore.EnPassant = Some(toSquare % 16) then 
                         enPassant()
                     else hasNoEnPassant()
-                else err OnlyCapturesThisWay
+                else err Error.OnlyCapturesThisWay
             else 
                 if fromSquare / 16 = c2 then info Promotion
         
@@ -77,32 +77,32 @@ let Validate move position =
         | (White, -17) -> validateCapture 1 (looksEnPassanty 3 -33 -1 Black)
         | (Black, +17) -> validateCapture 6 (looksEnPassanty 4 +33 +1 White)
         | (Black, +15) -> validateCapture 6 (looksEnPassanty 4 +31 -1 White)
-        | _ -> err DoesNotMoveThisWay
+        | _ -> err Error.DoesNotMoveThisWay
     
     let validateKnightMove f t = 
         match (t - f) with
         | 33 | 31 | -33 | -31 | 18 | 14 | -18 | -14 -> ()
-        | _ -> err DoesNotMoveThisWay
+        | _ -> err Error.DoesNotMoveThisWay
     
     let validateKingMove fromSquare toSquare = 
         let avail opt = positionCore.CastlingAvailability |> List.contains opt
         
         let long B C D E attacked castlingOpt = 
-            if at D <> None || at B <> None then err DoesNotJump
-            else if at C <> None then err DoesNotCaptureThisWay
-            else if not (avail castlingOpt) then err HasNoCastling
-            else if attacked E then err CastleFromCheck
+            if at D <> None || at B <> None then err Error.DoesNotJump
+            else if at C <> None then err Error.DoesNotCaptureThisWay
+            else if not (avail castlingOpt) then err Error.HasNoCastling
+            else if attacked E then err Error.CastleFromCheck
             else 
-                if attacked D then err CastleThroughCheck
+                if attacked D then err Error.CastleThroughCheck
             castle castlingOpt
         
         let short E F G attacked castlingOpt = 
-            if at F <> None then err DoesNotJump
-            else if at G <> None then err DoesNotCaptureThisWay
-            else if not (avail castlingOpt) then err HasNoCastling
-            else if attacked E then err CastleFromCheck
+            if at F <> None then err Error.DoesNotJump
+            else if at G <> None then err Error.DoesNotCaptureThisWay
+            else if not (avail castlingOpt) then err Error.HasNoCastling
+            else if attacked E then err Error.CastleFromCheck
             else 
-                if attacked F then err CastleThroughCheck
+                if attacked F then err Error.CastleThroughCheck
             castle castlingOpt
         
         let w = position.Core |> IsAttackedBy Black
@@ -115,21 +115,21 @@ let Validate move position =
             | (E8, C8) -> long B8 C8 D8 E8 b BQ
             | (E1, G1) -> short E1 F1 G1 w WK
             | (E8, G8) -> short E8 F8 G8 b BK
-            | _ -> err DoesNotMoveThisWay
-        | _ -> err DoesNotMoveThisWay
+            | _ -> err Error.DoesNotMoveThisWay
+        | _ -> err Error.DoesNotMoveThisWay
     
     let validateSlidingMove offsets f t = 
         let rec iterate start stop increment = 
             let next = start + increment
-            if next &&& 0x88 <> 0 then err DoesNotMoveThisWay
+            if next &&& 0x88 <> 0 then err Error.DoesNotMoveThisWay
             else if next = stop then ()
-            else if at next <> None then err DoesNotJump
+            else if at next <> None then err Error.DoesNotJump
             else iterate next stop increment
         
         let isMultipleOf n m = n % m = 0 && n / m < 8 && n / m >= 0
         match offsets |> Seq.tryFind (t - f |> isMultipleOf) with
         | Some(m) -> iterate f t m
-        | None -> err DoesNotMoveThisWay
+        | None -> err Error.DoesNotMoveThisWay
     
     let validateBishopMove = validateSlidingMove [ 15; -15; 17; -17 ]
     let validateRookMove = validateSlidingMove [ 16; -16; 01; -01 ]
@@ -210,7 +210,7 @@ let Validate move position =
     
     let setMoveToCheck() = 
         if IsInCheck color (!newPosition).Value then 
-            err MoveToCheck
+            err Error.MoveToCheck
             newPosition := None
     
     let setRequiresPromotion() = 
@@ -223,9 +223,9 @@ let Validate move position =
     //   __________
     //__/ Do steps \______________________________________________________    
     List.iter (fun f -> 
-        if (!errors).IsEmpty then f()) 
+        if !errors = Error.None then f()) 
         [ validate; setupResultPosition; setMoveToCheck; setRequiresPromotion ]
-    if (!errors).IsEmpty then 
+    if !errors = Error.None then 
         LegalMove { Move = move
                     OriginalPosition = position
                     ResultPosition = (!newPosition).Value
