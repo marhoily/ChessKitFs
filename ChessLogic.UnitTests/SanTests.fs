@@ -257,7 +257,7 @@ let illegal move expected errors board =
                 if piece <> None then yield fieldName piece.Value
                 if castling <> Castlings.None then yield sprintf "%A" castling
                 for x in observations -> fieldName x
-                if warnings <> Warning.None then yield sprintf "%A" warnings
+                if warnings <> MoveWarnings.None then yield sprintf "%A" warnings
                 if errors <> MoveErrors.None then yield sprintf "%A" errors
                 for x in resultObservations -> fieldName x
             }

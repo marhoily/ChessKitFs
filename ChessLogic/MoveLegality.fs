@@ -8,7 +8,7 @@ open PositionCoreExt
 let Validate move position = 
     let errors = ref MoveErrors.None
     let observations = ref []
-    let warnings = ref Warning.None
+    let warnings = ref MoveWarnings.None
     let castling = ref Castlings.None
     let newPosition = ref None
     let err e = errors := e ||| !errors
@@ -216,9 +216,9 @@ let Validate move position =
     let setRequiresPromotion() = 
         let requiresPromotion = !observations |> List.contains Promotion
         if move.PromoteTo = None then 
-            if requiresPromotion then warn Warning.MissingPromotionHint
+            if requiresPromotion then warn MoveWarnings.MissingPromotionHint
         else 
-            if not requiresPromotion then warn Warning.PromotionHintIsNotNeeded
+            if not requiresPromotion then warn MoveWarnings.PromotionHintIsNotNeeded
     
     //   __________
     //__/ Do steps \______________________________________________________    
