@@ -55,7 +55,7 @@ type Warning =
     | PromotionHintIsNotNeeded
 
 [<Flags>]    
-type Error = 
+type MoveErrors = 
     | None                  = 0b000000000000
     | MoveToCheck           = 0b000000000001
     | EmptyCell             = 0b000000000010
@@ -101,7 +101,7 @@ type IllegalMove =
       Castling : CastlingHint option
       Observations : Observation list
       Warnings : Warning list
-      Errors : Error }
+      Errors : MoveErrors }
 
 type MoveInfo = 
     | LegalMove of LegalMove

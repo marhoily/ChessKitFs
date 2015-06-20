@@ -13,14 +13,14 @@ let MoveToString (move : MoveInfo) =
             if castling <> None then yield fieldName castling.Value
             for x in observations -> fieldName x
             for x in warnings -> fieldName x
-            if errors = Error.None then ()
+            if errors = MoveErrors.None then ()
             else yield sprintf "%A" errors
         }
     
     let strings = 
         match move with
         | LegalMove m -> 
-            getStrings (Some(m.Piece)) m.Castling m.Observations m.Warnings Error.None
+            getStrings (Some(m.Piece)) m.Castling m.Observations m.Warnings MoveErrors.None
         | IllegalMove m -> 
             getStrings m.Piece m.Castling m.Observations m.Warnings m.Errors
     
