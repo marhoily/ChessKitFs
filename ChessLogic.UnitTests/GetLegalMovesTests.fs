@@ -9,7 +9,7 @@ open ChessKit.ChessLogic.Extensions
 open ChessKit.ChessLogic
 open ChessKit.ChessLogic
 
-let toString (m : LegalMove) = Coordinate.squareToString m.Move.End
+let toString (m : LegalMove) = Coordinate.toString m.Move.End
 
 let check from (expected : string list) position = 
     let p = position |> Fen.Parse
@@ -28,7 +28,7 @@ let check from (expected : string list) position =
               let e = (i % 8, i / 8)
               let t = Move.Create f e None
               match ValidateMove t p with
-              | LegalMove _ -> yield Coordinate.squareToString e
+              | LegalMove _ -> yield Coordinate.toString e
               | _ -> () ]
     actual |> should equal (expected2 |> List.sort)
 
@@ -48,7 +48,7 @@ let checkAll expected position =
                   let e = (i % 8, i / 8)
                   let t = Move.Create (j % 8, j / 8) e None
                   match ValidateMove t p with
-                  | LegalMove _ -> yield Coordinate.squareToString e
+                  | LegalMove _ -> yield Coordinate.toString e
                   | _ -> () ]
     actual |> should equal (expected2 |> List.sort)
 
