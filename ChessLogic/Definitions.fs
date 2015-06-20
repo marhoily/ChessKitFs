@@ -99,6 +99,8 @@ type IllegalMove =
       Warnings : Warning list
       Errors : Error list }
 
+// --------------------------------------------------
+
 type Color with
     member this.Invert = 
         match this with
@@ -200,7 +202,7 @@ module Extensions =
                            | Some(p) -> pieceToChar p)
         string sb
 
-module X88 = 
+module internal X88 = 
     // https://chessprogramming.wikispaces.com/0x88
     let toX88 = function 
         | (x, y) -> x + y * 16
