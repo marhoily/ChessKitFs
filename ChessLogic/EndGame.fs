@@ -48,7 +48,7 @@ let ToPosition(move : LegalMove) =
           Properties = Properties.None }
     
     let newHalfMoveClock = 
-        if piece = PieceType.Pawn || (obs |> test Observation.Capture) then 0
+        if piece = PieceType.Pawn || (obs |> test MoveObservations.Capture) then 0
         else prev.HalfMoveClock + 1
     
     let newMoveNumber = 

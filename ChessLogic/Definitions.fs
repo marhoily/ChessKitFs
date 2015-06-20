@@ -54,7 +54,7 @@ type Move =
       PromoteTo : PieceType }
 
 [<Flags>]
-type Observation = 
+type MoveObservations = 
     | None       = 0b0000
     | Promotion  = 0b0001
     | Capture    = 0b0010
@@ -96,7 +96,7 @@ type LegalMove =
       ResultPosition : PositionCore
       Piece : PieceType
       Castling : Castlings
-      Observations : Observation
+      Observations : MoveObservations
       Warnings : MoveWarnings }
 
 and Position = 
@@ -112,7 +112,7 @@ type IllegalMove =
       OriginalPosition : Position
       Piece : PieceType option
       Castling : Castlings
-      Observations : Observation
+      Observations : MoveObservations
       Warnings : MoveWarnings
       Errors : MoveErrors }
 

@@ -253,7 +253,7 @@ let illegal move expected errors board =
             seq { 
                 if piece <> None then yield sprintf "%A" piece.Value
                 if castling <> Castlings.None then yield sprintf "%A" castling
-                if observations <> Observation.None then 
+                if observations <> MoveObservations.None then 
                     yield sprintf "%A" observations
                 if warnings <> MoveWarnings.None then 
                     yield sprintf "%A" warnings
