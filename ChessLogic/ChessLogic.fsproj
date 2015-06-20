@@ -62,7 +62,7 @@
     <Compile Include="GetLegalMoves.fs" />
     <Compile Include="EndGame.fs" />
     <Compile Include="San.fs" />
-    <Compile Include="Board.fs" />
+    <Compile Include="BoardExtensions.fs" />
     <Content Include="packages.config" />
     <Content Include="app.config" />
     <None Include="ChessLogic.nuspec" />

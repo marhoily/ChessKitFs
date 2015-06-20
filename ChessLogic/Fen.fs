@@ -148,5 +148,3 @@ let TryParse str =
 let Parse str = TryParse str |> Operators.getSuccess
 let ParseCore str = (Parse str).Core
 
-let StartingPosition = 
-    Parse "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" 

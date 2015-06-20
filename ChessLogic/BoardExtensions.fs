@@ -35,3 +35,6 @@ let ParseLegalMove (position : Position) (move : string) =
 [<Extension>]
 let ParseSanMove (position : Position) (move : string) = 
     San.Parse move position
+
+let StartingPosition = 
+    Fen.Parse "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" 

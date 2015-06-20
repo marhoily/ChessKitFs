@@ -209,8 +209,8 @@ type LegalMove with
 
 type IllegalMove with
     member internal x.AsString = 
-        let errors = x.Errors |> List.map fieldName
-        sprintf "%s (%s)" x.Move.AsString (String.concat ", " errors)
+        let errors = x.Errors |> concatFieldNames ", "
+        sprintf "%s (%s)" x.Move.AsString errors
 
 [<Extension>]
 module BoardTextExtensions = 
