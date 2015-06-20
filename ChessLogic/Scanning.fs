@@ -39,4 +39,4 @@ let FindKing color (position : PositionCore) =
     |> map X88.fromIdx64
 
 let IsInCheck (side : Color) (position : PositionCore) = 
-    FindKing side position |> exists (IsAttackedBy side.Invert position)
+    FindKing side position |> exists (IsAttackedBy (side |> Side.Invert) position)

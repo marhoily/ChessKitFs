@@ -121,9 +121,9 @@ type MoveInfo =
     | IllegalMove of IllegalMove
 
 // --------------------------------------------------
-type Color with
-    member this.Invert = 
-        match this with
+module Side =
+    let Invert = 
+        function
         | White -> Black
         | Black -> White
 

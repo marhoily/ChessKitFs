@@ -209,7 +209,7 @@ let Validate move position =
         // Construct new position
         let updatedPosition = 
             { positionCore with Placement = newPlacement
-                                ActiveColor = color.Invert
+                                ActiveColor = color |> Side.Invert
                                 EnPassant = newEnPassant
                                 CastlingAvailability = newCastlingAvailability }
         
