@@ -37,7 +37,7 @@ let playFromFen moves start =
     |> Fen.Parse
     |> playFrom moves
 
-let play moves = BoardExtensions.StartingPosition |> playFrom moves
+let play moves = Board.StartingPosition |> playFrom moves
 
 [<Fact>]
 let ``Gives check``() = 
@@ -120,7 +120,7 @@ let Stalemate() =
 
 [<Fact>]
 let ``count material``() = 
-    (EndGame.countMaterial BoardExtensions.StartingPosition.Core |> sprintf "%A") 
+    (EndGame.countMaterial Board.StartingPosition.Core |> sprintf "%A") 
     |> should equal 
            (([| 11; 2; 1; 1; 1 |], [| 11; 2; 1; 1; 1 |]) |> sprintf "%A")
 

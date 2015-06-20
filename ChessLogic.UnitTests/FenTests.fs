@@ -163,7 +163,7 @@ Expecting: number 1..8 or piece symbol
 
 [<Fact>]
 let ``starting position print-out looks fine``() = 
-    BoardExtensions.StartingPosition
+    Board.StartingPosition
     |> Dump
     |> should equal (
           " ╔═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╗\r\n" +
@@ -187,7 +187,7 @@ let ``starting position print-out looks fine``() =
 
 [<Fact>]
 let ``d1 should refer to Q in starting position``() = 
-    BoardExtensions.StartingPosition.Core.atStr "d1"
+    Board.StartingPosition.Core.atStr "d1"
     |> Option.get
     |> Text.pieceToChar
     |> should equal 'Q'
