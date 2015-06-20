@@ -62,11 +62,11 @@
     <Compile Include="GetLegalMoves.fs" />
     <Compile Include="EndGame.fs" />
     <Compile Include="San.fs" />
+    <Compile Include="Board.fs" />
     <Content Include="packages.config" />
     <Content Include="app.config" />
     <None Include="ChessLogic.nuspec" />
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="Board.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FParsec">
