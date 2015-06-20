@@ -1,4 +1,5 @@
-﻿module ChessKit.ChessLogic.Board
+﻿[<RequireQualifiedAccess>]
+module ChessKit.ChessLogic.Board
 
 let IsAttackedBy (side : Color) (position : PositionCore) coordinate = 
     ScanningExtensions.IsAttackedBy side position 

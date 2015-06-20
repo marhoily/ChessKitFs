@@ -1,4 +1,5 @@
-﻿module ChessKit.ChessLogic.GetLegalMoves
+﻿[<RequireQualifiedAccess>]
+module ChessKit.ChessLogic.GetLegalMoves
 
 open PositionCoreExt
 
