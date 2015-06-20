@@ -164,6 +164,13 @@ module Coordinate =
     let ToString = function 
         | (file, rank) -> fileToStirng file + rankToString rank
 
+[<RequireQualifiedAccess>]
+module Idx64 = 
+    let GetColor (c : int) = 
+        let file, rank = c % 8, c / 8
+        if (file % 2) = (rank % 2) then White
+        else Black
+
 type Move with
     
     static member internal toString this = 

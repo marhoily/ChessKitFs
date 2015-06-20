@@ -122,16 +122,16 @@ let Stalemate() =
 
 [<Fact>]
 let ``count material``() = 
-    (CountMaterial Fen.StartingPosition.Core |> sprintf "%A") 
+    (countMaterial Fen.StartingPosition.Core |> sprintf "%A") 
     |> should equal 
            (([| 11; 2; 1; 1; 1 |], [| 11; 2; 1; 1; 1 |]) |> sprintf "%A")
 
 [<Fact>]
 let ``get square color``() = 
-    GetSquareColor 0 |> should equal White
-    GetSquareColor 1 |> should equal Black
-    GetSquareColor 8 |> should equal Black
-    GetSquareColor 63 |> should equal White
+    Idx64.GetColor 0 |> should equal White
+    Idx64.GetColor 1 |> should equal Black
+    Idx64.GetColor 8 |> should equal Black
+    Idx64.GetColor 63 |> should equal White
 
 [<Fact>]
 let ``insufficient material``() = 
