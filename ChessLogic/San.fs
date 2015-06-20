@@ -226,7 +226,7 @@ let TryParse str board =
         |> MoveLegality.Validate(Move.Parse (move))
         |> addNotesToAny notes None []
     
-    let validate promoteTo fromSquare toSquare = 
+    let validate promoteTo toSquare fromSquare = 
         MoveLegality.Validate (Move.Create fromSquare toSquare promoteTo) board
 
     let legal (m : LegalMove) = m.Move.Start
@@ -253,7 +253,7 @@ let TryParse str board =
             (valid, invalid)
 
         find (toSquare |> X88.fromCoordinate)
-        |> List.map (fun x -> validate x toSquare)
+        |> List.map (validate toSquare)
         |> separateToLegalAndIllegal
 
     let toSanMove find hint pieceType addNotes = 
