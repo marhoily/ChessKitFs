@@ -63,8 +63,8 @@
     <Compile Include="TestUtils.fs" />
     <Compile Include="DefinitionsTests.fs" />
     <Compile Include="FenTests.fs" />
-    <Compile Include="IsAttackedByTests.fs" />
-    <Compile Include="MoveLegalityCheckerTests.fs" />
+    <Compile Include="ScanningExtensionsTests.fs" />
+    <Compile Include="MoveLegalityTests.fs" />
     <Compile Include="UpdatePositionTests.fs" />
     <Compile Include="GetLegalMovesTests.fs" />
     <Compile Include="EndGameTests.fs" />

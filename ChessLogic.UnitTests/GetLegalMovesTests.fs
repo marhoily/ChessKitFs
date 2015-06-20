@@ -3,7 +3,6 @@
 open FsUnit.Xunit
 open Xunit
 open ChessKit.ChessLogic
-open ChessKit.ChessLogic.Text
 open ChessKit.ChessLogic.BoardTextExtensions
 open ChessKit.ChessLogic
 open ChessKit.ChessLogic

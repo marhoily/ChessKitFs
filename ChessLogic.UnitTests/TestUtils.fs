@@ -7,3 +7,14 @@ let ParseToStringShouldMatch toString parse input =
     toString (parse input) |> should equal input
 let ErrorMessageShouldMatch parse (input : string) (msg : string) = 
     (Operators.getError (parse input)).Replace("\r\n", "\n") |> should equal (msg.Replace("\r\n", "\n"))
+
+let EmptyPosition = 
+    { Core = 
+          { Placement = [||]
+            ActiveColor = White
+            CastlingAvailability = [ WK; WQ; BK; BQ ]
+            EnPassant = None }
+      HalfMoveClock = 0
+      FullMoveNumber = 1
+      Observations = []
+      Move = None }

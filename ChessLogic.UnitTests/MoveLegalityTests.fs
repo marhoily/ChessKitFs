@@ -1,4 +1,4 @@
-﻿module MoveLegalityCheckerTests
+﻿module MoveLegalityTests
 
 open Xunit
 open System

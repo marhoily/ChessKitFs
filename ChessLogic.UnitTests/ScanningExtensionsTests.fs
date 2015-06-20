@@ -1,4 +1,4 @@
-﻿module IsAttackedByTests
+﻿module ScanningExtensionsTests
 
 open Xunit
 open FsUnit.Xunit

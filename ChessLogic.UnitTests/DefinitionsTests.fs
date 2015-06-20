@@ -1,4 +1,4 @@
-﻿module DumpTests
+﻿module DefinitionsTests
 
 open Xunit
 open FsUnit.Xunit

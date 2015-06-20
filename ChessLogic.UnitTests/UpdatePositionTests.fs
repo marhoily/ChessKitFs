@@ -1,6 +1,6 @@
 ﻿module UpdatePositionTests
 
-open FenPrinterTests
+open TestUtils
 open FsUnit.Xunit
 open Xunit
 open ChessKit.ChessLogic

@@ -1,4 +1,4 @@
-﻿module FenPrinterTests
+﻿module FenTests
 
 open Xunit
 open FsUnit.Xunit
@@ -7,16 +7,6 @@ open ChessKit.ChessLogic.PositionCoreExt
 open ChessKit.ChessLogic.BoardTextExtensions
 open TestUtils
 
-let internal EmptyPosition = 
-    { Core = 
-          { Placement = [||]
-            ActiveColor = White
-            CastlingAvailability = [ WK; WQ; BK; BQ ]
-            EnPassant = None }
-      HalfMoveClock = 0
-      FullMoveNumber = 1
-      Observations = []
-      Move = None }
 
 let toFenCore c = 
     Fen.Print { EmptyPosition with Core = c } 
