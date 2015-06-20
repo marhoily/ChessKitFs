@@ -12,7 +12,7 @@ let check move expectedSan position =
     printfn "%s" (Dump p)
     p
     |> MoveLegality.ParseLegal move
-    |> San.ToSanString
+    |> San.ToString
     |> should equal expectedSan
 
 [<Fact>]
@@ -69,7 +69,7 @@ let Ne5c6() =
 let parse str expected = 
     San.ParseSanString str
     |> Operators.getSuccess
-    |> sprintf "%A"
+    |> sprintf "%+A"
     |> should equal expected
 
 [<Fact>]

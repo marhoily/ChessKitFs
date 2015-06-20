@@ -9,7 +9,7 @@ open System.Text
 open FParsec
 open ChessKit.ChessLogic
 
-let ToSanString(legalMove : LegalMove) = 
+let ToString(legalMove : LegalMove) = 
     //     _______________________
     // ___/ Shortcuts and helpers \___________________________
     let typeToString = 
@@ -69,27 +69,27 @@ let ToSanString(legalMove : LegalMove) =
     else if mate then appendc '#'
     string sb
 
-type Ending = 
+type internal Ending = 
     | SanCheck
     | SanMate
 
-type SanCapture = 
+type internal SanCapture = 
     | SanCapture
 
-type Hint = 
+type internal Hint = 
     | FileHint of File
     | RankHint of Rank
     | SquareHint of (File * Rank)
     | NoHint
 
-type Moves = 
+type internal Moves = 
     | ShortCastling
     | LongCastling
     | PawnPush of (File * Rank) * PieceType option
     | PawnCapture of File * ((File * Rank) * PieceType option)
     | Usual of (PieceType * (Hint * (SanCapture option * (File * Rank))))
 
-let ParseSanString str = 
+let internal ParseSanString str = 
     let parseRank (c : char) : Rank = (int '8') - (int c)
     
     let parsePiece = 
