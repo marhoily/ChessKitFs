@@ -57,7 +57,7 @@
     <Compile Include="Definitions.fs" />
     <Compile Include="Fen.fs" />
     <Compile Include="ScanningExtensions.fs" />
-    <Compile Include="Cells.fs" />
+    <Compile Include="CellsX88.fs" />
     <Compile Include="MoveLegality.fs" />
     <Compile Include="GetLegalMoves.fs" />
     <Compile Include="AddObservations.fs" />

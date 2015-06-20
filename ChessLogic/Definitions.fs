@@ -160,8 +160,8 @@ module Coordinate =
     let internal fromX88 i = (i % 16, i / 16)
     let internal toIdx64 = function 
         | (file, rank) -> rank * 8 + file
-    let PieceAt coordinate position = position.Placement.[toIdx64 coordinate]
-    let toString = function 
+    let At coordinate position = position.Placement.[toIdx64 coordinate]
+    let ToString = function 
         | (file, rank) -> fileToStirng file + rankToString rank
 
 type Move with
@@ -170,7 +170,7 @@ type Move with
         let vectorToString = 
             function 
             | (f, t) -> 
-                Coordinate.toString f + "-" + Coordinate.toString t
+                Coordinate.ToString f + "-" + Coordinate.ToString t
         let vector = vectorToString (this.Start, this.End)
         if this.PromoteTo = None then vector
         else 
@@ -248,11 +248,11 @@ module internal X88 =
         | (x, y) -> x + y * 16
     let parse = Coordinate.Parse >> fromCoordinate
     let toIdx64 = Coordinate.fromX88 >> Coordinate.toIdx64
-    let PieceAt cX88 position = position.Placement.[toIdx64 cX88]
+    let at cX88 position = position.Placement.[toIdx64 cX88]
 
 module internal PositionCoreExt = 
     type PositionCore with
-        member this.at c = Coordinate.PieceAt c this
+        member this.at c = Coordinate.At c this
         member this.atIdx64 c64 = this.Placement.[c64]
-        member this.atX88 cX88 = X88.PieceAt cX88 this
+        member this.atX88 cX88 = X88.at cX88 this
         member this.atStr = Coordinate.Parse >> this.at
