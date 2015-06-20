@@ -66,6 +66,7 @@
     <Content Include="app.config" />
     <None Include="ChessLogic.nuspec" />
     <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="Board.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FParsec">

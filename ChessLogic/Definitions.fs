@@ -230,19 +230,19 @@ module Extensions =
                            | Some(p) -> pieceToChar p)
         string sb
 
+[<RequireQualifiedAccess>]
 module internal X88 = 
     // https://chessprogramming.wikispaces.com/0x88
-    let toX88 = function 
+    let fromTuple = function 
         | (x, y) -> x + y * 16
     let fromX88 i = (i % 16, i / 16)
-    let from64 i = (i % 8, i / 8)
     let to64 = function 
         | (file, rank) -> rank * 8 + file
     let PieceAt coordinate position = position.Placement.[to64 coordinate]
-    
+module internal PositionCoreExt = 
     type PositionCore with
-        member this.at c = this.Placement.[c |> to64]
+        member this.at c = this.Placement.[c |> X88.to64]
         member this.at64 c64 = this.Placement.[c64]
         member this.atX88 cX88 = this.Placement.[cX88
-                                                 |> fromX88
-                                                 |> to64]
+                                                 |> X88.fromX88
+                                                 |> X88.to64]

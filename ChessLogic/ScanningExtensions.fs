@@ -1,8 +1,8 @@
-﻿module ChessKit.ChessLogic.ScanningExtensions
+﻿module internal ChessKit.ChessLogic.ScanningExtensions
 
-open X88
+open PositionCoreExt
 
-let inline getScanners side at88 square = 
+let getScanners side at88 square = 
     let rec slide square pieceType increment () = 
         let next = square + increment
         if next &&& 0x88 <> 0 then -1
@@ -38,7 +38,7 @@ let FindKing color (position: PositionCore) =
         |> Seq.tryFindIndex 
                (fun i -> i = (Some(color, King)))
     match index with
-    | Some(i) -> Some((i % 8, i / 8) |> toX88)
+    | Some(i) -> Some((i % 8, i / 8) |> X88.fromTuple)
     | None -> None
 
 let IsInCheck (side:Color) (position: PositionCore) = 

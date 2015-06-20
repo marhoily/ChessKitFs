@@ -1,7 +1,6 @@
 ﻿module ChessKit.ChessLogic.San
 
 open ChessKit.ChessLogic.Text
-open ChessKit.ChessLogic.X88
 open ChessKit.ChessLogic.MoveLegalityChecker
 open ChessKit.ChessLogic.ScanningExtensions
 open System.Text
@@ -34,7 +33,7 @@ let ToSanString(legalMove : LegalMove) =
     let file, rank, fileAndRankStr = fst, snd, squareToString
     let fileStr x = fileToStirng (x |> file)
     let rankStr x = rankToString (x |> rank)
-    let at x = legalMove.OriginalPosition.Core |> PieceAt x
+    let at x = legalMove.OriginalPosition.Core |> X88.PieceAt x
     let isSimilarTo (a:LegalMove) (b:LegalMove) = 
         let x, y = a.Move, b.Move
         (x.Start <> y.Start) && (x.End = y.End) && (at x.Start = at y.Start)
@@ -147,12 +146,12 @@ type SanMove =
     | Unparsable of string
 
 let sanScanners board = 
-    let at88 i = board |> PieceAt(i |> fromX88)
+    let at88 i = board |> X88.PieceAt(i |> X88.fromX88)
     let color = board.ActiveColor
     let project = 
         Seq.map (fun f -> f())
         >> Seq.filter (fun x -> x <> -1)
-        >> Seq.map fromX88
+        >> Seq.map X88.fromX88
         >> Seq.toList
 
     let findPushingPawns square = 
@@ -251,7 +250,7 @@ let FromSanString str board =
                 | IllegalMove m -> invalid <- m::invalid
             (valid, invalid)
 
-        find (toSquare |> toX88)
+        find (toSquare |> X88.fromTuple)
         |> List.map (fun x -> validate x toSquare)
         |> separateToLegalAndIllegal
 

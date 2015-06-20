@@ -1,7 +1,6 @@
 ﻿module ChessKit.ChessLogic.MoveLegalityChecker
 
 open Operators
-open X88
 open ScanningExtensions
 
 type MoveInfo = 
@@ -29,8 +28,8 @@ let ValidateMove move position =
     let moveFrom, moveTo, promoteTo = 
         (move.Start, move.End, move.PromoteTo ?|? Queen)
     let positionCore = position.Core
-    let at64 i64 = positionCore |> PieceAt i64
-    let at i = positionCore |> PieceAt(i % 16, i / 16)
+    let at64 i64 = positionCore |> X88.PieceAt i64
+    let at i = positionCore |> X88.PieceAt(i % 16, i / 16)
     let color = positionCore.ActiveColor
     match at64 moveTo with
     | Some(clr, _) when clr = color -> err ToOccupiedCell
@@ -151,7 +150,7 @@ let ValidateMove move position =
     
     //   _______
     //__/ Steps \_________________________________________________________
-    let validate() = validateByPieceType () (toX88 moveFrom) (toX88 moveTo)
+    let validate() = validateByPieceType () (X88.fromTuple moveFrom) (X88.fromTuple moveTo)
     
     let setupResultPosition() = 
         let newPlacement = Array.copy positionCore.Placement
@@ -160,17 +159,17 @@ let ValidateMove move position =
             let increment = 
                 if color = White then +8
                 else -8
-            newPlacement.[(moveTo |> to64) + increment] <- None
+            newPlacement.[(moveTo |> X88.to64) + increment] <- None
         // Remove the piece from the old square and put it to the new square
         let effectivePiece : PieceType = 
             if !observations |> List.contains Promotion then promoteTo
             else pieceType.Value
-        newPlacement.[moveTo |> to64] <- Some((color, effectivePiece))
-        newPlacement.[moveFrom |> to64] <- None
+        newPlacement.[moveTo |> X88.to64] <- Some((color, effectivePiece))
+        newPlacement.[moveFrom |> X88.to64] <- None
         // Move the rook if it was a castling
         let moveCastlingRook f t = 
-            let x88toIndex = fromX88 >> to64
-            let rook = newPlacement.[fromX88 f |> to64]
+            let x88toIndex = X88.fromX88 >> X88.to64
+            let rook = newPlacement.[X88.fromX88 f |> X88.to64]
             newPlacement.[f |> x88toIndex] <- None
             newPlacement.[t |> x88toIndex] <- rook
         match !castling with
@@ -181,7 +180,7 @@ let ValidateMove move position =
         | None -> ()
         // Figure out new castling availability
         let optionsInvalidatedBy p = 
-            match p |> toX88 with
+            match p |> X88.fromTuple with
             | A1 -> [ WQ ]
             | E1 -> [ WQ; WK ]
             | H1 -> [ WK ]
