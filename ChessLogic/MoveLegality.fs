@@ -2,7 +2,7 @@
 module internal ChessKit.ChessLogic.MoveLegality
 
 open Operators
-open ScanningExtensions
+open Scanning
 open PositionCoreExt
 
 let Validate move position = 

@@ -63,7 +63,7 @@
     <Compile Include="TestUtils.fs" />
     <Compile Include="DefinitionsTests.fs" />
     <Compile Include="FenTests.fs" />
-    <Compile Include="ScanningExtensionsTests.fs" />
+    <Compile Include="ScanningTests.fs" />
     <Compile Include="MoveLegalityTests.fs" />
     <Compile Include="UpdatePositionTests.fs" />
     <Compile Include="GetLegalMovesTests.fs" />

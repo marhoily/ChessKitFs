@@ -3,7 +3,7 @@ module ChessKit.ChessLogic.San
 
 open ChessKit.ChessLogic
 open ChessKit.ChessLogic.Text
-open ChessKit.ChessLogic.ScanningExtensions
+open ChessKit.ChessLogic.Scanning
 open ChessKit.ChessLogic.PositionCoreExt
 open System.Text
 open FParsec

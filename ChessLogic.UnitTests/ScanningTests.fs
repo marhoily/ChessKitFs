@@ -1,9 +1,9 @@
-﻿module ScanningExtensionsTests
+﻿module ScanningTests
 
 open Xunit
 open FsUnit.Xunit
 open ChessKit.ChessLogic
-open ChessKit.ChessLogic.ScanningExtensions
+open ChessKit.ChessLogic.Scanning
 
 let check square func fen = 
     func (Fen.ParseCore fen) (X88.parse square)

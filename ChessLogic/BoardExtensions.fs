@@ -7,16 +7,16 @@ open System.Runtime.CompilerServices
 module BoardExtensions = 
     [<Extension>]
     let IsAttackedBy (position : PositionCore) (side : Color) coordinate = 
-        ScanningExtensions.IsAttackedBy side position 
+        Scanning.IsAttackedBy side position 
             (coordinate |> X88.fromCoordinate)
     
     [<Extension>]
     let FindKing (position : PositionCore) (color : Color) = 
-        ScanningExtensions.FindKing color position
+        Scanning.FindKing color position
     
     [<Extension>]
     let IsInCheck (position : PositionCore) (side : Color) = 
-        ScanningExtensions.IsInCheck side position
+        Scanning.IsInCheck side position
     
     [<Extension>]
     let ValidateMove (position : Position) (move : Move) = 

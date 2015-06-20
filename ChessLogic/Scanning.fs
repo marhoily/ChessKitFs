@@ -1,4 +1,4 @@
-﻿module internal ChessKit.ChessLogic.ScanningExtensions
+﻿module internal ChessKit.ChessLogic.Scanning
 
 open PositionCoreExt
 open Microsoft.FSharp.Core.Option

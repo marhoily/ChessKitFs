@@ -2,7 +2,7 @@
 [<RequireQualifiedAccess>]
 module ChessKit.ChessLogic.EndGame
 
-open ScanningExtensions
+open Scanning
 open System.Runtime.CompilerServices
 
 let internal countMaterial (board : PositionCore) = 
