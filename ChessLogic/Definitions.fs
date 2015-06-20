@@ -160,14 +160,23 @@ module internal CoordinateNotation =
     type Move with
         static member Parse = ()
     
-    let private coordinate = 
+    let coordinate = 
         let parseFile (p : char) : File = int (p) - int ('a')
         let parseRank c = 8 - (int c - int '0')
         let file = anyOf "abcdefgh" |>> parseFile
         let rank = anyOf "12345678" |>> parseRank
         file .>>. rank
     
-    let TryParseCoordinateNotation str = 
+    let TryParseCoordinate str = run coordinate str
+    let ParseCoordinate = TryParseCoordinate >> Operators.getSuccess
+
+open Text
+open FParsec
+
+type Move with
+    member internal this.AsString = moveToString this
+    
+    static member TryParse(str : string) = 
         let parsePromotionHint = 
             function 
             | 'N' -> Knight
@@ -176,21 +185,12 @@ module internal CoordinateNotation =
             | 'Q' -> Queen
             | _ -> failwith ("unknown promotion hint")
         
-        let f = coordinate .>> (pchar '-' <|> pchar 'x')
+        let f = CoordinateNotation.coordinate .>> (pchar '-' <|> pchar 'x')
         let hint = anyOf "NBRQK" |>> parsePromotionHint
         let p = opt ((pchar '=') >>. hint)
-        let notation = pipe3 f coordinate p (Move.Create)
+        let notation = pipe3 f CoordinateNotation.coordinate p (Move.Create)
         run notation str
     
-    let TryParseCoordinate str = run coordinate str
-    let ParseCoordinate = TryParseCoordinate >> Operators.getSuccess
-
-open Text
-
-type Move with
-    member internal this.AsString = moveToString this
-    static member TryParse(str : string) = 
-        CoordinateNotation.TryParseCoordinateNotation str
     static member Parse(str : string) = 
         Move.TryParse str |> Operators.getSuccess
 
