@@ -15,14 +15,14 @@ let ec = EmptyPosition.Core;
 
 [<Fact>]
 let ``ToFen works``() = 
-    toFenCore { ec with Placement = [| Some(White, Pawn) |] } 
+    toFenCore { ec with Placement = [| Some(White, PieceType.Pawn) |] } 
     |> should equal "P w KQkq - 0 1"
 
 [<Fact>]
 let ``ToFen works with one empty square``() = 
     toFenCore { ec with Placement = 
                                    [| None
-                                      Some(White, Pawn) |] }
+                                      Some(White, PieceType.Pawn) |] }
     |> should equal "1P w KQkq - 0 1"
 
 [<Fact>]
@@ -30,22 +30,22 @@ let ``ToFen works with two empty squares``() =
     toFenCore { ec with Placement = 
                                    [| None
                                       None
-                                      Some(White, Pawn) |] }
+                                      Some(White, PieceType.Pawn) |] }
     |> should equal "2P w KQkq - 0 1"
 
 [<Fact>]
 let ``ToFen works with empty squares in the middle``() = 
     toFenCore { ec with Placement = 
-                                   [| Some(White, Pawn)
+                                   [| Some(White, PieceType.Pawn)
                                       None
                                       None
-                                      Some(Black, Bishop) |] }
+                                      Some(Black, PieceType.Bishop) |] }
     |> should equal "P2b w KQkq - 0 1"
 
 [<Fact>]
 let ``ToFen works with 2 ranks``() = 
     toFenCore { ec with Placement = 
-                                   [| Some(White, Pawn)
+                                   [| Some(White, PieceType.Pawn)
                                       None
                                       None
                                       None
@@ -53,20 +53,20 @@ let ``ToFen works with 2 ranks``() =
                                       None
                                       None
                                       None
-                                      Some(Black, Bishop) |] }
+                                      Some(Black, PieceType.Bishop) |] }
     |> should equal "P7/b w KQkq - 0 1"
 
 [<Fact>]
 let ``ToFen works with piece on the H file``() = 
     toFenCore { ec with Placement = 
-                                   [| Some(White, Pawn)
+                                   [| Some(White, PieceType.Pawn)
                                       None
                                       None
                                       None
                                       None
                                       None
                                       None
-                                      Some(Black, Bishop) |] }
+                                      Some(Black, PieceType.Bishop) |] }
     |> should equal "P6b w KQkq - 0 1"
 
 [<Fact>]
@@ -80,13 +80,13 @@ let ``ToFen works with empty ranks``() =
                                       None
                                       None
                                       None
-                                      Some(Black, Bishop) |] }
+                                      Some(Black, PieceType.Bishop) |] }
     |> should equal "8/b w KQkq - 0 1"
 
 [<Fact>]
 let ``ToFen works with empty rank after non-empty rank``() = 
     toFenCore { ec with Placement = 
-                                   [| Some(White, Pawn)
+                                   [| Some(White, PieceType.Pawn)
                                       None
                                       None
                                       None
@@ -102,13 +102,13 @@ let ``ToFen works with empty rank after non-empty rank``() =
                                       None
                                       None
                                       None
-                                      Some(Black, Bishop) |] }
+                                      Some(Black, PieceType.Bishop) |] }
     |> should equal "P7/8/b w KQkq - 0 1"
 
 [<Fact>]
 let ``ToFen works with round number of squares``() = 
     toFenCore { ec with Placement = 
-                                   [| Some(White, Pawn)
+                                   [| Some(White, PieceType.Pawn)
                                       None
                                       None
                                       None

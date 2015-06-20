@@ -12,8 +12,8 @@ let FromSquare from position =
     
     let rank7 = 1
     let rank2 = 6
-    let p (f, t) = Move.Create f t (Some Queen)
-    let u (f, t) = Move.Create f t None
+    let p (f, t) = Move.Create f t PieceType.Queen
+    let u (f, t) = Move.Create f t PieceType.None
     let fromX88 = from |> X88.fromCoordinate
     let validate createMove toX88 = 
         let toCoordinate = toX88 |> Coordinate.fromX88
@@ -34,18 +34,19 @@ let FromSquare from position =
     
     let iter = List.collect (step fromX88)
     match position.Core.at from with
-    | Some(White, Pawn) -> 
+    | Some(White, PieceType.Pawn) -> 
         if snd from = rank7 then gen p [ -16; -15; -17 ]
         else gen u [ -16; -32; -15; -17 ]
-    | Some(Black, Pawn) -> 
+    | Some(Black, PieceType.Pawn) -> 
         if snd from = rank2 then gen p [ +16; +15; +17 ]
         else gen u [ +16; +32; +15; +17 ]
-    | Some(_, Bishop) -> iter [ -15; +17; +15; -17 ]
-    | Some(_, Rook) -> iter [ -1; +1; +16; -16 ]
-    | Some(_, Queen) -> iter [ -15; +17; +15; -17; -1; +1; +16; -16 ]
-    | Some(_, King) -> gen u [ -15; +17; +15; -17; -1; +1; +16; -16 ]
-    | Some(_, Knight) -> gen u [ 33; 31; -33; -31; 18; 14; -18; -14 ]
+    | Some(_, PieceType.Bishop) -> iter [ -15; +17; +15; -17 ]
+    | Some(_, PieceType.Rook) -> iter [ -1; +1; +16; -16 ]
+    | Some(_, PieceType.Queen) -> iter [ -15; +17; +15; -17; -1; +1; +16; -16 ]
+    | Some(_, PieceType.King) -> gen u [ -15; +17; +15; -17; -1; +1; +16; -16 ]
+    | Some(_, PieceType.Knight) -> gen u [ 33; 31; -33; -31; 18; 14; -18; -14 ]
     | None -> []
+    | _ -> failwith "unexpected"
     |> legalOnly
 
 let All(position : Position) = 

@@ -22,11 +22,12 @@ let internal countMaterial (board : PositionCore) =
             
             let idx = 
                 match piece |> snd, square with
-                | Pawn, _ | Rook, _ | Queen, _ -> 0
-                | Knight, _ -> 1
-                | Bishop, White -> 2
-                | Bishop, Black -> 3
-                | King, _ -> 4
+                | PieceType.Pawn, _ | PieceType.Rook, _ | PieceType.Queen, _ -> 0
+                | PieceType.Knight, _ -> 1
+                | PieceType.Bishop, White -> 2
+                | PieceType.Bishop, Black -> 3
+                | PieceType.King, _ -> 4
+                | _ -> failwith "unexpected"
             
             arr.[idx] <- arr.[idx] + 1
     white, black
@@ -47,7 +48,7 @@ let ToPosition(move : LegalMove) =
           Properties = Properties.None }
     
     let newHalfMoveClock = 
-        if piece = Pawn || (obs |> test Observation.Capture) then 0
+        if piece = PieceType.Pawn || (obs |> test Observation.Capture) then 0
         else prev.HalfMoveClock + 1
     
     let newMoveNumber = 

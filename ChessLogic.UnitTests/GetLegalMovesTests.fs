@@ -25,7 +25,7 @@ let check from (expected : string list) position =
     let expected2 = 
         [ for i = 0 to 63 do
               let e = Coordinate.fromIdx64 i
-              let t = Move.Create f e None
+              let t = Move.Create f e PieceType.None
               match MoveLegality.Validate t p with
               | LegalMove _ -> yield Coordinate.ToString e
               | _ -> () ]
@@ -45,7 +45,7 @@ let checkAll expected position =
         [ for i = 0 to 63 do
               for j = 0 to 63 do
                   let e = Coordinate.fromIdx64 i
-                  let t = Move.Create (Coordinate.fromIdx64 j) e None
+                  let t = Move.Create (Coordinate.fromIdx64 j) e PieceType.None
                   match MoveLegality.Validate t p with
                   | LegalMove _ -> yield Coordinate.ToString e
                   | _ -> () ]

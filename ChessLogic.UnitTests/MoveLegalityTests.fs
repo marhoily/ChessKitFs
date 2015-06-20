@@ -9,7 +9,7 @@ open ChessKit.ChessLogic.Text
 let MoveToString (move : MoveInfo) = 
     let getStrings piece castling observations warnings errors = 
         seq { 
-            if piece <> None then yield fieldName piece.Value
+            if piece <> None then yield sprintf "%A" piece.Value
             if castling <> Castlings.None then yield sprintf "%A" castling
             if observations <> Observation.None then yield sprintf "%A" observations
             if warnings <> MoveWarnings.None then yield sprintf "%A" warnings

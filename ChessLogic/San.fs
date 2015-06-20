@@ -15,12 +15,13 @@ let ToString(legalMove : LegalMove) =
     // ___/ Shortcuts and helpers \___________________________
     let typeToString = 
         function 
-        | Pawn -> 'P'
-        | Knight -> 'N'
-        | Bishop -> 'B'
-        | Rook -> 'R'
-        | Queen -> 'Q'
-        | King -> 'K'
+        | PieceType.Pawn -> 'P'
+        | PieceType.Knight -> 'N'
+        | PieceType.Bishop -> 'B'
+        | PieceType.Rook -> 'R'
+        | PieceType.Queen -> 'Q'
+        | PieceType.King -> 'K'
+        | _ -> failwith "Unexpected"
     
     let sb = new StringBuilder(6)
     let move = legalMove.Move
@@ -53,7 +54,7 @@ let ToString(legalMove : LegalMove) =
     if shortCastling then append "O-O"
     else if longCastling then append "O-O-O"
     else 
-        if legalMove.Piece = Pawn then 
+        if legalMove.Piece = PieceType.Pawn then 
             if capture then append (fileStr move.Start)
         else 
             appendc (legalMove.Piece |> typeToString)
@@ -65,7 +66,7 @@ let ToString(legalMove : LegalMove) =
         append (fileAndRankStr move.End)
     if promotion then 
         appendc '='
-        appendc (move.PromoteTo.Value |> typeToString)
+        appendc (move.PromoteTo |> typeToString)
     if check then appendc '+'
     else if mate then appendc '#'
     string sb
@@ -86,8 +87,8 @@ type internal Hint =
 type internal Moves = 
     | ShortCastling
     | LongCastling
-    | PawnPush of (File * Rank) * PieceType option
-    | PawnCapture of File * ((File * Rank) * PieceType option)
+    | PawnPush of (File * Rank) * PieceType
+    | PawnCapture of File * ((File * Rank) * PieceType)
     | Usual of (PieceType * (Hint * (SanCapture option * (File * Rank))))
 
 let internal ParseSanString str = 
@@ -95,11 +96,11 @@ let internal ParseSanString str =
     
     let parsePiece = 
         function 
-        | 'N' -> Knight
-        | 'B' -> Bishop
-        | 'R' -> Rook
-        | 'Q' -> Queen
-        | 'K' -> King
+        | 'N' -> PieceType.Knight
+        | 'B' -> PieceType.Bishop
+        | 'R' -> PieceType.Rook
+        | 'Q' -> PieceType.Queen
+        | 'K' -> PieceType.King
         | _ -> failwith ("unknown promotion hint")
     
     let short = stringReturn "O-O" ShortCastling
@@ -113,7 +114,7 @@ let internal ParseSanString str =
     let promotion = skipChar '=' >>. anyOf "NBRQ" |>> parsePiece
     let ending = check <|> mate
     let square = file .>>. rank
-    let pawn = square .>>. opt promotion
+    let pawn = square .>>. (opt promotion |>> (fun x -> x ?|? PieceType.None))
     let pawnPush = pawn |>> PawnPush
     let pawnCapture = attempt (file .>> capture .>>. pawn) |>> PawnCapture
     let target = opt capture .>>. square
@@ -159,26 +160,26 @@ let internal sanScanners board =
     let findPushingPawns square = 
         let _, slide = getScanners color board.atX88 square
         match color with
-        | Black -> slide Pawn [ -16; ]
-        | White -> slide Pawn [ +16; ]
+        | Black -> slide PieceType.Pawn [ -16; ]
+        | White -> slide PieceType.Pawn [ +16; ]
         |> project
 
     let findCapturingPawns square = 
         let jump, _ = getScanners color board.atX88 square
         match color with
-        | Black -> jump Pawn [ -15; -17 ]
-        | White -> jump Pawn [ +15; +17 ]
+        | Black -> jump PieceType.Pawn [ -15; -17 ]
+        | White -> jump PieceType.Pawn [ +15; +17 ]
         |> project
 
     let findNonPawnPieces ofType square = 
         let jump, slide = getScanners color board.atX88 square
         match ofType with
-        | Knight -> jump Knight [ -33; -31; -18; -14; +33; +31; +18; +14 ]
-        | Queen -> slide Queen [ +15; +17; -15; -17; +16; +01; -16; -01 ]
-        | Rook -> slide Rook [ +16; +01; -16; -01 ]
-        | Bishop -> slide Bishop [ +15; +17; -15; -17 ]
-        | King -> jump King [ +15; +17; -15; -17; +16; +01; -16; -01 ]
-        | Pawn -> failwith "unexpected"
+        | PieceType.Knight -> jump PieceType.Knight [ -33; -31; -18; -14; +33; +31; +18; +14 ]
+        | PieceType.Queen -> slide PieceType.Queen [ +15; +17; -15; -17; +16; +01; -16; -01 ]
+        | PieceType.Rook  -> slide PieceType.Rook [ +16; +01; -16; -01 ]
+        | PieceType.Bishop-> slide PieceType.Bishop [ +15; +17; -15; -17 ]
+        | PieceType.King   -> jump PieceType.King [ +15; +17; -15; -17; +16; +01; -16; -01 ]
+        | _ -> failwith "unexpected"
         |> project
     (findPushingPawns, findCapturingPawns, findNonPawnPieces)
 
@@ -280,16 +281,16 @@ let TryParse str board =
         | PawnPush(toSquare, promoteTo), notes -> 
             let addNotes = addNotesToLegal notes None
             let find = findAndSeparate findPushingPawns toSquare (validate promoteTo) 
-            toSanMove find NoHint Pawn addNotes
+            toSanMove find NoHint PieceType.Pawn addNotes
 
         | PawnCapture(fromFile, (toSquare, promoteTo)), notes -> 
             let addNotes = addNotesToLegal notes (Some SanCapture)
             let find = findAndSeparate findCapturingPawns toSquare (validate promoteTo) 
-            toSanMove find (FileHint fromFile) Pawn addNotes
+            toSanMove find (FileHint fromFile) PieceType.Pawn addNotes
 
         | Usual(pieceType, (hint, (capture, toSquare))), notes -> 
             let addNotes = addNotesToLegal notes capture
-            let find = findAndSeparate (findNonPawnPieces pieceType) toSquare (validate None)
+            let find = findAndSeparate (findNonPawnPieces pieceType) toSquare (validate PieceType.None)
             toSanMove find hint pieceType addNotes
            
     match ParseSanString str with

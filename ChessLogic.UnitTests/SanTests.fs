@@ -110,20 +110,20 @@ let ``parse Qe1xf8``() =
         "(Usual (Queen, (SquareHint (4, 7), (Some SanCapture, (5, 0)))), null)"
 
 [<Fact>]
-let ``parse e4``() = parse "e4" "(PawnPush ((4, 4),null), null)"
+let ``parse e4``() = parse "e4" "(PawnPush ((4, 4),None), null)"
 
 [<Fact>]
-let ``parse f8=Q``() = parse "f8=Q" "(PawnPush ((5, 0),Some Queen), null)"
+let ``parse f8=Q``() = parse "f8=Q" "(PawnPush ((5, 0),Queen), null)"
 
 [<Fact>]
 let ``parse c1=N+``() = 
-    parse "c1=N+" "(PawnPush ((2, 7),Some Knight), Some SanCheck)"
+    parse "c1=N+" "(PawnPush ((2, 7),Knight), Some SanCheck)"
 
 [<Fact>]
-let ``parse a2#``() = parse "a2#" "(PawnPush ((0, 6),null), Some SanMate)"
+let ``parse a2#``() = parse "a2#" "(PawnPush ((0, 6),None), Some SanMate)"
 
 [<Fact>]
-let ``parse gxe4``() = parse "gxe4" "(PawnCapture (6,((4, 4), null)), null)"
+let ``parse gxe4``() = parse "gxe4" "(PawnCapture (6,((4, 4), None)), null)"
 
 // ----- Scanners --------
 let findPushingPawns square (expected : string list) board = 
@@ -183,42 +183,42 @@ let findNonPawnPieces pieceType square (expected : string list) board =
 [<Fact>]
 let ``2 black knights can capture e5``() = 
     "2k1r3/pp3ppp/2n3n1/1p1rP3/6b1/1NP2NB1/PPK3PP/R3R3 b - - 0 19" 
-    |> findNonPawnPieces Knight "e5" [ "c6"; "g6" ]
+    |> findNonPawnPieces PieceType.Knight "e5" [ "c6"; "g6" ]
 
 [<Fact>]
 let ``2 black rooks can capture e5``() = 
     "2k1r3/pp3ppp/2n3n1/1p1rP3/6b1/1NP2NB1/PPK3PP/R3R3 b - - 0 19" 
-    |> findNonPawnPieces Rook "e5" [ "e8"; "d5" ]
+    |> findNonPawnPieces PieceType.Rook "e5" [ "e8"; "d5" ]
 
 [<Fact>]
 let ``white rook can capture e5``() = 
     "2k1r3/pp3ppp/2n3n1/1p1rP3/6b1/1NP2NB1/PPK3PP/R3R3 w - - 0 19" 
-    |> findNonPawnPieces Rook "e5" [ "e1" ]
+    |> findNonPawnPieces PieceType.Rook "e5" [ "e1" ]
 
 [<Fact>]
 let ``white bishop can capture e5``() = 
     "2k1r3/pp3ppp/2n3n1/1p1rP3/6b1/1NP2NB1/PPK3PP/R3R3 w - - 0 19" 
-    |> findNonPawnPieces Bishop "e5" [ "g3" ]
+    |> findNonPawnPieces PieceType.Bishop "e5" [ "g3" ]
 
 [<Fact>]
 let ``white knight can capture e5``() = 
     "2k1r3/pp3ppp/2n3n1/1p1rP3/6b1/1NP2NB1/PPK3PP/R3R3 w - - 0 19" 
-    |> findNonPawnPieces Knight "e5" [ "f3" ]
+    |> findNonPawnPieces PieceType.Knight "e5" [ "f3" ]
 
 [<Fact>]
 let ``black queen can capture d1``() = 
     "rn1qk1nr/pp2Pppp/8/1p2P3/6b1/2P2N2/PP4PP/RNBQK2R b KQkq - 0 12" 
-    |> findNonPawnPieces Queen "d1" [ "d8" ]
+    |> findNonPawnPieces PieceType.Queen "d1" [ "d8" ]
 
 [<Fact>]
 let ``white king can capture d1``() = 
     "rn1qk1nr/pp2Pppp/8/1p2P3/6b1/2P2N2/PP4PP/RNBQK2R w KQkq - 0 12" 
-    |> findNonPawnPieces King "d1" [ "e1" ]
+    |> findNonPawnPieces PieceType.King "d1" [ "e1" ]
 
 [<Fact>]
 let ``findNonPawnPieces throws when given pawn``() = 
     let board = "8/8/8/8/8/8/8/8 w KQkq - 0 12"
-    (fun () -> board |> findNonPawnPieces Pawn "d1" []) 
+    (fun () -> board |> findNonPawnPieces PieceType.Pawn "d1" []) 
     |> should throw typeof<System.Exception>
 
 // ----- toSanMove --------
@@ -251,7 +251,7 @@ let illegal move expected errors board =
     let MoveToString m = 
         let getStrings piece castling observations warnings errors = 
             seq { 
-                if piece <> None then yield fieldName piece.Value
+                if piece <> None then yield sprintf "%A" piece.Value
                 if castling <> Castlings.None then yield sprintf "%A" castling
                 if observations <> Observation.None then 
                     yield sprintf "%A" observations

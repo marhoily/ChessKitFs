@@ -15,8 +15,8 @@ let Validate move position =
     let warn w = warnings := w ||| !warnings
     let info i = observations := i ||| !observations
     let enPassant() = 
-        observations := Observation.Capture 
-        ||| Observation.EnPassant ||| !observations
+        observations 
+        := Observation.Capture ||| Observation.EnPassant ||| !observations
     
     let hasNoEnPassant() = 
         err MoveErrors.HasNoEnPassant
@@ -25,7 +25,10 @@ let Validate move position =
     //   ___________
     //__/ Shortcats \_____________________________________________________
     let moveFrom, moveTo, promoteTo = 
-        (move.Start, move.End, move.PromoteTo ?|? Queen)
+        (move.Start, move.End, 
+         if move.PromoteTo = PieceType.None then PieceType.Queen
+         else move.PromoteTo)
+    
     let positionCore = position.Core
     let at = positionCore.atX88
     let color = positionCore.ActiveColor
@@ -69,7 +72,7 @@ let Validate move position =
         
         let looksEnPassanty c1 c2 c3 clr () = 
             fromSquare / 16 = c1 && at (fromSquare + c2) = None 
-            && at (fromSquare + c3) = (Some(clr, Pawn))
+            && at (fromSquare + c3) = (Some(clr, PieceType.Pawn))
         match (color, (toSquare - fromSquare)) with
         | (White, -32) -> validateDoublePush -16 6
         | (Black, +32) -> validateDoublePush +16 1
@@ -115,8 +118,8 @@ let Validate move position =
             match (fromSquare, toSquare) with
             | (E1, C1) -> long B1 C1 D1 E1 w Castlings.WQ
             | (E8, C8) -> long B8 C8 D8 E8 b Castlings.BQ
-            | (E1, G1) -> short E1 F1 G1 w   Castlings.WK
-            | (E8, G8) -> short E8 F8 G8 b   Castlings.BK
+            | (E1, G1) -> short E1 F1 G1 w Castlings.WK
+            | (E8, G8) -> short E8 F8 G8 b Castlings.BK
             | _ -> err MoveErrors.DoesNotMoveThisWay
         | _ -> err MoveErrors.DoesNotMoveThisWay
     
@@ -140,12 +143,13 @@ let Validate move position =
     
     let validateByPieceType() = 
         match pieceType.Value with
-        | Pawn -> validatePawnMove
-        | Knight -> validateKnightMove
-        | King -> validateKingMove
-        | Bishop -> validateBishopMove
-        | Rook -> validateRookMove
-        | Queen -> validateQueenMove
+        | PieceType.Pawn -> validatePawnMove
+        | PieceType.Knight -> validateKnightMove
+        | PieceType.King -> validateKingMove
+        | PieceType.Bishop -> validateBishopMove
+        | PieceType.Rook -> validateRookMove
+        | PieceType.Queen -> validateQueenMove
+        | _ -> failwith "unexpected"
     
     //   _______
     //__/ Steps \_________________________________________________________
@@ -184,21 +188,22 @@ let Validate move position =
         let optionsInvalidatedBy p = 
             match p |> X88.fromCoordinate with
             | A1 -> Castlings.WQ
-            | E1 -> Castlings.W 
+            | E1 -> Castlings.W
             | H1 -> Castlings.WK
             | A8 -> Castlings.BQ
-            | E8 -> Castlings.B 
+            | E8 -> Castlings.B
             | H8 -> Castlings.BK
             | _ -> Castlings.None
         
         let newCastlingAvailability = 
-            positionCore.CastlingAvailability &&&
-            ~~~((optionsInvalidatedBy moveFrom) 
-            ||| (optionsInvalidatedBy moveTo))
+            positionCore.CastlingAvailability 
+            &&& ~~~((optionsInvalidatedBy moveFrom) 
+                    ||| (optionsInvalidatedBy moveTo))
         
         // Figure out new en-passant option
         let newEnPassant = 
-            if !observations |> test Observation.DoublePush then Some(fst moveFrom)
+            if !observations |> test Observation.DoublePush then 
+                Some(fst moveFrom)
             else None
         
         // Construct new position
@@ -217,10 +222,11 @@ let Validate move position =
     
     let setRequiresPromotion() = 
         let requiresPromotion = !observations |> test Observation.Promotion
-        if move.PromoteTo = None then 
+        if move.PromoteTo = PieceType.None then 
             if requiresPromotion then warn MoveWarnings.MissingPromotionHint
         else 
-            if not requiresPromotion then warn MoveWarnings.PromotionHintIsNotNeeded
+            if not requiresPromotion then 
+                warn MoveWarnings.PromotionHintIsNotNeeded
     
     //   __________
     //__/ Do steps \______________________________________________________    

@@ -2,22 +2,24 @@
 
 open System.Runtime.CompilerServices
 open System
+open Operators
 
 type File = int
 
 type Rank = int
 
 type Color = 
-    | Black
-    | White
+    | Black //= 1
+    | White //= 2
 
 type PieceType = 
-    | Pawn
-    | Knight
-    | Bishop
-    | Rook
-    | Queen
-    | King
+    | None   = 0
+    | Pawn   = 1
+    | Knight = 2
+    | Bishop = 3
+    | Rook   = 4
+    | Queen  = 5
+    | King   = 6
 
 type Piece = Color * PieceType
 
@@ -49,7 +51,7 @@ type Properties =
 type Move = 
     { Start : File * Rank
       End : File * Rank
-      PromoteTo : PieceType option }
+      PromoteTo : PieceType }
 
 [<Flags>]
 type Observation = 
@@ -140,18 +142,19 @@ module internal Text =
     
     let pieceToChar = 
         function 
-        | (White, Pawn) -> 'P'
-        | (White, Knight) -> 'N'
-        | (White, Bishop) -> 'B'
-        | (White, Rook) -> 'R'
-        | (White, Queen) -> 'Q'
-        | (White, King) -> 'K'
-        | (Black, Pawn) -> 'p'
-        | (Black, Knight) -> 'n'
-        | (Black, Bishop) -> 'b'
-        | (Black, Rook) -> 'r'
-        | (Black, Queen) -> 'q'
-        | (Black, King) -> 'k'
+        | (White, PieceType.Pawn) -> 'P'
+        | (White, PieceType.Knight) -> 'N'
+        | (White, PieceType.Bishop) -> 'B'
+        | (White, PieceType.Rook) -> 'R'
+        | (White, PieceType.Queen) -> 'Q'
+        | (White, PieceType.King) -> 'K'
+        | (Black, PieceType.Pawn) -> 'p'
+        | (Black, PieceType.Knight) -> 'n'
+        | (Black, PieceType.Bishop) -> 'b'
+        | (Black, PieceType.Rook) -> 'r'
+        | (Black, PieceType.Queen) -> 'q'
+        | (Black, PieceType.King) -> 'k'
+        | _ -> failwith "Unexpected"
     
     let fieldName (x : 'a) = 
         match FSharpValue.GetUnionFields(x, typeof<'a>) with
@@ -193,9 +196,9 @@ type Move with
         let vectorToString (f, t) = 
             Coordinate.ToString f + "-" + Coordinate.ToString t
         let vector = vectorToString (this.Start, this.End)
-        if this.PromoteTo = None then vector
+        if this.PromoteTo = PieceType.None then vector
         else 
-            let p = pieceToChar (White, this.PromoteTo.Value)
+            let p = pieceToChar (White, this.PromoteTo)
             sprintf "%s=%c" vector p
     
     member internal this.AsString = Move.toString this
@@ -203,15 +206,15 @@ type Move with
     static member TryParse(str : string) = 
         let parsePromotionHint = 
             function 
-            | 'N' -> Knight
-            | 'B' -> Bishop
-            | 'R' -> Rook
-            | 'Q' -> Queen
+            | 'N' -> PieceType.Knight
+            | 'B' -> PieceType.Bishop
+            | 'R' -> PieceType.Rook
+            | 'Q' -> PieceType.Queen
             | _ -> failwith ("unknown promotion hint")
         
         let f = Coordinate.parser .>> (pchar '-' <|> pchar 'x')
         let hint = anyOf "NBRQK" |>> parsePromotionHint
-        let p = opt (pchar '=' >>. hint)
+        let p = opt (pchar '=' >>. hint) |>> (fun x -> x ?|? PieceType.None)
         let notation = pipe3 f Coordinate.parser p (Move.Create)
         run notation str
     
