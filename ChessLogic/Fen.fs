@@ -66,6 +66,7 @@ let Print p =
     string sb
 
 open FParsec
+open Microsoft.FSharp.Core.Option
 
 type private Code = 
     | Piece of Piece
@@ -104,13 +105,9 @@ let TryParse str =
                for square in rank do
                    match square with
                    | Piece(p) -> yield Some(p)
-                   | Gap(n) -> 
-                       for _ in 1..n -> None |]
+                   | Gap(n) -> for _ in 1..n -> None |]
     
-    let parseEnPassant = 
-        function 
-        | Some(p, _) -> Some(p)
-        | None -> None
+    let parseEnPassant = map (fun (p, _) -> p)
     
     let createCore plcmnt clr ca enp = 
         { Placement = parsePlacement (plcmnt)

@@ -24,7 +24,7 @@ let check from (expected : string list) position =
     // Now do full search and make sure ValidateMove agrees
     let expected2 = 
         [ for i = 0 to 63 do
-              let e = (i % 8, i / 8)
+              let e = Coordinate.fromIdx64 i
               let t = Move.Create f e None
               match MoveLegality.Validate t p with
               | LegalMove _ -> yield Coordinate.ToString e
@@ -44,8 +44,8 @@ let checkAll expected position =
     let expected2 = 
         [ for i = 0 to 63 do
               for j = 0 to 63 do
-                  let e = (i % 8, i / 8)
-                  let t = Move.Create (j % 8, j / 8) e None
+                  let e = Coordinate.fromIdx64 i
+                  let t = Move.Create (Coordinate.fromIdx64 j) e None
                   match MoveLegality.Validate t p with
                   | LegalMove _ -> yield Coordinate.ToString e
                   | _ -> () ]
