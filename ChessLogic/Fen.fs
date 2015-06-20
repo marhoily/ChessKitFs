@@ -71,7 +71,7 @@ type private Code =
     | Piece of Piece
     | Gap of int
 
-let Parse str = 
+let TryParse str = 
     let parsePieceLetter = 
         function 
         | 'P' -> (White, Pawn)
@@ -145,6 +145,7 @@ let Parse str =
     let fenParser = pipe3 core (n .>> ws) n createPosition
     run fenParser str
 
+let Parse = TryParse >> Operators.getSuccess
+
 let StartingPosition = 
     Parse "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" 
-    |> Operators.getSuccess

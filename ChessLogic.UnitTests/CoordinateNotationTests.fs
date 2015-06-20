@@ -7,7 +7,7 @@ open ChessKit.ChessLogic
 open ChessKit.ChessLogic.CoordinateNotation
 
 let positive = 
-    ParseToStringShouldMatch Text.moveToString TryParseCoordinateNotation
+    ParseToStringShouldMatch Text.moveToString ParseCoordinateNotation
 let negative = ErrorMessageShouldMatch TryParseCoordinateNotation
 
 [<Fact>]

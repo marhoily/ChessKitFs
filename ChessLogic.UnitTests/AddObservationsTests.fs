@@ -20,7 +20,6 @@ let check expectedObservations position =
 let checkObservations position move expectedObservations = 
     position
     |> Fen.Parse
-    |> Operators.getSuccess
     |> ValidateLegalMove(ParseCoordinateNotation move)
     |> CoreToPosition
     |> check expectedObservations
@@ -40,7 +39,6 @@ let rec playFrom m p =
 let playFromFen moves start = 
     start
     |> Fen.Parse
-    |> Operators.getSuccess
     |> playFrom moves
 
 let play moves = Fen.StartingPosition |> playFrom moves
@@ -67,8 +65,8 @@ let ``Play should work``() =
 [<Fact>]
 let ``PositionCore structural equality works``() = 
     let fen = "r2q1r1k/p1p1b3/4pnQp/3p4/8/2NB4/PPP2PPP/R5K1 b - - 3 16"
-    let c1 = (Fen.Parse fen |> Operators.getSuccess).Core
-    let c2 = (Fen.Parse fen |> Operators.getSuccess).Core
+    let c1 = (Fen.Parse fen).Core
+    let c2 = (Fen.Parse fen).Core
     c1 |> should equal c2
     c1.GetHashCode() |> should equal (c2.GetHashCode())
     [ c1; c2 ]

@@ -8,9 +8,7 @@ open ChessKit.ChessLogic.CoordinateNotation
 open ChessKit.ChessLogic.X88
 
 let check square func fen = 
-    func (fen
-          |> Fen.Parse
-          |> Operators.getSuccess).Core (ParseCoordinate square |> toX88)
+    func (fen |> Fen.Parse).Core (ParseCoordinate square |> toX88)
 
 [<Fact>]
 let ``c6 is attacked by black pawn on b7``() = 
@@ -253,7 +251,6 @@ let check2 func fen =
     let position = 
         fen
         |> Fen.Parse
-        |> Operators.getSuccess
     func position.Core
 
 [<Fact>]

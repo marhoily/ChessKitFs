@@ -11,7 +11,7 @@ open ChessKit.ChessLogic.Extensions
 open ChessKit.ChessLogic.X88
 
 let positive = ParseToStringShouldMatch Fen.Print Fen.Parse
-let negative = ErrorMessageShouldMatch Fen.Parse
+let negative = ErrorMessageShouldMatch Fen.TryParse
 
 [<Fact>]
 let works() = positive "p2P3n/8 b KQ - 0 1"

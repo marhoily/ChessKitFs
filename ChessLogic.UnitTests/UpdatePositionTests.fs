@@ -10,7 +10,6 @@ open ChessKit.ChessLogic.MoveLegalityChecker
 let after move position = 
     position
     |> Fen.Parse
-    |> Operators.getSuccess
     |> ValidateLegalMove(ParseCoordinateNotation move)
     |> fun vm -> { EmptyPosition with Core = vm.ResultPosition }
     |> Fen.Print
