@@ -2,6 +2,7 @@
 
 open PositionCoreExt
 open Microsoft.FSharp.Core.Option
+open Microsoft.FSharp.Core.Operators.Unchecked
 
 let getScanners side at88 square = 
     let rec slide square pieceType increment () = 
@@ -35,7 +36,7 @@ let IsAttackedBy side (position : PositionCore) c88 =
 let FindKing color (position : PositionCore) = 
     seq { 0..63 }
     |> Seq.map position.atIdx64
-    |> Seq.tryFindIndex (fun i -> i = (Some(color, King)))
+    |> Seq.tryFindIndex (equals (Some(color, King)))
     |> map X88.fromIdx64
 
 let IsInCheck (side : Color) (position : PositionCore) = 

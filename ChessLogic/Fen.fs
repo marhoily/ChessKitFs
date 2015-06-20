@@ -107,13 +107,11 @@ let TryParse str =
                    | Piece(p) -> yield Some(p)
                    | Gap(n) -> for _ in 1..n -> None |]
     
-    let parseEnPassant = map (fun (p, _) -> p)
-    
     let createCore plcmnt clr ca enp = 
         { Placement = parsePlacement (plcmnt)
           ActiveColor = clr
           CastlingAvailability = ca
-          EnPassant = parseEnPassant (enp) }
+          EnPassant = map fst enp }
     
     let createPosition core halfMoveClock fullMoveNumber = 
         { Core = core
