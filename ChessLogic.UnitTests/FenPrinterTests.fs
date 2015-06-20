@@ -2,7 +2,6 @@
 
 open Xunit
 open ChessKit.ChessLogic
-open ChessKit.ChessLogic.Fen
 open FsUnit.Xunit
 
 let internal EmptyPosition = 
@@ -17,7 +16,7 @@ let internal EmptyPosition =
       Move = None }
 
 let toFenCore c = 
-    ToFen { EmptyPosition with Core = c } 
+    Fen.ToFen { EmptyPosition with Core = c } 
 
 let ec = EmptyPosition.Core;
 

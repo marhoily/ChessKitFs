@@ -4,7 +4,6 @@ open Xunit
 open System
 open FsUnit.Xunit
 open ChessKit.ChessLogic
-open ChessKit.ChessLogic.Fen
 open ChessKit.ChessLogic.MoveLegalityChecker
 open ChessKit.ChessLogic.CoordinateNotation
 open ChessKit.ChessLogic.Text
@@ -30,7 +29,7 @@ let MoveToString (move : MoveInfo) =
 
 let check position move expectedHint = 
     position
-    |> ParseFen
+    |> Fen.ParseFen
     |> Operators.getSuccess
     |> ValidateMove(ParseCoordinateNotation move)
     |> MoveToString
@@ -1365,7 +1364,7 @@ module Queen =
             | (n, fen, move, expected) -> 
                 let actual = 
                     fen
-                    |> ParseFen
+                    |> Fen.ParseFen
                     |> Operators.getSuccess
                     |> ValidateMove(ParseCoordinateNotation move)
                     |> MoveToString

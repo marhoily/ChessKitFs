@@ -1,4 +1,5 @@
-﻿module ChessKit.ChessLogic.Fen
+﻿[<RequireQualifiedAccess>]
+module ChessKit.ChessLogic.Fen
 
 open Text
 open System
@@ -19,7 +20,7 @@ let ToFen p =
                    | BQ -> 'q'
                    | BK -> 'k')
             |> List.toArray
-            // This can be just "System.String" in F# 4.0
+            // This can be just "String" in F# 4.0
             |> (fun arr -> (String(arr)))
         if result = "" then "-"
         else result

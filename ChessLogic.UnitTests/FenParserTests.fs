@@ -6,13 +6,12 @@ open FsUnit.Xunit
 open Option
 open ChessKit.ChessLogic
 open ChessKit.ChessLogic.Text
-open ChessKit.ChessLogic.Fen
 open ChessKit.ChessLogic.CoordinateNotation
 open ChessKit.ChessLogic.Extensions
 open ChessKit.ChessLogic.X88
 
-let positive = ParseToStringShouldMatch ToFen ParseFen
-let negative = ErrorMessageShouldMatch ParseFen
+let positive = ParseToStringShouldMatch Fen.ToFen Fen.ParseFen
+let negative = ErrorMessageShouldMatch Fen.ParseFen
 
 [<Fact>]
 let works() = positive "p2P3n/8 b KQ - 0 1"
@@ -40,7 +39,7 @@ Expecting: number 1..8 or piece symbol
 
 [<Fact>]
 let ``starting position print-out looks fine``() = 
-    StartingPosition
+    Fen.StartingPosition
     |> Dump
     |> should equal (
           " ╔═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╗\r\n" +
@@ -64,7 +63,7 @@ let ``starting position print-out looks fine``() =
 
 [<Fact>]
 let ``d1 should refer to Q in starting position``() = 
-    StartingPosition.Core
+    Fen.StartingPosition.Core
     |> PieceAt (ParseCoordinate "d1") |> get
     |> pieceToChar
     |> should equal 'Q'

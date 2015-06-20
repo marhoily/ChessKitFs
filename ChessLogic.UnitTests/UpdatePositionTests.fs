@@ -5,16 +5,15 @@ open FsUnit.Xunit
 open Xunit
 open ChessKit.ChessLogic
 open ChessKit.ChessLogic.CoordinateNotation
-open ChessKit.ChessLogic.Fen
 open ChessKit.ChessLogic.MoveLegalityChecker
 
 let after move position = 
     position
-    |> ParseFen
+    |> Fen.ParseFen
     |> Operators.getSuccess
     |> ValidateLegalMove(ParseCoordinateNotation move)
     |> fun vm -> { EmptyPosition with Core = vm.ResultPosition }
-    |> ToFen
+    |> Fen.ToFen
 
 [<Fact>]
 let IsValidPawnMove() = 

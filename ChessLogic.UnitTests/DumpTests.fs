@@ -4,14 +4,13 @@ open Xunit;
 open FsUnit.Xunit
 
 open ChessKit.ChessLogic
-open ChessKit.ChessLogic.Fen
 open ChessKit.ChessLogic.Text
 open ChessKit.ChessLogic.Extensions
 
 [<Fact>]
 let printOut() =
     "1r2k2r/p2n1p1p/np4p1/2p1B1b1/7P/1P1P4/P1PN3P/RNQ2RK1 b k - 0 18"
-    |> ParseFen
+    |> Fen.ParseFen
     |> Operators.getSuccess
     |> Dump
     |> should equal (

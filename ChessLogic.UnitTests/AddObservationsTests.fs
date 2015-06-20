@@ -4,7 +4,6 @@ open FsUnit.Xunit
 open Xunit
 open ChessKit.ChessLogic
 open ChessKit.ChessLogic.AddObservations
-open ChessKit.ChessLogic.Fen
 open ChessKit.ChessLogic.MoveLegalityChecker
 open ChessKit.ChessLogic.CoordinateNotation
 open ChessKit.ChessLogic.Text
@@ -12,7 +11,7 @@ open ChessKit.ChessLogic.San
 open ChessKit.ChessLogic.Extensions
 
 let check expectedObservations position = 
-    printfn "%s" (ToFen position)
+    printfn "%s" (Fen.ToFen position)
     printfn "%s" (Dump position)
     position.Observations
     |> concatFieldNames " | "
@@ -20,7 +19,7 @@ let check expectedObservations position =
 
 let checkObservations position move expectedObservations = 
     position
-    |> ParseFen
+    |> Fen.ParseFen
     |> Operators.getSuccess
     |> ValidateLegalMove(ParseCoordinateNotation move)
     |> CoreToPosition
@@ -33,18 +32,18 @@ let rec playFrom m p =
         match p |> FromSanString head with
         | LegalSan(legal, _) -> playFrom tail (CoreToPosition legal)
         | x -> 
-            printfn "%s" (ToFen p)
+            printfn "%s" (Fen.ToFen p)
             printfn "%s" (Dump p)
             printfn "%s" head
             failwithf "%A" x
 
 let playFromFen moves start = 
     start
-    |> ParseFen
+    |> Fen.ParseFen
     |> Operators.getSuccess
     |> playFrom moves
 
-let play moves = StartingPosition |> playFrom moves
+let play moves = Fen.StartingPosition |> playFrom moves
 
 [<Fact>]
 let ``Gives check``() = 
@@ -62,14 +61,14 @@ let ``Play should work``() =
               "Bb4"; "Nxc6"; "bxc6"; "Bd3"; "d5"; "exd5"; "cxd5"; "O-O"; "O-O"; 
               "Bg5"; "Be6"; "Qf3"; "Be7"; "Rfe1"; "h6"; "Bxh6"; "gxh6"; "Rxe6"; 
               "fxe6"; "Qg3+"; "Kh8"; "Qg6" ]
-    ToFen res 
+    Fen.ToFen res 
     |> should equal "r2q1r1k/p1p1b3/4pnQp/3p4/8/2NB4/PPP2PPP/R5K1 b - - 3 16"
 
 [<Fact>]
 let ``PositionCore structural equality works``() = 
     let fen = "r2q1r1k/p1p1b3/4pnQp/3p4/8/2NB4/PPP2PPP/R5K1 b - - 3 16"
-    let c1 = (ParseFen fen |> Operators.getSuccess).Core
-    let c2 = (ParseFen fen |> Operators.getSuccess).Core
+    let c1 = (Fen.ParseFen fen |> Operators.getSuccess).Core
+    let c2 = (Fen.ParseFen fen |> Operators.getSuccess).Core
     c1 |> should equal c2
     c1.GetHashCode() |> should equal (c2.GetHashCode())
     [ c1; c2 ]
@@ -127,7 +126,7 @@ let Stalemate() =
 
 [<Fact>]
 let ``count material``() = 
-    (CountMaterial StartingPosition.Core |> sprintf "%A") 
+    (CountMaterial Fen.StartingPosition.Core |> sprintf "%A") 
     |> should equal 
            (([| 11; 2; 1; 1; 1 |], [| 11; 2; 1; 1; 1 |]) |> sprintf "%A")
 

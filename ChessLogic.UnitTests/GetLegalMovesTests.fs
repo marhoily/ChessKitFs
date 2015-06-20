@@ -4,7 +4,6 @@ open FsUnit.Xunit
 open Xunit
 open ChessKit.ChessLogic
 open ChessKit.ChessLogic.MoveLegalityChecker
-open ChessKit.ChessLogic.Fen
 open ChessKit.ChessLogic.CoordinateNotation
 open ChessKit.ChessLogic.Text
 open ChessKit.ChessLogic.Extensions
@@ -12,7 +11,7 @@ open ChessKit.ChessLogic.Extensions
 let toString (m : LegalMove) = squareToString m.Move.End
 
 let check from (expected : string list) position = 
-    let p = Operators.getSuccess (position |> ParseFen)
+    let p = Operators.getSuccess (position |> Fen.ParseFen)
     printf "%s" (Dump p)
     let f = ParseCoordinate from
     
@@ -33,7 +32,7 @@ let check from (expected : string list) position =
     actual |> should equal (expected2 |> List.sort)
 
 let checkAll expected position = 
-    let p = Operators.getSuccess (position |> ParseFen)
+    let p = Operators.getSuccess (position |> Fen.ParseFen)
     printf "%s" (Dump p)
     let actual = 
         p
