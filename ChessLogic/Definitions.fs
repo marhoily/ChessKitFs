@@ -240,11 +240,11 @@ module internal X88 =
     let fromCoordinate = function 
         | (x, y) -> x + y * 16
     let parse = Coordinate.Parse >> fromCoordinate
+    let toIdx64 = Coordinate.fromX88 >> Coordinate.toIdx64
+    let PieceAt cX88 position = position.Placement.[toIdx64 cX88]
 
 module internal PositionCoreExt = 
     type PositionCore with
-        member this.at c = this.Placement.[c |> Coordinate.toIdx64]
-        member this.at64 c64 = this.Placement.[c64]
-        member this.atX88 cX88 = this.Placement.[cX88
-                                                 |> Coordinate.fromX88
-                                                 |> Coordinate.toIdx64]
+        member this.at c = Coordinate.PieceAt c this
+        member this.atIdx64 c64 = this.Placement.[c64]
+        member this.atX88 cX88 = X88.PieceAt cX88 this

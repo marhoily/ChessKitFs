@@ -34,7 +34,7 @@ let IsAttackedBy side (position: PositionCore) c88 =
 let FindKing color (position: PositionCore) = 
     let index = 
         seq { 0..63 } 
-        |> Seq.map position.at64
+        |> Seq.map position.atIdx64
         |> Seq.tryFindIndex 
                (fun i -> i = (Some(color, King)))
     match index with

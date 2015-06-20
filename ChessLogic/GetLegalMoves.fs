@@ -1,6 +1,7 @@
 ﻿module ChessKit.ChessLogic.GetLegalMoves
 
 open MoveLegalityChecker
+open PositionCoreExt
 
 let FromSquare from position = 
     let legalOnly moves = 
@@ -16,7 +17,7 @@ let FromSquare from position =
     let u (f,t) = Move.Create f t None
     let f = from |> X88.fromCoordinate
     let validate v t = position |> ValidateMove(v (from, t |> Coordinate.fromX88))
-    let at88 i = position.Core |> Coordinate.PieceAt(i |> Coordinate.fromX88)
+    let at88 = position.Core.atX88
     
     let gen v = 
         List.map (fun i -> f + i)

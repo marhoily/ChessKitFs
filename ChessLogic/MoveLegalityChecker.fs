@@ -150,7 +150,9 @@ let ValidateMove move position =
     
     //   _______
     //__/ Steps \_________________________________________________________
-    let validate() = validateByPieceType () (X88.fromCoordinate moveFrom) (X88.fromCoordinate moveTo)
+    let validate() = 
+        validateByPieceType () (X88.fromCoordinate moveFrom) 
+            (X88.fromCoordinate moveTo)
     
     let setupResultPosition() = 
         let newPlacement = Array.copy positionCore.Placement
@@ -164,14 +166,15 @@ let ValidateMove move position =
         let effectivePiece : PieceType = 
             if !observations |> List.contains Promotion then promoteTo
             else pieceType.Value
-        newPlacement.[moveTo |> Coordinate.toIdx64] <- Some((color, effectivePiece))
+        newPlacement.[moveTo |> Coordinate.toIdx64] <- Some
+                                                           ((color, 
+                                                             effectivePiece))
         newPlacement.[moveFrom |> Coordinate.toIdx64] <- None
         // Move the rook if it was a castling
         let moveCastlingRook f t = 
-            let x88toIndex = Coordinate.fromX88 >> Coordinate.toIdx64
-            let rook = newPlacement.[Coordinate.fromX88 f |> Coordinate.toIdx64]
-            newPlacement.[f |> x88toIndex] <- None
-            newPlacement.[t |> x88toIndex] <- rook
+            let rook = newPlacement.[f |> X88.toIdx64]
+            newPlacement.[f |> X88.toIdx64] <- None
+            newPlacement.[t |> X88.toIdx64] <- rook
         match !castling with
         | Some(WK) -> moveCastlingRook H1 F1
         | Some(WQ) -> moveCastlingRook A1 D1
@@ -205,6 +208,7 @@ let ValidateMove move position =
                                 ActiveColor = color.Invert
                                 EnPassant = newEnPassant
                                 CastlingAvailability = newCastlingAvailability }
+        
         newPosition := Some(updatedPosition)
     
     let setMoveToCheck() = 
@@ -231,7 +235,7 @@ let ValidateMove move position =
                     Piece = pieceType.Value
                     Castling = !castling
                     Observations = !observations
-                    Warnings = !warnings } 
+                    Warnings = !warnings }
     else 
         IllegalMove { Move = move
                       OriginalPosition = position
@@ -239,7 +243,7 @@ let ValidateMove move position =
                       Castling = !castling
                       Observations = !observations
                       Warnings = !warnings
-                      Errors = !errors } 
+                      Errors = !errors }
 
 let ValidateLegalMove move pos = 
     match ValidateMove move pos with
