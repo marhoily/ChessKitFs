@@ -4,7 +4,7 @@ open FsUnit.Xunit
 open Xunit
 open ChessKit.ChessLogic
 open ChessKit.ChessLogic.Text
-open ChessKit.ChessLogic.Extensions
+open ChessKit.ChessLogic.BoardTextExtensions
 open ChessKit.ChessLogic
 open ChessKit.ChessLogic
 open ChessKit.ChessLogic

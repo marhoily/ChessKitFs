@@ -6,7 +6,7 @@ open FsUnit.Xunit
 open Option
 open ChessKit.ChessLogic
 open ChessKit.ChessLogic.Text
-open ChessKit.ChessLogic.Extensions
+open ChessKit.ChessLogic.BoardTextExtensions
 open ChessKit.ChessLogic.PositionCoreExt
 
 let positive = ParseToStringShouldMatch Fen.Print Fen.Parse

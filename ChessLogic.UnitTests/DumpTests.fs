@@ -5,7 +5,7 @@ open FsUnit.Xunit
 
 open ChessKit.ChessLogic
 open ChessKit.ChessLogic.Text
-open ChessKit.ChessLogic.Extensions
+open ChessKit.ChessLogic.BoardTextExtensions
 
 [<Fact>]
 let printOut() =

@@ -6,7 +6,7 @@ open ChessKit.ChessLogic
 open ChessKit.ChessLogic.AddObservations
 open ChessKit.ChessLogic.Text
 open ChessKit.ChessLogic.San
-open ChessKit.ChessLogic.Extensions
+open ChessKit.ChessLogic.BoardTextExtensions
 
 let check expectedObservations position = 
     printfn "%s" (Fen.Print position)
