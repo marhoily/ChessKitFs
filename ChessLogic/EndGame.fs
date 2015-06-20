@@ -4,6 +4,7 @@ module ChessKit.ChessLogic.EndGame
 
 open Scanning
 open System.Runtime.CompilerServices
+open Operators
 
 let internal countMaterial (board : PositionCore) = 
     let white = Array.zeroCreate 5
@@ -46,7 +47,7 @@ let ToPosition(move : LegalMove) =
           Properties = Properties.None }
     
     let newHalfMoveClock = 
-        if piece = Pawn || obs |> List.contains Capture then 0
+        if piece = Pawn || (obs |> test Observation.Capture) then 0
         else prev.HalfMoveClock + 1
     
     let newMoveNumber = 

@@ -11,7 +11,7 @@ let MoveToString (move : MoveInfo) =
         seq { 
             if piece <> None then yield fieldName piece.Value
             if castling <> Castlings.None then yield sprintf "%A" castling
-            for x in observations -> fieldName x
+            if observations <> Observation.None then yield sprintf "%A" observations
             if warnings <> MoveWarnings.None then yield sprintf "%A" warnings
             if errors <> MoveErrors.None then yield sprintf "%A" errors
         }

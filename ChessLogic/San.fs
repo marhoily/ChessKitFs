@@ -27,8 +27,8 @@ let ToString(legalMove : LegalMove) =
     let obs = (legalMove |> EndGame.ToPosition).Properties
     let shortCastling = legalMove.Castling |> test Castlings.K
     let longCastling = legalMove.Castling |> test Castlings.Q
-    let capture = legalMove.Observations |> List.contains Capture
-    let promotion = legalMove.Observations |> List.contains Promotion
+    let capture = legalMove.Observations |> test Observation.Capture
+    let promotion = legalMove.Observations |> test Observation.Promotion
     let check = obs |> test Properties.Check
     let mate = obs |> test Properties.Mate
     let append (str : string) = sb.Append(str) |> ignore
@@ -203,7 +203,7 @@ let TryParse str board =
         else if mateNote && not mateReal then warn IsNotMate
                     
         let captureNote = capture = Some(SanCapture)
-        let captureReal = legalMove.Observations |> List.contains Capture
+        let captureReal = legalMove.Observations |> test Observation.Capture
         if not captureNote && captureReal then warn IsCapture
         else if captureNote && not captureReal then warn IsNotCapture
             

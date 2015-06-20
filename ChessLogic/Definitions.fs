@@ -51,17 +51,19 @@ type Move =
       End : File * Rank
       PromoteTo : PieceType option }
 
+[<Flags>]
 type Observation = 
-    | Capture
-    | EnPassant
-    | Promotion
-    | DoublePush
+    | None       = 0b0000
+    | Promotion  = 0b0001
+    | Capture    = 0b0010
+    | EnPassant  = 0b0100
+    | DoublePush = 0b1000
 
 [<Flags>]
 type MoveWarnings = 
-    | None                     = 0b000000000000
-    | MissingPromotionHint     = 0b000000000001
-    | PromotionHintIsNotNeeded = 0b000000000010
+    | None                     = 0b00
+    | MissingPromotionHint     = 0b01
+    | PromotionHintIsNotNeeded = 0b10
 
 [<Flags>]
 type MoveErrors = 
@@ -92,7 +94,7 @@ type LegalMove =
       ResultPosition : PositionCore
       Piece : PieceType
       Castling : Castlings
-      Observations : Observation list
+      Observations : Observation
       Warnings : MoveWarnings }
 
 and Position = 
@@ -108,7 +110,7 @@ type IllegalMove =
       OriginalPosition : Position
       Piece : PieceType option
       Castling : Castlings
-      Observations : Observation list
+      Observations : Observation
       Warnings : MoveWarnings
       Errors : MoveErrors }
 

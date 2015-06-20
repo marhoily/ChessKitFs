@@ -230,7 +230,6 @@ let san move (expected : string) board =
                 failwithf "%s" (concatFieldNames ", " warns)
             move
         | x -> failwithf "%A" x
-    
     Fen.Parse board
     |> fromLegalSanString move
     |> sprintf "%A"
@@ -243,7 +242,6 @@ let warn move (expected : string) warnings board =
             concatFieldNames ", " warns |> should equal warnings
             move
         | x -> failwithf "%A" x
-    
     Fen.Parse board
     |> fromLegalSanString move
     |> sprintf "%A"
@@ -256,13 +254,14 @@ let illegal move expected errors board =
             seq { 
                 if piece <> None then yield fieldName piece.Value
                 if castling <> Castlings.None then yield sprintf "%A" castling
-                for x in observations -> fieldName x
-                if warnings <> MoveWarnings.None then yield sprintf "%A" warnings
+                if observations <> Observation.None then 
+                    yield sprintf "%A" observations
+                if warnings <> MoveWarnings.None then 
+                    yield sprintf "%A" warnings
                 if errors <> MoveErrors.None then yield sprintf "%A" errors
                 for x in resultObservations -> fieldName x
             }
-        
-        getStrings m.Piece m.Castling m.Observations m.Warnings m.Errors [] 
+        getStrings m.Piece m.Castling m.Observations m.Warnings m.Errors []
         |> String.concat " | "
     Fen.Parse board
     |> San.TryParse move
