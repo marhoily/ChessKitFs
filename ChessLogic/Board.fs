@@ -21,10 +21,17 @@ let IsInCheck (position : PositionCore) (side : Color) =
 let ValidateMove (position : Position) (move : Move) = 
     MoveLegality.Validate move position
 
+/// Parses move, throws when illegal
 [<Extension>]
 let ValidateLegalMove (position : Position) (move : Move) = 
     MoveLegality.ValidateLegal move position
 
+/// Parses string like "e2-e4", throws when illegal
 [<Extension>]
 let ParseLegalMove (position : Position) (move : string) = 
     MoveLegality.ParseLegal move position
+
+/// Parses string like "e4", throws when illegal
+[<Extension>]
+let ParseSanMove (position : Position) (move : string) = 
+    San.Parse move position
