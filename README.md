@@ -3,6 +3,10 @@
 [![ChessKit.ChessLogic](https://img.shields.io/nuget/v/ChessKit.ChessLogic.svg)](https://www.nuget.org/packages/ChessKit.ChessLogic/)
 [![ChessKit.ChessLogic](https://img.shields.io/nuget/vpre/ChessKit.ChessLogic.svg)](https://www.nuget.org/packages/ChessKit.ChessLogic/)
 
+## Disclaimers
+ 1. API is very unstable at the moment! Wait for the version 1.0 before you depend on the library
+ 2. Zobrist is not in the code yet. I'm playing with the API at the moment.
+
 ### What it is
 Chess Kit [includes](https://trello.com/b/80MHIZWN/chess-f):
  * Immutable Board representation
