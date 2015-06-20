@@ -100,7 +100,6 @@ type IllegalMove =
       Errors : Error list }
 
 // --------------------------------------------------
-
 type Color with
     member this.Invert = 
         match this with
@@ -143,8 +142,8 @@ module internal Text =
     
     let concatFieldNames sep list = 
         String.concat sep (list |> List.map fieldName)
-
-    let moveToString this =
+    
+    let moveToString this = 
         let vectorToString = function 
             | (f, t) -> squareToString f + "-" + squareToString t
         let vector = vectorToString (this.Start, this.End)
@@ -154,21 +153,20 @@ module internal Text =
             sprintf "%s=%c" vector p
 
 [<RequireQualifiedAccess>]
-module internal CoordinateNotation =
-
+module internal CoordinateNotation = 
     open Text
     open FParsec
-
+    
     type Move with
         static member Parse = ()
-
+    
     let private coordinate = 
         let parseFile (p : char) : File = int (p) - int ('a')
         let parseRank c = 8 - (int c - int '0')
         let file = anyOf "abcdefgh" |>> parseFile
         let rank = anyOf "12345678" |>> parseRank
         file .>>. rank
-
+    
     let TryParseCoordinateNotation str = 
         let parsePromotionHint = 
             function 
@@ -177,23 +175,24 @@ module internal CoordinateNotation =
             | 'R' -> Rook
             | 'Q' -> Queen
             | _ -> failwith ("unknown promotion hint")
-    
+        
         let f = coordinate .>> (pchar '-' <|> pchar 'x')
         let hint = anyOf "NBRQK" |>> parsePromotionHint
         let p = opt ((pchar '=') >>. hint)
         let notation = pipe3 f coordinate p (Move.Create)
         run notation str
-
+    
     let TryParseCoordinate str = run coordinate str
     let ParseCoordinate = TryParseCoordinate >> Operators.getSuccess
-    let ParseCoordinateNotation = TryParseCoordinateNotation >> Operators.getSuccess
 
 open Text
 
 type Move with
     member internal this.AsString = moveToString this
-    static member TryParse = CoordinateNotation.TryParseCoordinateNotation
-    static member Parse = CoordinateNotation.ParseCoordinateNotation
+    static member TryParse(str : string) = 
+        CoordinateNotation.TryParseCoordinateNotation str
+    static member Parse(str : string) = 
+        Move.TryParse str |> Operators.getSuccess
 
 type LegalMove with
     member internal x.AsString = x.Move.AsString
@@ -248,7 +247,10 @@ module internal X88 =
     let to64 = function 
         | (file, rank) -> rank * 8 + file
     let PieceAt coordinate position = position.Placement.[to64 coordinate]
+    
     type PositionCore with
         member this.at c = this.Placement.[c |> to64]
         member this.at64 c64 = this.Placement.[c64]
-        member this.atX88 cX88 = this.Placement.[cX88 |> fromX88 |> to64]
+        member this.atX88 cX88 = this.Placement.[cX88
+                                                 |> fromX88
+                                                 |> to64]
