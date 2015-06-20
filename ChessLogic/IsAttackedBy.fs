@@ -19,8 +19,8 @@ let inline getScanners side at88 square =
     let scan fn pieceType = Seq.map (fn square pieceType)
     (scan jump, scan slide)
 
-let IsAttackedBy side at88 square = 
-    let jump, slide = getScanners side at88 square
+let IsAttackedBy side (position: PositionCore) c88 = 
+    let jump, slide = getScanners side position.atX88 c88
     [ jump Pawn (if side = Black then [ -15; -17 ]
                 else [ +15; +17 ])
       jump Knight [ -33; -31; -18; -14; +33; +31; +18; +14 ]
@@ -31,17 +31,17 @@ let IsAttackedBy side at88 square =
     |> Seq.concat
     |> Seq.exists (fun f -> f() <> -1)
 
-let FindKing color at64 = 
+let FindKing color (position: PositionCore) = 
     let index = 
         seq { 0..63 } 
+        |> Seq.map position.at64
         |> Seq.tryFindIndex 
-               (fun i -> (at64 (i % 8, i / 8)) = (Some(color, King)))
+               (fun i -> i = (Some(color, King)))
     match index with
     | Some(i) -> Some((i % 8, i / 8) |> toX88)
     | None -> None
 
-let IsInCheck side at64 = 
-    match FindKing (side:Color) at64 with
-    | Some(position) -> 
-        position |> IsAttackedBy side.Invert (fromX88 >> at64)
+let IsInCheck (side:Color) (position: PositionCore) = 
+    match FindKing side position with
+    | Some c -> IsAttackedBy side.Invert position c
     | None -> false

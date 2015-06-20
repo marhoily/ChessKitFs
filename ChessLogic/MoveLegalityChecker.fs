@@ -110,8 +110,8 @@ let ValidateMove move position =
                 if attacked F then err CastleThroughCheck
             castle castlingOpt
         
-        let w = IsAttackedBy Black at
-        let b = IsAttackedBy White at
+        let w = position.Core |> IsAttackedBy Black
+        let b = position.Core |> IsAttackedBy White
         match (toSquare - fromSquare) with
         | 1 | 15 | 16 | 17 | -1 | -15 | -16 | -17 -> ()
         | -2 | +2 -> 
@@ -210,8 +210,7 @@ let ValidateMove move position =
         newPosition := Some(updatedPosition)
     
     let setMoveToCheck() = 
-        let at c = PieceAt c (!newPosition).Value
-        if IsInCheck color at then 
+        if IsInCheck color (!newPosition).Value then 
             err MoveToCheck
             newPosition := None
     
