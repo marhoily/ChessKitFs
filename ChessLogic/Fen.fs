@@ -145,7 +145,7 @@ let TryParse str =
     let fenParser = pipe3 core (n .>> ws) n createPosition
     run fenParser str
 
-let Parse = TryParse >> Operators.getSuccess
+let Parse str = TryParse str |> Operators.getSuccess
 let ParseCore str = (Parse str).Core
 
 let StartingPosition = 
