@@ -10,8 +10,8 @@ open ChessKit.ChessLogic.CoordinateNotation
 open ChessKit.ChessLogic.Extensions
 open ChessKit.ChessLogic.X88
 
-let positive = ParseToStringShouldMatch Fen.ToFen Fen.ParseFen
-let negative = ErrorMessageShouldMatch Fen.ParseFen
+let positive = ParseToStringShouldMatch Fen.Print Fen.Parse
+let negative = ErrorMessageShouldMatch Fen.Parse
 
 [<Fact>]
 let works() = positive "p2P3n/8 b KQ - 0 1"

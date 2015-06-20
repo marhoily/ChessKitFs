@@ -16,7 +16,7 @@ let internal EmptyPosition =
       Move = None }
 
 let toFenCore c = 
-    Fen.ToFen { EmptyPosition with Core = c } 
+    Fen.Print { EmptyPosition with Core = c } 
 
 let ec = EmptyPosition.Core;
 

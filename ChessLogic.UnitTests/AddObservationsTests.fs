@@ -11,7 +11,7 @@ open ChessKit.ChessLogic.San
 open ChessKit.ChessLogic.Extensions
 
 let check expectedObservations position = 
-    printfn "%s" (Fen.ToFen position)
+    printfn "%s" (Fen.Print position)
     printfn "%s" (Dump position)
     position.Observations
     |> concatFieldNames " | "
@@ -19,7 +19,7 @@ let check expectedObservations position =
 
 let checkObservations position move expectedObservations = 
     position
-    |> Fen.ParseFen
+    |> Fen.Parse
     |> Operators.getSuccess
     |> ValidateLegalMove(ParseCoordinateNotation move)
     |> CoreToPosition
@@ -32,14 +32,14 @@ let rec playFrom m p =
         match p |> FromSanString head with
         | LegalSan(legal, _) -> playFrom tail (CoreToPosition legal)
         | x -> 
-            printfn "%s" (Fen.ToFen p)
+            printfn "%s" (Fen.Print p)
             printfn "%s" (Dump p)
             printfn "%s" head
             failwithf "%A" x
 
 let playFromFen moves start = 
     start
-    |> Fen.ParseFen
+    |> Fen.Parse
     |> Operators.getSuccess
     |> playFrom moves
 
@@ -61,14 +61,14 @@ let ``Play should work``() =
               "Bb4"; "Nxc6"; "bxc6"; "Bd3"; "d5"; "exd5"; "cxd5"; "O-O"; "O-O"; 
               "Bg5"; "Be6"; "Qf3"; "Be7"; "Rfe1"; "h6"; "Bxh6"; "gxh6"; "Rxe6"; 
               "fxe6"; "Qg3+"; "Kh8"; "Qg6" ]
-    Fen.ToFen res 
+    Fen.Print res 
     |> should equal "r2q1r1k/p1p1b3/4pnQp/3p4/8/2NB4/PPP2PPP/R5K1 b - - 3 16"
 
 [<Fact>]
 let ``PositionCore structural equality works``() = 
     let fen = "r2q1r1k/p1p1b3/4pnQp/3p4/8/2NB4/PPP2PPP/R5K1 b - - 3 16"
-    let c1 = (Fen.ParseFen fen |> Operators.getSuccess).Core
-    let c2 = (Fen.ParseFen fen |> Operators.getSuccess).Core
+    let c1 = (Fen.Parse fen |> Operators.getSuccess).Core
+    let c2 = (Fen.Parse fen |> Operators.getSuccess).Core
     c1 |> should equal c2
     c1.GetHashCode() |> should equal (c2.GetHashCode())
     [ c1; c2 ]

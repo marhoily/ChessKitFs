@@ -9,11 +9,11 @@ open ChessKit.ChessLogic.MoveLegalityChecker
 
 let after move position = 
     position
-    |> Fen.ParseFen
+    |> Fen.Parse
     |> Operators.getSuccess
     |> ValidateLegalMove(ParseCoordinateNotation move)
     |> fun vm -> { EmptyPosition with Core = vm.ResultPosition }
-    |> Fen.ToFen
+    |> Fen.Print
 
 [<Fact>]
 let IsValidPawnMove() = 

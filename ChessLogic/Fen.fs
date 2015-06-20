@@ -5,7 +5,7 @@ open Text
 open System
 open System.Text
 
-let ToFen p = 
+let Print p = 
     let color = 
         match p.Core.ActiveColor with
         | White -> "w"
@@ -71,7 +71,7 @@ type private Code =
     | Piece of Piece
     | Gap of int
 
-let ParseFen str = 
+let Parse str = 
     let parsePieceLetter = 
         function 
         | 'P' -> (White, Pawn)
@@ -146,5 +146,5 @@ let ParseFen str =
     run fenParser str
 
 let StartingPosition = 
-    ParseFen "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" 
+    Parse "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" 
     |> Operators.getSuccess

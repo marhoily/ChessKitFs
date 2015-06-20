@@ -11,7 +11,7 @@ open ChessKit.ChessLogic.Extensions
 let toString (m : LegalMove) = squareToString m.Move.End
 
 let check from (expected : string list) position = 
-    let p = Operators.getSuccess (position |> Fen.ParseFen)
+    let p = Operators.getSuccess (position |> Fen.Parse)
     printf "%s" (Dump p)
     let f = ParseCoordinate from
     
@@ -32,7 +32,7 @@ let check from (expected : string list) position =
     actual |> should equal (expected2 |> List.sort)
 
 let checkAll expected position = 
-    let p = Operators.getSuccess (position |> Fen.ParseFen)
+    let p = Operators.getSuccess (position |> Fen.Parse)
     printf "%s" (Dump p)
     let actual = 
         p

@@ -29,7 +29,7 @@ let MoveToString (move : MoveInfo) =
 
 let check position move expectedHint = 
     position
-    |> Fen.ParseFen
+    |> Fen.Parse
     |> Operators.getSuccess
     |> ValidateMove(ParseCoordinateNotation move)
     |> MoveToString
@@ -1364,7 +1364,7 @@ module Queen =
             | (n, fen, move, expected) -> 
                 let actual = 
                     fen
-                    |> Fen.ParseFen
+                    |> Fen.Parse
                     |> Operators.getSuccess
                     |> ValidateMove(ParseCoordinateNotation move)
                     |> MoveToString
