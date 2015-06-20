@@ -16,5 +16,5 @@ let EmptyPosition =
             EnPassant = None }
       HalfMoveClock = 0
       FullMoveNumber = 1
-      Observations = PositionObservation.None
+      Properties = Properties.None
       Move = None }

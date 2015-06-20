@@ -9,7 +9,7 @@ open ChessKit.ChessLogic.BoardTextExtensions
 let check expectedObservations position = 
     printfn "%s" (Fen.Print position)
     printfn "%s" (Dump position)
-    position.Observations
+    position.Properties
     |> sprintf "%A"//concatFieldNames " | "
     |> should equal expectedObservations
 

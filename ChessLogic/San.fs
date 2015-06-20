@@ -24,13 +24,13 @@ let ToString(legalMove : LegalMove) =
     
     let sb = new StringBuilder(6)
     let move = legalMove.Move
-    let obs = (legalMove |> EndGame.ToPosition).Observations
+    let obs = (legalMove |> EndGame.ToPosition).Properties
     let shortCastling = legalMove.Castling = Some(WK) || legalMove.Castling = Some(BK)
     let longCastling = legalMove.Castling = Some(WQ) || legalMove.Castling = Some(BQ)
     let capture = legalMove.Observations |> List.contains Capture
     let promotion = legalMove.Observations |> List.contains Promotion
-    let check = obs |> test PositionObservation.Check
-    let mate = obs |> test PositionObservation.Mate
+    let check = obs |> test Properties.Check
+    let mate = obs |> test Properties.Mate
     let append (str : string) = sb.Append(str) |> ignore
     let appendc (str : char) = sb.Append(str) |> ignore
     let file, rank, fileAndRankStr = fst, snd, Coordinate.ToString
@@ -190,15 +190,15 @@ let TryParse str board =
     let addNotesToLegal notes capture warns (legalMove:LegalMove) =
         let warnings = ref warns
         let warn w = warnings := w :: !warnings
-        let obs = (legalMove |> EndGame.ToPosition).Observations
+        let obs = (legalMove |> EndGame.ToPosition).Properties
         
         let checkNote = notes = Some(SanCheck)
-        let checkReal = obs |> test PositionObservation.Check
+        let checkReal = obs |> test Properties.Check
         if not checkNote && checkReal then warn IsCheck
         else if checkNote && not checkReal then warn IsNotCheck
                     
         let mateNote = notes = Some(SanMate)
-        let mateReal = obs |> test PositionObservation.Mate
+        let mateReal = obs |> test Properties.Mate
         if not mateNote && mateReal then warn IsMate
         else if mateNote && not mateReal then warn IsNotMate
                     

@@ -28,7 +28,7 @@ type CastlingHint =
     | BK
 
 [<Flags>]    
-type PositionObservation = 
+type Properties = 
     | None                 = 0b0000000
     | Check                = 0b0000001
     | Mate                 = 0b0000010
@@ -88,7 +88,7 @@ and Position =
     { Core : PositionCore
       HalfMoveClock : int
       FullMoveNumber : int
-      Observations : PositionObservation
+      Properties : Properties
       Move : LegalMove option }
 
 [<StructuredFormatDisplay("{AsString}")>]
