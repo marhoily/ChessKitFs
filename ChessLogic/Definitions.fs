@@ -116,8 +116,6 @@ module internal Text =
     let parseFile (p : char) : File = int (p) - int ('a')
     let fileToStirng (f : File) = char (int 'a' + f) |> string
     let rankToString (rank : Rank) = string (8 - rank)
-    let squareToString = function 
-        | (file, rank) -> fileToStirng file + rankToString rank
     
     let pieceToChar = 
         function 
@@ -141,15 +139,6 @@ module internal Text =
     let concatFieldNames sep list = 
         String.concat sep (list |> List.map fieldName)
     
-    let moveToString this = 
-        let vectorToString = function 
-            | (f, t) -> squareToString f + "-" + squareToString t
-        let vector = vectorToString (this.Start, this.End)
-        if this.PromoteTo = None then vector
-        else 
-            let p = pieceToChar (White, this.PromoteTo.Value)
-            sprintf "%s=%c" vector p
-
 open Text
 open FParsec
 
@@ -168,9 +157,20 @@ module Coordinate =
     let internal toIdx64 = function 
         | (file, rank) -> rank * 8 + file
     let PieceAt coordinate position = position.Placement.[toIdx64 coordinate]
+    let squareToString = function 
+        | (file, rank) -> fileToStirng file + rankToString rank
 
 type Move with
-    member internal this.AsString = moveToString this
+    static member internal toString this = 
+        let vectorToString = function 
+            | (f, t) -> Coordinate.squareToString f + "-" + Coordinate.squareToString t
+        let vector = vectorToString (this.Start, this.End)
+        if this.PromoteTo = None then vector
+        else 
+            let p = pieceToChar (White, this.PromoteTo.Value)
+            sprintf "%s=%c" vector p
+    member internal this.AsString = Move.toString this
+
     
     static member TryParse(str : string) = 
         let parsePromotionHint = 

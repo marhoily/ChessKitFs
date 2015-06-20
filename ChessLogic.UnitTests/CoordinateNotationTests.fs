@@ -6,19 +6,19 @@ open Parsing
 open ChessKit.ChessLogic
 
 let positive = 
-    ParseToStringShouldMatch Text.moveToString Move.Parse
+    ParseToStringShouldMatch Move.toString Move.Parse
 let negative = ErrorMessageShouldMatch Move.TryParse
 
 [<Fact>]
 let ``(4,6) -> (4,4) should read "e2-e4"``() = 
     Move.Create (4, 6) (4, 4) None
-    |> Text.moveToString
+    |> Move.toString
     |> should equal "e2-e4"
 
 [<Fact>]
 let ``Promotion move should read correctly``() = 
     Move.Create (4, 6) (4, 4) (Some(Queen))
-    |> Text.moveToString
+    |> Move.toString
     |> should equal "e2-e4=Q"
 
 [<Fact>]
