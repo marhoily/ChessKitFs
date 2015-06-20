@@ -225,7 +225,7 @@ module BoardTextExtensions =
     let Dump board = 
         let sb = 
             StringBuilder
-                (" ╔═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╗\r\n" 
+                (  " ╔═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╗\r\n" 
                  + "8║   │ r │   │   │ k │   │   │ r ║\r\n" 
                  + " ╟───┼───┼───┼───┼───┼───┼───┼───╢\r\n" 
                  + "7║ p │   │   │ n │   │ p │   │ p ║\r\n" 
