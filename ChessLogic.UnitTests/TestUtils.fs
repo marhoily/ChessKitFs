@@ -1,4 +1,4 @@
-﻿module Parsing
+﻿module TestUtils
 
 open FsUnit.Xunit
 open ChessKit.ChessLogic
