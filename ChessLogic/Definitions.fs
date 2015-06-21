@@ -64,7 +64,7 @@ type Castlings =
 
 /// Represents different outcomes to the position a move can have
 [<Flags>]
-type MoveOutcomes =
+type GameStates =
     | None                 = 0b0000000
     /// The last move gives check
     | Check                = 0b0000001
@@ -195,7 +195,7 @@ and
       /// Number of full moves (white, then black) counted
       FullMoveNumber : int
       /// Properties of the position like check, mate and stalemate
-      Properties : MoveOutcomes
+      Properties : GameStates
       /// The previous legal move if the position derives from
       /// some other position, -or- ...
       Move : LegalMove option }

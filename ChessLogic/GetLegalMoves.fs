@@ -3,7 +3,7 @@ module ChessKit.ChessLogic.GetLegalMoves
 
 open PositionCoreExt
 
-let FromSquare (fromIdx64:int) position = 
+let FromSquare (fromIdx64 : int) position = 
     let legalOnly moves = 
         [ for move in moves do
               match move with
@@ -15,10 +15,12 @@ let FromSquare (fromIdx64:int) position =
     let p (f, t) = Move.Create f t PieceType.Queen
     let u (f, t) = Move.Create f t PieceType.None
     let fromX88 = fromIdx64 |> X88.fromIdx64
+    
     let validate createMove toX88 = 
         let toCoordinate = toX88 |> Idx64.fromX88
         let move = createMove (fromIdx64, toCoordinate)
         position |> MoveLegality.Validate(move)
+    
     let atX88 = position.Core.atX88
     
     let gen createMove = 

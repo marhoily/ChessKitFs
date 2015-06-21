@@ -16,5 +16,5 @@ let EmptyPosition =
             EnPassant = None }
       HalfMoveClock = 0
       FullMoveNumber = 1
-      Properties = MoveOutcomes.None
+      Properties = GameStates.None
       Move = None }

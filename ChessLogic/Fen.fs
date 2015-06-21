@@ -134,7 +134,7 @@ let TryParse str =
         { Core = core
           HalfMoveClock = halfMoveClock
           FullMoveNumber = fullMoveNumber
-          Properties = MoveOutcomes.None
+          Properties = GameStates.None
           Move = None }
     
     let piece = anyOf "pnbrqkPNBRQK" |>> parsePiece <?> "piece symbol"

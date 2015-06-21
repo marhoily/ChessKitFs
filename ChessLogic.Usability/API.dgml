@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DirectedGraph Layout="Sugiyama" ZoomLevel="-1" xmlns="http://schemas.microsoft.com/vs/2009/dgml">
+  <Nodes>
+    <Node Id="&quot;e2-e4=Q&quot;" Bounds="-195.360336405436,-71.3703845656323,76.9633333333333,25.96" UseManualLocation="True" />
+    <Node Id="BK" Bounds="267.539989018906,13.1522385198525,50.00119872,25.9628131890172" />
+    <Node Id="BQ" Bounds="267.539978027344,41.1150575441706,50,25.96" />
+    <Node Id="BQ1" Bounds="267.539999493104,69.0750512383762,50.0115842657444,25.9707338945479" Label="BQ" />
+    <Node Id="Bishop" Bounds="418.263272298177,16.0457784572039,67.7233333333334,25" Label="Bishop" />
+    <Node Id="Black" Bounds="70.2478921721677,204.178576965332,50,25.96" />
+    <Node Id="BlackQueen" Bounds="166.157904074023,204.178584594727,82.58,25.96" />
+    <Node Id="Capture" Bounds="317.98806955145,208.451471244901,61.8966666666666,25.96" />
+    <Node Id="CastlingAvailability" Bounds="374.577537841797,368.178584594727,119.526666666667,25.96" />
+    <Node Id="Castlings" Bounds="319.551574707031,13.1522413057673,50,25.96" Label="WQ" />
+    <Node Id="Castlings1" Bounds="261.539978027344,-12.8478614801475,114.011596679688,113.893746613072" Group="Expanded" Label="Castlings" LayoutSettings="List" />
+    <Node Id="Check" Bounds="52.0560404593496,7.67817687988281,102.936666666667,25" />
+    <Node Id="Color" Bounds="70.247854025195,232.138598937988,51.25,25.96" Label="White" />
+    <Node Id="Color1" Bounds="61.587854025195,178.178476965332,68.57,85.9202219726562" Group="Expanded" Label="Color" LayoutSettings="List" />
+    <Node Id="EmptyCell" Bounds="-281.648383979997,270.390391706951,72.8533333333334,25.96" />
+    <Node Id="Errors" Bounds="-64.3654793081383,433.713588256836,50.7133333333334,25.96" />
+    <Node Id="FiftyMovesClock" Bounds="142.104208433765,370.339524129232,106.193333333333,25.96" />
+    <Node Id="FiftyMovesRule" Bounds="52.0560404593496,34.6781768798828,102.936666666667,25" />
+    <Node Id="GameStates" Bounds="46.0560404593496,-18.3219231201172,114.936666666667,138.000207629395" Group="Expanded" LayoutSettings="List" UseManualLocation="True" />
+    <Node Id="IllegalMove" Bounds="-89.6054793081383,407.713488256836,101.193333333333,57.9602" Group="Expanded" LayoutSettings="List" />
+    <Node Id="Knight" Bounds="418.263272298177,43.0457851329241,67.7233333333334,25" Label="Knight" />
+    <Node Id="LegalMove" Bounds="-89.6054726050239,319.664153544681,97.90544952,58.0492563872" Group="Expanded" Label="LegalMove" LayoutSettings="List" />
+    <Node Id="Mate" Bounds="52.0560404593496,61.6781768798828,102.936666666667,25" />
+    <Node Id="MissingPromotionHint" Bounds="-261.804355621338,154.318893281658,139,25.96" />
+    <Node Id="Move" Bounds="-149.166136830648,10.5898154343677,84.1866666666667,25.96" Label="FromSquare" />
+    <Node Id="Move1" Bounds="-155.241026711914,-15.4102845656323,96.2615565479329,113.72897784729" Group="Expanded" Label="Move" LayoutSettings="List" UseManualLocation="True" />
+    <Node Id="MoveAnnotations" Bounds="288.872290344036,182.451470704101,134.24,85.8982546787296" Group="Expanded" LayoutSettings="List" UseManualLocation="True" />
+    <Node Id="MoveErrors" Bounds="-287.648383979997,244.390291706951,134.04,113.8802" Group="Expanded" LayoutSettings="List" UseManualLocation="True" />
+    <Node Id="MoveNumber" Bounds="142.104209856395,398.299546739739,96.4330155466667,32.7231060241027" />
+    <Node Id="MoveWarnings" Bounds="-267.804356892904,128.318793281658,180.666666666667,86.071398425293" Group="Expanded" LayoutSettings="List" UseManualLocation="True" />
+    <Node Id="Pawn" Bounds="418.263272298177,70.0457851329241,67.7233333333334,25" Label="Pawn" />
+    <Node Id="Piece" Bounds="405.55160563151,-9.95432154279608,93.1466666666668,111.00020667572" Group="Expanded" Label="PieceType" LayoutSettings="List" />
+    <Node Id="Piece1" Bounds="166.157854025195,232.138598937988,79.54,25.96" Label="WhitePawn" />
+    <Node Id="Piece2" Bounds="160.157854025195,178.178484594727,94.5800500488282,85.9202143432617" Group="Expanded" Label="Piece" LayoutSettings="List" />
+    <Node Id="Position" Bounds="368.577536477385,342.178476965332,131.52667195638,85.9201990844726" Group="Expanded" Label="PositionCore" LayoutSettings="List" UseManualLocation="True" />
+    <Node Id="Position1" Bounds="136.104208433765,344.339424129232,118.193333333333,92.6833133758209" Group="Expanded" Label="Position" LayoutSettings="List" UseManualLocation="True" />
+    <Node Id="PromoteTo" Bounds="-149.241026711914,38.4466304776501,78.956144,26.0049377234937" />
+    <Node Id="Promotion" Bounds="317.95062367737,236.400598043466,76.0833333333333,25.96" />
+    <Node Id="PromotionHintIsNotNeeded" Bounds="-261.804356892904,182.430091706951,168.666666666667,25.96" />
+    <Node Id="Repetition" Bounds="52.0560404593496,88.6781845092773,102.936666666667,25" />
+    <Node Id="Squares" Bounds="374.577532552083,396.138545532227,69.12,25.96" Label="Squares[]" />
+    <Node Id="To" Bounds="-149.166141916911,66.3585932816577,70.1033333333334,25.96" Label="ToSquare" />
+    <Node Id="ToOccupiedCell" Bounds="-281.648381900887,298.350390930176,103.063333333333,25.96" />
+    <Node Id="ValidatedMove" Bounds="-109.605479308138,279.664053544681,141.193333333333,206.009734712154" Group="Expanded" UseManualLocation="True" />
+    <Node Id="Warnings" Bounds="-75.7554726050239,345.664253544681,70.20544952,26.0490563872" Label="Warnings" />
+    <Node Id="WrongSideToMove" Bounds="-281.648383979997,326.310391706951,122.04,25.96" />
+  </Nodes>
+  <Links>
+    <Link Source="&quot;e2-e4=Q&quot;" Target="Move1" Bounds="-150.408673570253,-45.4103846740723,10.9388275684799,21.9452961239434" Label="Parse" LabelBounds="-175.099216227013,-33.545516942218,28.37,15.96" />
+    <Link Source="Castlings1" Target="BK" Category="Contains" />
+    <Link Source="Castlings1" Target="BQ" Category="Contains" />
+    <Link Source="Castlings1" Target="BQ1" Category="Contains" />
+    <Link Source="Castlings1" Target="Castlings" Category="Contains" />
+    <Link Source="Color1" Target="Black" Category="Contains" />
+    <Link Source="Color1" Target="Color" Category="Contains" />
+    <Link Source="GameStates" Target="Check" Category="Contains" />
+    <Link Source="GameStates" Target="FiftyMovesRule" Category="Contains" />
+    <Link Source="GameStates" Target="Mate" Category="Contains" />
+    <Link Source="GameStates" Target="Repetition" Category="Contains" />
+    <Link Source="IllegalMove" Target="Errors" Category="Contains" />
+    <Link Source="LegalMove" Target="Position1" Bounds="8.29997808260136,357.404517489158,118.943566088503,21.1771805630206" />
+    <Link Source="LegalMove" Target="Warnings" Category="Contains" />
+    <Link Source="Move1" Target="Move" Category="Contains" />
+    <Link Source="Move1" Target="PromoteTo" Category="Contains" />
+    <Link Source="Move1" Target="To" Category="Contains" />
+    <Link Source="Move1" Target="ValidatedMove" Bounds="-93.263557434082,98.3186950683594,34.3848114013672,172.484069824219" Label="Validate(PositionCore)" LabelBounds="-66.9969027738604,194.260264995642,117.583333333333,15.96" />
+    <Link Source="MoveAnnotations" Target="Capture" Category="Contains" />
+    <Link Source="MoveAnnotations" Target="Promotion" Category="Contains" />
+    <Link Source="MoveErrors" Target="EmptyCell" Category="Contains" />
+    <Link Source="MoveErrors" Target="ToOccupiedCell" Category="Contains" />
+    <Link Source="MoveErrors" Target="WrongSideToMove" Category="Contains" />
+    <Link Source="MoveWarnings" Target="MissingPromotionHint" Category="Contains" />
+    <Link Source="MoveWarnings" Target="PromotionHintIsNotNeeded" Category="Contains" />
+    <Link Source="Piece" Target="Bishop" Category="Contains" />
+    <Link Source="Piece" Target="Knight" Category="Contains" />
+    <Link Source="Piece" Target="Pawn" Category="Contains" />
+    <Link Source="Piece2" Target="BlackQueen" Category="Contains" />
+    <Link Source="Piece2" Target="Piece1" Category="Contains" />
+    <Link Source="Position" Target="CastlingAvailability" Category="Contains" />
+    <Link Source="Position" Target="Squares" Category="Contains" />
+    <Link Source="Position1" Target="FiftyMovesClock" Category="Contains" />
+    <Link Source="Position1" Target="LegalMove" Bounds="17.1606339440487,358.982103526431,118.943566088503,21.1771805630206" />
+    <Link Source="Position1" Target="MoveNumber" Category="Contains" />
+    <Link Source="Position1" Target="Position" Bounds="254.297541767098,386.871296772937,105.282410978996,2.44011132820583" Label="Includes" LabelBounds="285.0624060644,368.131352292845,43.66,15.96" />
+    <Link Source="Position1" Target="ValidatedMove" Index="2147483647" Bounds="40.5280570983887,384.664215087891,95.5761451721191,6.17019653320313" Label="PreviousMove" LabelBounds="46.9720378986548,368.188783760624,74.5666666666667,15.96" Weight="1" />
+    <Link Source="ValidatedMove" Target="IllegalMove" Category="Contains" />
+    <Link Source="ValidatedMove" Target="LegalMove" Category="Contains" />
+    <Link Source="ValidatedMove" Target="Position1" Index="2147483647" Bounds="31.587854385376,389.668579101563,95.5171794891357,7.0745849609375" Label="OriginalPosition" LabelBounds="35.8693391273452,399.564135885673,84.4466666666667,15.96" Weight="1" />
+  </Links>
+  <Categories>
+    <Category Id="Contains" Label="Contains" Description="Whether the source of the link contains the target object" CanBeDataDriven="False" CanLinkedNodesBeDataDriven="True" IncomingActionLabel="Contained By" IsContainment="True" OutgoingActionLabel="Contains" />
+  </Categories>
+  <Properties>
+    <Property Id="Bounds" DataType="System.Windows.Rect" />
+    <Property Id="CanBeDataDriven" Label="CanBeDataDriven" Description="CanBeDataDriven" DataType="System.Boolean" />
+    <Property Id="CanLinkedNodesBeDataDriven" Label="CanLinkedNodesBeDataDriven" Description="CanLinkedNodesBeDataDriven" DataType="System.Boolean" />
+    <Property Id="Expression" DataType="System.String" />
+    <Property Id="Group" Label="Group" Description="Display the node as a group" DataType="Microsoft.VisualStudio.GraphModel.GraphGroupStyle" />
+    <Property Id="GroupLabel" DataType="System.String" />
+    <Property Id="IncomingActionLabel" Label="IncomingActionLabel" Description="IncomingActionLabel" DataType="System.String" />
+    <Property Id="IsContainment" DataType="System.Boolean" />
+    <Property Id="IsEnabled" DataType="System.Boolean" />
+    <Property Id="Label" Label="Label" Description="Displayable label of an Annotatable object" DataType="System.String" />
+    <Property Id="LabelBounds" DataType="System.Windows.Rect" />
+    <Property Id="Layout" DataType="System.String" />
+    <Property Id="LayoutSettings" DataType="Microsoft.VisualStudio.Diagrams.View.GroupLayoutStyle" />
+    <Property Id="OutgoingActionLabel" Label="OutgoingActionLabel" Description="OutgoingActionLabel" DataType="System.String" />
+    <Property Id="TargetType" DataType="System.Type" />
+    <Property Id="UseManualLocation" DataType="System.Boolean" />
+    <Property Id="Value" DataType="System.String" />
+    <Property Id="ValueLabel" DataType="System.String" />
+    <Property Id="Weight" Label="Weight" Description="Weight" DataType="System.Double" />
+    <Property Id="ZoomLevel" DataType="System.String" />
+  </Properties>
+  <Styles>
+    <Style TargetType="Node" GroupLabel="Comment" ValueLabel="Has comment">
+      <Condition Expression="HasCategory('Comment')" />
+      <Setter Property="Background" Value="#FFFFFACD" />
+      <Setter Property="Stroke" Value="#FFE5C365" />
+      <Setter Property="StrokeThickness" Value="1" />
+      <Setter Property="NodeRadius" Value="2" />
+      <Setter Property="MaxWidth" Value="250" />
+    </Style>
+  </Styles>
+</DirectedGraph>

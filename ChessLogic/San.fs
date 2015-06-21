@@ -31,8 +31,8 @@ let ToString(legalMove : LegalMove) =
     let longCastling = legalMove.Castling |> test Castlings.Q
     let capture = legalMove.Observations |> test MoveAnnotations.Capture
     let promotion = legalMove.Observations |> test MoveAnnotations.Promotion
-    let check = obs |> test MoveOutcomes.Check
-    let mate = obs |> test MoveOutcomes.Mate
+    let check = obs |> test GameStates.Check
+    let mate = obs |> test GameStates.Mate
     let append (str : string) = sb.Append(str) |> ignore
     let appendc (str : char) = sb.Append(str) |> ignore
     let file, rank, fileAndRankStr = Idx64.File, Idx64.Rank, Idx64.ToString
@@ -203,12 +203,12 @@ let TryParse str board =
         let obs = (legalMove |> EndGame.ToPosition).Properties
         
         let checkNote = notes = Some(SanCheck)
-        let checkReal = obs |> test MoveOutcomes.Check
+        let checkReal = obs |> test GameStates.Check
         if not checkNote && checkReal then warn Warning.IsCheck
         else if checkNote && not checkReal then warn  Warning.IsNotCheck
                     
         let mateNote = notes = Some(SanMate)
-        let mateReal = obs |> test MoveOutcomes.Mate
+        let mateReal = obs |> test GameStates.Mate
         if not mateNote && mateReal then warn Warning.IsMate
         else if mateNote && not mateReal then warn Warning.IsNotMate
                     
