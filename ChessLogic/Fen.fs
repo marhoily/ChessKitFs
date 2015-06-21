@@ -13,21 +13,19 @@ let Print p =
         | Color.Black -> "b"
         | _ -> failwith "unexpected"
     
-    let options = 
+    let castling = 
+        let specialCase predicate value source = 
+            if predicate source then value else source
+
         [ (Castlings.WK, 'K');
           (Castlings.WQ, 'Q');
           (Castlings.BK, 'k');
           (Castlings.BQ, 'q') ]
-
-    let castling = 
-        let result = 
-            [| for o in options do
-                   if fst o |> test p.Core.CastlingAvailability then
-                       yield (snd o) |]
-            // This can be just "String" in F# 4.0
-            |> (fun arr -> (String(arr)))
-        if result = "" then "-"
-        else result
+        |> Seq.filter (fst >> test p.Core.CastlingAvailability) 
+        |> Seq.map snd |> Seq.toArray
+        // This can be just "String" in F# 4.0
+        |> (fun arr -> (String(arr)))
+        |> specialCase ((=) "") "-"
     
     let enPassant = 
         match p.Core.EnPassant with
