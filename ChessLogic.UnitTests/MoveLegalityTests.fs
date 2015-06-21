@@ -10,7 +10,7 @@ let MoveToString (move : MoveInfo) =
         seq { 
             if piece <> PieceType.None then yield sprintf "%A" piece
             if castling <> Castlings.None then yield sprintf "%A" castling
-            if observations <> MoveObservations.None then yield sprintf "%A" observations
+            if observations <> MoveAnnotations.None then yield sprintf "%A" observations
             if warnings <> MoveWarnings.None then yield sprintf "%A" warnings
             if errors <> MoveErrors.None then yield sprintf "%A" errors
         }

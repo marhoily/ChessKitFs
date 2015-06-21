@@ -7,7 +7,7 @@ open PositionCoreExt
 
 let Validate move position = 
     let errors = ref MoveErrors.None
-    let observations = ref MoveObservations.None
+    let observations = ref MoveAnnotations.None
     let warnings = ref MoveWarnings.None
     let castling = ref Castlings.None
     let newPosition = ref None
@@ -16,7 +16,7 @@ let Validate move position =
     let info i = observations := i ||| !observations
     let enPassant() = 
         observations 
-        := MoveObservations.Capture ||| MoveObservations.EnPassant 
+        := MoveAnnotations.Capture ||| MoveAnnotations.EnPassant 
            ||| !observations
     
     let hasNoEnPassant() = 
@@ -38,7 +38,7 @@ let Validate move position =
        |> getColor
        = color then err MoveErrors.ToOccupiedCell
     else 
-        if pieceTo <> Piece.EmptyCell then info MoveObservations.Capture
+        if pieceTo <> Piece.EmptyCell then info MoveAnnotations.Capture
     let pieceFrom = positionCore.atIdx64 moveFromIdx64
     let pieceType = pieceFrom |> getPieceType
     if pieceFrom = Piece.EmptyCell then err MoveErrors.EmptyCell
@@ -55,13 +55,13 @@ let Validate move position =
                 err MoveErrors.DoesNotCaptureThisWay
             else if at (fromSquare + v) <> Piece.EmptyCell then 
                 err MoveErrors.DoesNotJump
-            else info MoveObservations.DoublePush
+            else info MoveAnnotations.DoublePush
         
         let validatePush c = 
             if at toSquare <> Piece.EmptyCell then 
                 err MoveErrors.DoesNotCaptureThisWay
             else 
-                if fromSquare / 16 = c then info MoveObservations.Promotion
+                if fromSquare / 16 = c then info MoveAnnotations.Promotion
         
         let validateCapture c2 looksEnPassanty = 
             if at toSquare = Piece.EmptyCell then 
@@ -71,7 +71,7 @@ let Validate move position =
                     else hasNoEnPassant()
                 else err MoveErrors.OnlyCapturesThisWay
             else 
-                if fromSquare / 16 = c2 then info MoveObservations.Promotion
+                if fromSquare / 16 = c2 then info MoveAnnotations.Promotion
         
         let looksEnPassanty c1 c2 c3 clr () = 
             fromSquare / 16 = c1 && at (fromSquare + c2) = Piece.EmptyCell 
@@ -170,14 +170,14 @@ let Validate move position =
     let setupResultPosition() = 
         let newPlacement = Array.copy positionCore.Placement
         // Remove the pawn captured en-passant
-        if !observations |> test MoveObservations.EnPassant then 
+        if !observations |> test MoveAnnotations.EnPassant then 
             let increment = 
                 if color = Color.White then +8
                 else -8
             newPlacement.[moveToIdx64 + increment] <- Piece.EmptyCell
         // Remove the piece from the old square and put it to the new square
         let effectivePieceType = 
-            if !observations |> test MoveObservations.Promotion then promoteTo
+            if !observations |> test MoveAnnotations.Promotion then promoteTo
             else pieceType
         
         let effectivePiece = color +|+ effectivePieceType
@@ -212,7 +212,7 @@ let Validate move position =
         
         // Figure out new en-passant option
         let newEnPassant = 
-            if !observations |> test MoveObservations.DoublePush then 
+            if !observations |> test MoveAnnotations.DoublePush then 
                 Some(Idx64.File moveFromIdx64)
             else None
         
@@ -231,7 +231,7 @@ let Validate move position =
             newPosition := None
     
     let setRequiresPromotion() = 
-        let requiresPromotion = !observations |> test MoveObservations.Promotion
+        let requiresPromotion = !observations |> test MoveAnnotations.Promotion
         if move.PromoteTo = PieceType.None then 
             if requiresPromotion then warn MoveWarnings.MissingPromotionHint
         else 
