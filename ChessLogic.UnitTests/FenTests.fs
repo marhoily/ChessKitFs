@@ -21,15 +21,15 @@ let ``ToFen works``() =
 [<Fact>]
 let ``ToFen works with one empty square``() = 
     toFenCore { ec with Placement = 
-                                   [| Piece.None
+                                   [| Piece.EmptyCell
                                       Piece.WhitePawn |] }
     |> should equal "1P w KQkq - 0 1"
 
 [<Fact>]
 let ``ToFen works with two empty squares``() = 
     toFenCore { ec with Placement = 
-                                   [| Piece.None
-                                      Piece.None
+                                   [| Piece.EmptyCell
+                                      Piece.EmptyCell
                                       Piece.WhitePawn |] }
     |> should equal "2P w KQkq - 0 1"
 
@@ -37,8 +37,8 @@ let ``ToFen works with two empty squares``() =
 let ``ToFen works with empty squares in the middle``() = 
     toFenCore { ec with Placement = 
                                    [| Piece.WhitePawn
-                                      Piece.None
-                                      Piece.None
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
                                       Piece.BlackBishop |] }
     |> should equal "P2b w KQkq - 0 1"
 
@@ -46,13 +46,13 @@ let ``ToFen works with empty squares in the middle``() =
 let ``ToFen works with 2 ranks``() = 
     toFenCore { ec with Placement = 
                                    [| Piece.WhitePawn
-                                      Piece.None
-                                      Piece.None
-                                      Piece.None
-                                      Piece.None
-                                      Piece.None
-                                      Piece.None
-                                      Piece.None
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
                                       Piece.BlackBishop |] }
     |> should equal "P7/b w KQkq - 0 1"
 
@@ -60,26 +60,26 @@ let ``ToFen works with 2 ranks``() =
 let ``ToFen works with piece on the H file``() = 
     toFenCore { ec with Placement = 
                                    [| Piece.WhitePawn
-                                      Piece.None
-                                      Piece.None
-                                      Piece.None
-                                      Piece.None
-                                      Piece.None
-                                      Piece.None
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
                                       Piece.BlackBishop |] }
     |> should equal "P6b w KQkq - 0 1"
 
 [<Fact>]
 let ``ToFen works with empty ranks``() = 
     toFenCore { ec with Placement = 
-                                   [| Piece.None
-                                      Piece.None
-                                      Piece.None
-                                      Piece.None
-                                      Piece.None
-                                      Piece.None
-                                      Piece.None
-                                      Piece.None
+                                   [| Piece.EmptyCell
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
                                       Piece.BlackBishop |] }
     |> should equal "8/b w KQkq - 0 1"
 
@@ -87,21 +87,21 @@ let ``ToFen works with empty ranks``() =
 let ``ToFen works with empty rank after non-empty rank``() = 
     toFenCore { ec with Placement = 
                                    [| Piece.WhitePawn
-                                      Piece.None
-                                      Piece.None
-                                      Piece.None
-                                      Piece.None
-                                      Piece.None
-                                      Piece.None
-                                      Piece.None
-                                      Piece.None
-                                      Piece.None
-                                      Piece.None
-                                      Piece.None
-                                      Piece.None
-                                      Piece.None
-                                      Piece.None
-                                      Piece.None
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
                                       Piece.BlackBishop |] }
     |> should equal "P7/8/b w KQkq - 0 1"
 
@@ -109,13 +109,13 @@ let ``ToFen works with empty rank after non-empty rank``() =
 let ``ToFen works with round number of squares``() = 
     toFenCore { ec with Placement = 
                                    [| Piece.WhitePawn
-                                      Piece.None
-                                      Piece.None
-                                      Piece.None
-                                      Piece.None
-                                      Piece.None
-                                      Piece.None
-                                      Piece.None |] }
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell
+                                      Piece.EmptyCell |] }
     |> should equal "P7 w KQkq - 0 1"
 
 [<Fact>]

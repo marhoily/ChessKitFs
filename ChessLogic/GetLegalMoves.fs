@@ -30,11 +30,11 @@ let FromSquare from position =
         [ let curr = start + increment
           if curr &&& 0x88 = 0 then 
               yield validate u curr
-              if atX88 curr = Piece.None then yield! step curr increment ]
+              if atX88 curr = Piece.EmptyCell then yield! step curr increment ]
     
     let iter = List.collect (step fromX88)
     let piece = position.Core.at from
-    match piece |> color, piece |> pieceType with
+    match piece |> getColor, piece |> getPieceType with
     | Color.White, PieceType.Pawn -> 
         if snd from = rank7 then gen p [ -16; -15; -17 ]
         else gen u [ -16; -32; -15; -17 ]
@@ -53,6 +53,6 @@ let FromSquare from position =
 let All(position : Position) = 
     [ for i = 0 to 63 do
           let coordinate = Coordinate.fromIdx64 i
-          let colr = position.Core.at coordinate |> color
+          let colr = position.Core.at coordinate |> getColor
           if colr = position.Core.ActiveColor then 
               yield! position |> FromSquare coordinate ]

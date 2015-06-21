@@ -48,7 +48,7 @@ let Print p =
             file <- 0
         file <- file + 1
         match square with
-        | Piece.None -> skip <- skip + 1
+        | Piece.EmptyCell -> skip <- skip + 1
         | p -> 
             if skip > 0 then 
                 appendi skip
@@ -110,7 +110,7 @@ let TryParse str =
                for square in rank do
                    match square with
                    | Piece(p) -> yield p
-                   | Gap(n) -> for _ in 1..n -> Piece.None |]
+                   | Gap(n) -> for _ in 1..n -> Piece.EmptyCell |]
     
     let createCore plcmnt clr ca enp = 
         { Placement = parsePlacement (plcmnt)

@@ -8,7 +8,7 @@ let getScanners side at88 square =
         let next = square + increment
         if next &&& 0x88 <> 0 then -1
         else if at88 next = side +|+ pieceType then next
-        else if at88 next <> Piece.None then -1
+        else if at88 next <> Piece.EmptyCell then -1
         else slide next pieceType increment ()
     
     let jump square pieceType increment () = 

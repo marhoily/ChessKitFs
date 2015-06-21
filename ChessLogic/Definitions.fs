@@ -9,32 +9,32 @@ type File = int
 type Rank = int
 
 type Color = 
-    | Black = 0b000001000000
-    | White = 0b000010000000
+    | Black       = 0b01000000
+    | White       = 0b10000000
 
 type PieceType = 
-    | None   = 0b000000000000
-    | Pawn   = 0b000000000001
-    | Knight = 0b000000000010
-    | Bishop = 0b000000000100
-    | Rook   = 0b000000001000
-    | Queen  = 0b000000010000
-    | King   = 0b000000100000
+    | None        = 0b00000000
+    | Pawn        = 0b00000001
+    | Knight      = 0b00000010
+    | Bishop      = 0b00000100
+    | Rook        = 0b00001000
+    | Queen       = 0b00010000
+    | King        = 0b00100000
 
 type Piece = 
-    | None = 0
-    | WhitePawn   = 0b000010000001
-    | WhiteKnight = 0b000010000010
-    | WhiteBishop = 0b000010000100
-    | WhiteRook   = 0b000010001000
-    | WhiteQueen  = 0b000010010000
-    | WhiteKing   = 0b000010100000
-    | BlackPawn   = 0b000001000001
-    | BlackKnight = 0b000001000010
-    | BlackBishop = 0b000001000100
-    | BlackRook   = 0b000001001000
-    | BlackQueen  = 0b000001010000
-    | BlackKing   = 0b000001100000
+    | EmptyCell = 0
+    | WhitePawn   = 0b10000001
+    | WhiteKnight = 0b10000010
+    | WhiteBishop = 0b10000100
+    | WhiteRook   = 0b10001000
+    | WhiteQueen  = 0b10010000
+    | WhiteKing   = 0b10100000
+    | BlackPawn   = 0b01000001
+    | BlackKnight = 0b01000010
+    | BlackBishop = 0b01000100
+    | BlackRook   = 0b01001000
+    | BlackQueen  = 0b01010000
+    | BlackKing   = 0b01100000
 
 [<Flags>]
 type Castlings = 
@@ -148,11 +148,11 @@ type Move with
           PromoteTo = p }
 
 [<AutoOpen>]
-module internal PieceTypeOperators = 
+module internal FlagsOperators = 
     let private colors = int (Color.White ||| Color.Black)
     let (+|+) color pieceType = enum<Piece> (int (color) ||| int (pieceType))
-    let color (piece: Piece) = enum<Color> (int(piece) &&& colors)
-    let pieceType (piece: Piece) = enum<PieceType> (int(piece) &&& ~~~colors)
+    let getColor (piece: Piece) = enum<Color> (int(piece) &&& colors)
+    let getPieceType (piece: Piece) = enum<PieceType> (int(piece) &&& ~~~colors)
 
 module internal Text = 
     open Microsoft.FSharp.Reflection
@@ -175,7 +175,7 @@ module internal Text =
         | Piece.BlackRook -> 'r'
         | Piece.BlackQueen -> 'q'
         | Piece.BlackKing -> 'k'
-        | Piece.None -> ' '
+        | Piece.EmptyCell -> ' '
         | _ -> failwith "Unexpected"
     
     let fieldName (x : 'a) = 
