@@ -226,8 +226,8 @@ let san move (expected : string) board =
     let fromLegalSanString str board = 
         match San.TryParse str board with
         | San.Legal(move, warns) -> 
-            if not warns.IsEmpty then 
-                failwithf "%s" (concatFieldNames ", " warns)
+            if warns <> San.Warning.None then 
+                failwithf "%A" warns
             move
         | x -> failwithf "%A" x
     Fen.Parse board
@@ -239,7 +239,8 @@ let warn move (expected : string) warnings board =
     let fromLegalSanString str board = 
         match San.TryParse str board with
         | San.Legal(move, warns) -> 
-            concatFieldNames ", " warns |> should equal warnings
+            let actual = sprintf "%A" warns
+            actual |> should equal warnings
             move
         | x -> failwithf "%A" x
     Fen.Parse board
@@ -392,7 +393,7 @@ let ``San: it is mate when it should be``() =
 
 [<Fact>]
 let ``San: it is check, not mate``() = 
-    "8/Q7/8/8/8/8/8/5K1k w - - 0 1" |> warn "Qa8#" "a7-a8" "IsNotMate, IsCheck"
+    "8/Q7/8/8/8/8/8/5K1k w - - 0 1" |> warn "Qa8#" "a7-a8" "IsCheck, IsNotMate"
 
 [<Fact>]
 let ``San: it not marked capture when it should be``() = 

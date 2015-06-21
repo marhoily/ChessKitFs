@@ -9,6 +9,7 @@ open System.Text
 open FParsec
 open ChessKit.ChessLogic
 open Operators
+open System
 
 let ToString(legalMove : LegalMove) = 
     //     _______________________
@@ -134,17 +135,19 @@ type Error =
     | AmbiguousChoice of LegalMove list
     | ChoiceOfIllegalMoves of IllegalMove list
 
+[<Flags>]
 type Warning = 
-    | IsCapture
-    | IsNotCapture
-    | IsCheck
-    | IsNotCheck
-    | IsMate
-    | IsNotMate
-    | DisambiguationIsExcessive
+    | None                      = 0b0000000
+    | IsCapture                 = 0b0000001
+    | IsNotCapture              = 0b0000010
+    | IsCheck                   = 0b0000100
+    | IsNotCheck                = 0b0001000
+    | IsMate                    = 0b0010000
+    | IsNotMate                 = 0b0100000
+    | DisambiguationIsExcessive = 0b1000000
 
 type Move = 
-    | Legal of LegalMove * Warning list
+    | Legal of LegalMove * Warning
     | Illegal of IllegalMove
     | Nonsense of Error
     | Unparsable of string
@@ -192,23 +195,23 @@ let TryParse str board =
     
     let addNotesToLegal notes capture warns (legalMove:LegalMove) =
         let warnings = ref warns
-        let warn w = warnings := w :: !warnings
+        let warn w = warnings := w ||| !warnings
         let obs = (legalMove |> EndGame.ToPosition).Properties
         
         let checkNote = notes = Some(SanCheck)
         let checkReal = obs |> test Properties.Check
-        if not checkNote && checkReal then warn IsCheck
-        else if checkNote && not checkReal then warn IsNotCheck
+        if not checkNote && checkReal then warn Warning.IsCheck
+        else if checkNote && not checkReal then warn  Warning.IsNotCheck
                     
         let mateNote = notes = Some(SanMate)
         let mateReal = obs |> test Properties.Mate
-        if not mateNote && mateReal then warn IsMate
-        else if mateNote && not mateReal then warn IsNotMate
+        if not mateNote && mateReal then warn Warning.IsMate
+        else if mateNote && not mateReal then warn Warning.IsNotMate
                     
         let captureNote = capture = Some(SanCapture)
         let captureReal = legalMove.Observations |> test MoveObservations.Capture
-        if not captureNote && captureReal then warn IsCapture
-        else if captureNote && not captureReal then warn IsNotCapture
+        if not captureNote && captureReal then warn Warning.IsCapture
+        else if captureNote && not captureReal then warn Warning.IsNotCapture
             
         Legal(legalMove, !warnings)
 
@@ -227,7 +230,7 @@ let TryParse str board =
             | _ -> failwith "unexpected"
         board 
         |> MoveLegality.Validate(Move.Parse (move))
-        |> addNotesToAny notes None []
+        |> addNotesToAny notes None Warning.None
     
     let validate promoteTo toSquare fromSquare = 
         MoveLegality.Validate (Move.Create fromSquare toSquare promoteTo) board
@@ -266,8 +269,8 @@ let TryParse str board =
 
         let warnings = 
             if validCandidates |> List.length = 1 && hint <> NoHint then 
-                [ DisambiguationIsExcessive ]
-            else []
+                Warning.DisambiguationIsExcessive
+            else Warning.None
 
         match valid, invalid with
         | [], _::_::[] -> Nonsense (ChoiceOfIllegalMoves invalid)
