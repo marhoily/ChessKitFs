@@ -10,19 +10,18 @@ let internal countMaterial (board : PositionCore) =
     let white = Array.zeroCreate 5
     let black = Array.zeroCreate 5
     for i in 0..63 do
-        let p = board.Placement.[i]
-        if p <> None then 
-            let piece = p.Value
-            let square = Idx64.GetColor i
+        let piece = board.Placement.[i]
+        if piece <> Piece.None then 
+            let squareColor = Idx64.GetColor i
             
             let arr = 
-                match piece |> fst with
+                match piece |> color with
                 | Color.White -> white
                 | Color.Black -> black
                 | _ -> failwith "unexpected"
             
             let idx = 
-                match piece |> snd, square with
+                match piece |> pieceType, squareColor with
                 | PieceType.Pawn, _ | PieceType.Rook, _ | PieceType.Queen, _ -> 0
                 | PieceType.Knight, _ -> 1
                 | PieceType.Bishop, Color.White -> 2

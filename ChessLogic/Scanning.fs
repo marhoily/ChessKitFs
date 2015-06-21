@@ -7,14 +7,14 @@ let getScanners side at88 square =
     let rec slide square pieceType increment () = 
         let next = square + increment
         if next &&& 0x88 <> 0 then -1
-        else if at88 next = Some(side, pieceType) then next
-        else if at88 next <> None then -1
+        else if at88 next = side +|+ pieceType then next
+        else if at88 next <> Piece.None then -1
         else slide next pieceType increment ()
     
     let jump square pieceType increment () = 
         let next = square + increment
         if next &&& 0x88 <> 0 then -1
-        else if at88 next = Some(side, pieceType) then next
+        else if at88 next = side +|+ pieceType then next
         else -1
     
     let scan fn pieceType = Seq.map (fn square pieceType)
@@ -35,7 +35,7 @@ let IsAttackedBy side (position : PositionCore) c88 =
 let FindKing color (position : PositionCore) = 
     seq { 0..63 }
     |> Seq.map position.atIdx64
-    |> Seq.tryFindIndex ((=) (Some(color, PieceType.King)))
+    |> Seq.tryFindIndex ((=) (color +|+ PieceType.King))
     |> map X88.fromIdx64
 
 let IsInCheck (side : Color) (position : PositionCore) = 

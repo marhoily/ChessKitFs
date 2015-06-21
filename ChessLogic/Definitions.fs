@@ -9,19 +9,32 @@ type File = int
 type Rank = int
 
 type Color = 
-    | Black = 16
-    | White = 32
+    | Black = 0b000001000000
+    | White = 0b000010000000
 
 type PieceType = 
-    | None   = 0
-    | Pawn   = 1
-    | Knight = 2
-    | Bishop = 3
-    | Rook   = 4
-    | Queen  = 5
-    | King   = 6
+    | None   = 0b000000000000
+    | Pawn   = 0b000000000001
+    | Knight = 0b000000000010
+    | Bishop = 0b000000000100
+    | Rook   = 0b000000001000
+    | Queen  = 0b000000010000
+    | King   = 0b000000100000
 
-type Piece = Color * PieceType
+type Piece = 
+    | None = 0
+    | WhitePawn   = 0b000010000001
+    | WhiteKnight = 0b000010000010
+    | WhiteBishop = 0b000010000100
+    | WhiteRook   = 0b000010001000
+    | WhiteQueen  = 0b000010010000
+    | WhiteKing   = 0b000010100000
+    | BlackPawn   = 0b000001000001
+    | BlackKnight = 0b000001000010
+    | BlackBishop = 0b000001000100
+    | BlackRook   = 0b000001001000
+    | BlackQueen  = 0b000001010000
+    | BlackKing   = 0b000001100000
 
 [<Flags>]
 type Castlings = 
@@ -30,10 +43,10 @@ type Castlings =
     | K    = 0b1010
     | W    = 0b0011
     | B    = 0b1100
-    | WQ   = 0b0001 
-    | WK   = 0b0010 
-    | BQ   = 0b0100 
-    | BK   = 0b1000 
+    | WQ   = 0b0001
+    | WK   = 0b0010
+    | BQ   = 0b0100
+    | BK   = 0b1000
     | All  = 0b1111
 
 [<Flags>]
@@ -84,7 +97,7 @@ type MoveErrors =
     | CastleFromCheck       = 0b100000000000
 
 type PositionCore = 
-    { Placement : Piece option array
+    { Placement : Piece array
       ActiveColor : Color
       CastlingAvailability : Castlings
       EnPassant : File option }
@@ -110,7 +123,7 @@ and Position =
 type IllegalMove = 
     { Move : Move
       OriginalPosition : Position
-      Piece : PieceType option
+      Piece : PieceType
       Castling : Castlings
       Observations : MoveObservations
       Warnings : MoveWarnings
@@ -121,9 +134,9 @@ type MoveInfo =
     | IllegalMove of IllegalMove
 
 // --------------------------------------------------
-module Side =
+module Side = 
     let Invert = 
-        function
+        function 
         | Color.White -> Color.Black
         | Color.Black -> Color.White
         | _ -> failwith "unexpected"
@@ -134,6 +147,13 @@ type Move with
           End = t
           PromoteTo = p }
 
+[<AutoOpen>]
+module internal PieceTypeOperators = 
+    let private colors = int (Color.White ||| Color.Black)
+    let (+|+) color pieceType = enum<Piece> (int (color) ||| int (pieceType))
+    let color (piece: Piece) = enum<Color> (int(piece) &&& colors)
+    let pieceType (piece: Piece) = enum<PieceType> (int(piece) &&& ~~~colors)
+
 module internal Text = 
     open Microsoft.FSharp.Reflection
     
@@ -143,18 +163,19 @@ module internal Text =
     
     let pieceToChar = 
         function 
-        | (Color.White, PieceType.Pawn) -> 'P'
-        | (Color.White, PieceType.Knight) -> 'N'
-        | (Color.White, PieceType.Bishop) -> 'B'
-        | (Color.White, PieceType.Rook) -> 'R'
-        | (Color.White, PieceType.Queen) -> 'Q'
-        | (Color.White, PieceType.King) -> 'K'
-        | (Color.Black, PieceType.Pawn) -> 'p'
-        | (Color.Black, PieceType.Knight) -> 'n'
-        | (Color.Black, PieceType.Bishop) -> 'b'
-        | (Color.Black, PieceType.Rook) -> 'r'
-        | (Color.Black, PieceType.Queen) -> 'q'
-        | (Color.Black, PieceType.King) -> 'k'
+        | Piece.WhitePawn -> 'P'
+        | Piece.WhiteKnight -> 'N'
+        | Piece.WhiteBishop -> 'B'
+        | Piece.WhiteRook -> 'R'
+        | Piece.WhiteQueen -> 'Q'
+        | Piece.WhiteKing -> 'K'
+        | Piece.BlackPawn -> 'p'
+        | Piece.BlackKnight -> 'n'
+        | Piece.BlackBishop -> 'b'
+        | Piece.BlackRook -> 'r'
+        | Piece.BlackQueen -> 'q'
+        | Piece.BlackKing -> 'k'
+        | Piece.None -> ' '
         | _ -> failwith "Unexpected"
     
     let fieldName (x : 'a) = 
@@ -182,7 +203,7 @@ module Coordinate =
     let internal fromIdx64 i = (i % 8, i / 8)
     let internal toIdx64 (file, rank) = rank * 8 + file
     let At coordinate position = position.Placement.[toIdx64 coordinate]
-    let ToString (file, rank) = fileToStirng file + rankToString rank
+    let ToString(file, rank) = fileToStirng file + rankToString rank
 
 [<RequireQualifiedAccess>]
 module Idx64 = 
@@ -199,7 +220,7 @@ type Move with
         let vector = vectorToString (this.Start, this.End)
         if this.PromoteTo = PieceType.None then vector
         else 
-            let p = pieceToChar (Color.White, this.PromoteTo)
+            let p = pieceToChar (Color.White +|+ this.PromoteTo)
             sprintf "%s=%c" vector p
     
     member internal this.AsString = Move.toString this
@@ -238,7 +259,7 @@ module BoardTextExtensions =
     let Dump board = 
         let sb = 
             StringBuilder
-                (  " ╔═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╗\r\n" 
+                (" ╔═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╗\r\n" 
                  + "8║   │ r │   │   │ k │   │   │ r ║\r\n" 
                  + " ╟───┼───┼───┼───┼───┼───┼───┼───╢\r\n" 
                  + "7║ p │   │   │ n │   │ p │   │ p ║\r\n" 
@@ -260,9 +281,7 @@ module BoardTextExtensions =
             let piece = board.Core.Placement.[index]
             let file, rank = Coordinate.fromIdx64 index
             let i = (rank * 2 + 1) * 36 + file * 4 + 3
-            sb.[i] <- (match piece with
-                       | None -> ' '
-                       | Some(p) -> pieceToChar p)
+            sb.[i] <- pieceToChar piece
         string sb
 
 /// https://chessprogramming.wikispaces.com/0x88

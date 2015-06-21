@@ -4,12 +4,11 @@ open Xunit
 open System
 open FsUnit.Xunit
 open ChessKit.ChessLogic
-open ChessKit.ChessLogic.Text
 
 let MoveToString (move : MoveInfo) = 
     let getStrings piece castling observations warnings errors = 
         seq { 
-            if piece <> None then yield sprintf "%A" piece.Value
+            if piece <> PieceType.None then yield sprintf "%A" piece
             if castling <> Castlings.None then yield sprintf "%A" castling
             if observations <> MoveObservations.None then yield sprintf "%A" observations
             if warnings <> MoveWarnings.None then yield sprintf "%A" warnings
@@ -19,7 +18,7 @@ let MoveToString (move : MoveInfo) =
     let strings = 
         match move with
         | LegalMove m -> 
-            getStrings (Some m.Piece) m.Castling m.Observations m.Warnings MoveErrors.None
+            getStrings m.Piece m.Castling m.Observations m.Warnings MoveErrors.None
         | IllegalMove m -> 
             getStrings m.Piece m.Castling m.Observations m.Warnings m.Errors
     

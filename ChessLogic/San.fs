@@ -272,7 +272,7 @@ let TryParse str board =
         match valid, invalid with
         | [], _::_::[] -> Nonsense (ChoiceOfIllegalMoves invalid)
         | [], only::[] -> Illegal only
-        | [], [] -> Nonsense (PieceNotFound (color, pieceType))
+        | [], [] -> Nonsense (PieceNotFound (color +|+ pieceType))
         | validMove::[], _ -> validMove |> addNotes warnings
         | tooMany, _ -> Nonsense (AmbiguousChoice tooMany)
  

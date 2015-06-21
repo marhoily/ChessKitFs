@@ -48,12 +48,12 @@ let Print p =
             file <- 0
         file <- file + 1
         match square with
-        | Some p -> 
+        | Piece.None -> skip <- skip + 1
+        | p -> 
             if skip > 0 then 
                 appendi skip
                 skip <- 0
             appendc (pieceToChar p)
-        | None -> skip <- skip + 1
         if file = 8 && skip > 0 then 
             appendi skip
             skip <- 0
@@ -79,18 +79,18 @@ type private Code =
 let TryParse str = 
     let parsePieceLetter = 
         function 
-        | 'P' -> (Color.White, PieceType.Pawn)
-        | 'N' -> (Color.White, PieceType.Knight)
-        | 'B' -> (Color.White, PieceType.Bishop)
-        | 'R' -> (Color.White, PieceType.Rook)
-        | 'Q' -> (Color.White, PieceType.Queen)
-        | 'K' -> (Color.White, PieceType.King)
-        | 'p' -> (Color.Black, PieceType.Pawn)
-        | 'n' -> (Color.Black, PieceType.Knight)
-        | 'b' -> (Color.Black, PieceType.Bishop)
-        | 'r' -> (Color.Black, PieceType.Rook)
-        | 'q' -> (Color.Black, PieceType.Queen)
-        | 'k' -> (Color.Black, PieceType.King)
+        | 'P' -> Piece.WhitePawn
+        | 'N' -> Piece.WhiteKnight
+        | 'B' -> Piece.WhiteBishop
+        | 'R' -> Piece.WhiteRook
+        | 'Q' -> Piece.WhiteQueen
+        | 'K' -> Piece.WhiteKing
+        | 'p' -> Piece.BlackPawn
+        | 'n' -> Piece.BlackKnight
+        | 'b' -> Piece.BlackBishop
+        | 'r' -> Piece.BlackRook
+        | 'q' -> Piece.BlackQueen
+        | 'k' -> Piece.BlackKing
         | _ -> failwith ("unknown piece letter")
     
     let parseGap c = Gap(int c - int '0')
@@ -109,8 +109,8 @@ let TryParse str =
         [| for rank in ranks do
                for square in rank do
                    match square with
-                   | Piece(p) -> yield Some(p)
-                   | Gap(n) -> for _ in 1..n -> None |]
+                   | Piece(p) -> yield p
+                   | Gap(n) -> for _ in 1..n -> Piece.None |]
     
     let createCore plcmnt clr ca enp = 
         { Placement = parsePlacement (plcmnt)

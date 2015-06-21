@@ -251,7 +251,7 @@ let illegal move expected errors board =
     let MoveToString m = 
         let getStrings piece castling observations warnings errors = 
             seq { 
-                if piece <> None then yield sprintf "%A" piece.Value
+                if piece <> PieceType.None then yield sprintf "%A" piece
                 if castling <> Castlings.None then yield sprintf "%A" castling
                 if observations <> MoveObservations.None then 
                     yield sprintf "%A" observations
@@ -325,7 +325,7 @@ let ``San: 2 pawns can capture``() =
 [<Fact>]
 let ``San: pawn move does not make sense``() = 
     "8/8/8/8/8/8/P7/8 w - - 0 12" 
-    |> nonsense "axb4" "PieceNotFound (White, Pawn)"
+    |> nonsense "axb4" "PieceNotFound WhitePawn"
 
 [<Fact>]
 let ``San: can't push pawn cause it's pinned``() = 
@@ -355,12 +355,12 @@ let ``San: disambiguate N1f3``() =
 [<Fact>]
 let ``San: no candidates found Nf3``() = 
     "8/8/8/8/8/8/8/8 w - - 0 12" 
-    |> nonsense "Nf3" "PieceNotFound (White, Knight)"
+    |> nonsense "Nf3" "PieceNotFound WhiteKnight"
 
 [<Fact>]
 let ``San: wrong disambiguation N1f3``() = 
     "8/8/8/6N1/8/8/8/8 w - - 0 12" 
-    |> nonsense "N1f3" "PieceNotFound (White, Knight)"
+    |> nonsense "N1f3" "PieceNotFound WhiteKnight"
 
 [<Fact>]
 let ``San: one of the knights is pinned``() = 
