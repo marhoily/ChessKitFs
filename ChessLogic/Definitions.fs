@@ -179,18 +179,6 @@ module internal Text =
 
 open Text
 
-[<RequireQualifiedAccess>]
-module Idx64 = 
-    let GetColor(c : int) = 
-        let file, rank = c % 8, c / 8
-        if (file % 2) = (rank % 2) then Color.White
-        else Color.Black
-    let FromCoordinate(file, rank) = file + rank * 8
-    let internal fromX88 i = i % 16 + (i / 16)*8
-    let Rank(idx64 : int) = idx64 / 8
-    let File(idx64 : int) = idx64 % 8
-    let ToString(idx64 : int) = (fileToStirng (File idx64)) + (rankToString (Rank idx64))
-
 open FParsec
 
 [<RequireQualifiedAccess>]
@@ -200,13 +188,39 @@ module Coordinate =
         let parseRank c = 8 - (int c - int '0')
         let file = anyOf "abcdefgh" |>> parseFile
         let rank = anyOf "12345678" |>> parseRank
-        file .>>. rank |>> Idx64.FromCoordinate
+        file .>>. rank 
     
     let TryParse(str : string) = run parser str
     let Parse(str : string) = TryParse str |> Operators.getSuccess
     let FromIdx64 i = (i % 8, i / 8)
-    let At coordinate position = position.Placement.[Idx64.FromCoordinate coordinate]
+    let At coordinate position = 
+        let toIdx64(file, rank) = file + rank * 8
+        position.Placement.[toIdx64 coordinate]
     let ToString(file, rank) = fileToStirng file + rankToString rank
+
+[<RequireQualifiedAccess>]
+module Idx64 = 
+    let GetColor(c : int) = 
+        let file, rank = c % 8, c / 8
+        if (file % 2) = (rank % 2) then Color.White
+        else Color.Black
+    let FromCoordinate(file, rank) = file + rank * 8
+    let internal parser = Coordinate.parser |>> FromCoordinate
+    let internal fromX88 i = i % 16 + (i / 16)*8
+    let Rank(idx64 : int) = idx64 / 8
+    let File(idx64 : int) = idx64 % 8
+    let TryParse(str : string) = run parser str
+    let Parse(str : string) = TryParse str |> Operators.getSuccess
+    let ToString(idx64 : int) = (fileToStirng (File idx64)) + (rankToString (Rank idx64))
+
+/// https://chessprogramming.wikispaces.com/0x88
+[<RequireQualifiedAccess>]
+module internal X88 = 
+    let toIdx64 i = i % 16 + (i / 16) * 8
+    let fromIdx64 i = i % 8 + (i / 8) * 16
+    let fromCoordinate (file, rank) = file + rank * 16
+    let parse = Coordinate.Parse >> fromCoordinate
+    let at cX88 position = position.Placement.[toIdx64 cX88]
 
 type Move with
     
@@ -230,11 +244,10 @@ type Move with
             | 'Q' -> PieceType.Queen
             | _ -> failwith ("unknown promotion hint")
         
-        let fIdx64 = Coordinate.parser 
-        let f = fIdx64 .>> (pchar '-' <|> pchar 'x')
+        let f = Idx64.parser .>> (pchar '-' <|> pchar 'x')
         let hint = anyOf "NBRQK" |>> parsePromotionHint
         let p = opt (pchar '=' >>. hint) |>> (fun x -> x ?|? PieceType.None)
-        let notation = pipe3 f Coordinate.parser p (Move.Create)
+        let notation = pipe3 f Idx64.parser p (Move.Create)
         run notation str
     
     static member Parse(str : string) = 
@@ -279,16 +292,8 @@ module BoardTextExtensions =
             sb.[i] <- pieceToChar piece
         string sb
 
-/// https://chessprogramming.wikispaces.com/0x88
-[<RequireQualifiedAccess>]
-module internal X88 = 
-    let toIdx64 i = i % 16 + (i / 16) * 8
-    let fromIdx64 i = i % 8 + (i / 8) * 16
-    let parse = Coordinate.Parse >> fromIdx64
-    let at cX88 position = position.Placement.[toIdx64 cX88]
-
 module internal PositionCoreExt = 
     type PositionCore with
         member this.atIdx64 c64 = this.Placement.[c64]
         member this.atX88 cX88 = X88.at cX88 this
-        member this.atStr = Coordinate.Parse >> this.atIdx64
+        member this.atStr = Idx64.Parse >> this.atIdx64

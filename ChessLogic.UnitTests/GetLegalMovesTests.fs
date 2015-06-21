@@ -10,7 +10,7 @@ let toString (m : LegalMove) = Idx64.ToString m.Move.ToIdx64
 let check from (expected : string list) position = 
     let p = position |> Fen.Parse
     printf "%s" (Dump p)
-    let f = Coordinate.Parse from
+    let f = Idx64.Parse from
     
     let actual = 
         p
