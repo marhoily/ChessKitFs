@@ -85,6 +85,8 @@ type private Code =
     | Piece of Piece
     | Gap of int
 
+/// Tries to parse FEN string like 
+/// "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 let TryParse str = 
     let parsePieceLetter = 
         function 
@@ -148,7 +150,9 @@ let TryParse str =
     let noCastling = pchar '-' >>% Castlings.None
     let ca = noCastling <|> castlings .>> ws
     let file = anyOf "abcdefgh" |>> parseFile
-    let enColor = (pchar '3' >>% Color.Black) <|> (pchar '6' >>% Color.White)
+    let enBlack = (pchar '3' >>% Color.Black)
+    let enWhite = (pchar '6' >>% Color.White)
+    let enColor = enBlack <|> enWhite
     let en = (file .>>. enColor) |>> Some
     let enPassant = ((pchar '-' >>% None) <|> en) .>> ws
     let core = pipe4 ranks color ca enPassant createCore
@@ -156,5 +160,7 @@ let TryParse str =
     let fenParser = pipe3 core (n .>> ws) n createPosition
     run fenParser str
 
+/// Parses FEN string -or- throws
 let Parse str = TryParse str |> Operators.getSuccess
+/// Parses FEN string and only returns the PositionCore -or- throws
 let ParseCore str = (Parse str).Core
