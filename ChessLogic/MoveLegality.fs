@@ -249,7 +249,7 @@ let Validate move position =
                     ResultPosition = (!newPosition).Value
                     Piece = pieceType
                     Castling = !castling
-                    Observations = !observations
+                    Annotations = !observations
                     Warnings = !warnings }
     else 
         IllegalMove { Move = move

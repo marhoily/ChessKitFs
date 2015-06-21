@@ -37,7 +37,7 @@ let ToPosition(move : LegalMove) =
     let core = move.ResultPosition
     let prev = move.OriginalPosition
     let piece = move.Piece
-    let obs = move.Observations
+    let obs = move.Annotations
     let color = prev.Core.ActiveColor
     
     let position = 

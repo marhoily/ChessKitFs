@@ -1,55 +1,60 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<DirectedGraph Layout="Sugiyama" ZoomLevel="-1" xmlns="http://schemas.microsoft.com/vs/2009/dgml">
+<DirectedGraph Layout="ForceDirected" ZoomLevel="-1" xmlns="http://schemas.microsoft.com/vs/2009/dgml">
   <Nodes>
-    <Node Id="&quot;e2-e4=Q&quot;" Bounds="-195.360336405436,-71.3703845656323,76.9633333333333,25.96" UseManualLocation="True" />
-    <Node Id="BK" Bounds="267.539989018906,13.1522385198525,50.00119872,25.9628131890172" />
-    <Node Id="BQ" Bounds="267.539978027344,41.1150575441706,50,25.96" />
-    <Node Id="BQ1" Bounds="267.539999493104,69.0750512383762,50.0115842657444,25.9707338945479" Label="BQ" />
-    <Node Id="Bishop" Bounds="418.263272298177,16.0457784572039,67.7233333333334,25" Label="Bishop" />
-    <Node Id="Black" Bounds="70.2478921721677,204.178576965332,50,25.96" />
-    <Node Id="BlackQueen" Bounds="166.157904074023,204.178584594727,82.58,25.96" />
-    <Node Id="Capture" Bounds="317.98806955145,208.451471244901,61.8966666666666,25.96" />
-    <Node Id="CastlingAvailability" Bounds="374.577537841797,368.178584594727,119.526666666667,25.96" />
-    <Node Id="Castlings" Bounds="319.551574707031,13.1522413057673,50,25.96" Label="WQ" />
-    <Node Id="Castlings1" Bounds="261.539978027344,-12.8478614801475,114.011596679688,113.893746613072" Group="Expanded" Label="Castlings" LayoutSettings="List" />
-    <Node Id="Check" Bounds="52.0560404593496,7.67817687988281,102.936666666667,25" />
-    <Node Id="Color" Bounds="70.247854025195,232.138598937988,51.25,25.96" Label="White" />
-    <Node Id="Color1" Bounds="61.587854025195,178.178476965332,68.57,85.9202219726562" Group="Expanded" Label="Color" LayoutSettings="List" />
-    <Node Id="EmptyCell" Bounds="-281.648383979997,270.390391706951,72.8533333333334,25.96" />
-    <Node Id="Errors" Bounds="-64.3654793081383,433.713588256836,50.7133333333334,25.96" />
-    <Node Id="FiftyMovesClock" Bounds="142.104208433765,370.339524129232,106.193333333333,25.96" />
-    <Node Id="FiftyMovesRule" Bounds="52.0560404593496,34.6781768798828,102.936666666667,25" />
-    <Node Id="GameStates" Bounds="46.0560404593496,-18.3219231201172,114.936666666667,138.000207629395" Group="Expanded" LayoutSettings="List" UseManualLocation="True" />
-    <Node Id="IllegalMove" Bounds="-89.6054793081383,407.713488256836,101.193333333333,57.9602" Group="Expanded" LayoutSettings="List" />
-    <Node Id="Knight" Bounds="418.263272298177,43.0457851329241,67.7233333333334,25" Label="Knight" />
-    <Node Id="LegalMove" Bounds="-89.6054726050239,319.664153544681,97.90544952,58.0492563872" Group="Expanded" Label="LegalMove" LayoutSettings="List" />
-    <Node Id="Mate" Bounds="52.0560404593496,61.6781768798828,102.936666666667,25" />
-    <Node Id="MissingPromotionHint" Bounds="-261.804355621338,154.318893281658,139,25.96" />
-    <Node Id="Move" Bounds="-149.166136830648,10.5898154343677,84.1866666666667,25.96" Label="FromSquare" />
-    <Node Id="Move1" Bounds="-155.241026711914,-15.4102845656323,96.2615565479329,113.72897784729" Group="Expanded" Label="Move" LayoutSettings="List" UseManualLocation="True" />
-    <Node Id="MoveAnnotations" Bounds="288.872290344036,182.451470704101,134.24,85.8982546787296" Group="Expanded" LayoutSettings="List" UseManualLocation="True" />
-    <Node Id="MoveErrors" Bounds="-287.648383979997,244.390291706951,134.04,113.8802" Group="Expanded" LayoutSettings="List" UseManualLocation="True" />
-    <Node Id="MoveNumber" Bounds="142.104209856395,398.299546739739,96.4330155466667,32.7231060241027" />
-    <Node Id="MoveWarnings" Bounds="-267.804356892904,128.318793281658,180.666666666667,86.071398425293" Group="Expanded" LayoutSettings="List" UseManualLocation="True" />
-    <Node Id="Pawn" Bounds="418.263272298177,70.0457851329241,67.7233333333334,25" Label="Pawn" />
-    <Node Id="Piece" Bounds="405.55160563151,-9.95432154279608,93.1466666666668,111.00020667572" Group="Expanded" Label="PieceType" LayoutSettings="List" />
-    <Node Id="Piece1" Bounds="166.157854025195,232.138598937988,79.54,25.96" Label="WhitePawn" />
-    <Node Id="Piece2" Bounds="160.157854025195,178.178484594727,94.5800500488282,85.9202143432617" Group="Expanded" Label="Piece" LayoutSettings="List" />
-    <Node Id="Position" Bounds="368.577536477385,342.178476965332,131.52667195638,85.9201990844726" Group="Expanded" Label="PositionCore" LayoutSettings="List" UseManualLocation="True" />
-    <Node Id="Position1" Bounds="136.104208433765,344.339424129232,118.193333333333,92.6833133758209" Group="Expanded" Label="Position" LayoutSettings="List" UseManualLocation="True" />
-    <Node Id="PromoteTo" Bounds="-149.241026711914,38.4466304776501,78.956144,26.0049377234937" />
-    <Node Id="Promotion" Bounds="317.95062367737,236.400598043466,76.0833333333333,25.96" />
-    <Node Id="PromotionHintIsNotNeeded" Bounds="-261.804356892904,182.430091706951,168.666666666667,25.96" />
-    <Node Id="Repetition" Bounds="52.0560404593496,88.6781845092773,102.936666666667,25" />
-    <Node Id="Squares" Bounds="374.577532552083,396.138545532227,69.12,25.96" Label="Squares[]" />
-    <Node Id="To" Bounds="-149.166141916911,66.3585932816577,70.1033333333334,25.96" Label="ToSquare" />
-    <Node Id="ToOccupiedCell" Bounds="-281.648381900887,298.350390930176,103.063333333333,25.96" />
-    <Node Id="ValidatedMove" Bounds="-109.605479308138,279.664053544681,141.193333333333,206.009734712154" Group="Expanded" UseManualLocation="True" />
-    <Node Id="Warnings" Bounds="-75.7554726050239,345.664253544681,70.20544952,26.0490563872" Label="Warnings" />
-    <Node Id="WrongSideToMove" Bounds="-281.648383979997,326.310391706951,122.04,25.96" />
+    <Node Id="&quot;e2-e4=Q&quot;" Bounds="319.257804633943,361.850508756471,76.9633333333333,25.96" />
+    <Node Id="ActiveColor" Bounds="43.3727701822917,263.832956975478,80.8499999999999,25.96" />
+    <Node Id="Annotations" Bounds="326.463557197954,-79.3489547509979,84.4399510337787,25.9944647146915" />
+    <Node Id="BK" Bounds="631.680003667344,32.1530650937059,50.0011987199999,25.9628131890172" />
+    <Node Id="BQ" Bounds="631.680053710938,60.1158860253727,50,25.96" />
+    <Node Id="BQ1" Bounds="631.680059917909,88.0758816269269,50.0115842657443,25.9707338945479" Label="BQ" />
+    <Node Id="Bishop" Bounds="12.7116670735677,445.006564674046,67.7233333333334,25" Label="Bishop" />
+    <Node Id="Black" Bounds="131.806671142578,445.006564674046,50,25.96" />
+    <Node Id="BlackQueen" Bounds="602.623333333333,443.810641843295,82.58,25.9599999999999" />
+    <Node Id="Capture" Bounds="250.794983317057,445.006564674046,61.8966666666666,25.96" />
+    <Node Id="Castling" Bounds="326.463532511393,-51.3544885069334,62.3666666666667,25.96" />
+    <Node Id="CastlingAvailability" Bounds="43.372724202474,291.792933171767,119.526666666667,25.96" />
+    <Node Id="Castlings" Bounds="683.691589355469,32.153071694318,50,25.96" Label="WQ" />
+    <Node Id="Castlings1" Bounds="625.680003667344,6.15296509370589,114.011585688125,113.893750427769" Group="Expanded" Label="Castlings" LayoutSettings="List" />
+    <Node Id="Check" Bounds="-108.000008036296,140.869995117188,102.936666666667,25" />
+    <Node Id="Color" Bounds="131.806663513184,472.966525611546,51.25,25.96" Label="White" />
+    <Node Id="Color1" Bounds="123.146663513184,419.006464674046,68.57,85.9201609375" Group="Expanded" Label="Color" LayoutSettings="List" />
+    <Node Id="EmptyCell" Bounds="629.013366292318,176.046915521475,72.8533333333334,25.96" />
+    <Node Id="EnPassant" Bounds="43.372768758138,319.752939885634,72.8366666666667,25.96" />
+    <Node Id="Errors" Bounds="607.726676839193,-55.8072349062942,50.7133333333334,25.96" Label="Errors" />
+    <Node Id="FiftyMovesClock" Bounds="73.6034333333341,-54.1120739610382,106.193333333333,25.96" />
+    <Node Id="FiftyMovesRule" Bounds="-108.000008036296,167.869995117188,102.936666666667,25" />
+    <Node Id="GameStates" Bounds="-114,114.86988801611,114.936666666667,138.000176583147" Group="Expanded" LayoutSettings="List" UseManualLocation="True" />
+    <Node Id="IllegalMove" Bounds="582.486657949917,-81.8073243273478,101.193333333333,57.9602" Group="Expanded" Label="IllegalMove" LayoutSettings="List" UseManualLocation="True" />
+    <Node Id="Knight" Bounds="12.7116670735677,472.006564674046,67.7233333333334,25" Label="Knight" />
+    <Node Id="LegalMove" Bounds="272.752104060611,157.914464714691,97.8366666666667,44.0112394051098" Group="Expanded" Label="LegalMove" LayoutSettings="List" UseManualLocation="True" />
+    <Node Id="Mate" Bounds="-108.000008036296,194.869995117188,102.936666666667,25" />
+    <Node Id="MissingPromotionHint" Bounds="391.956666666667,443.810641843295,139,25.96" />
+    <Node Id="Move" Bounds="432.221143053539,268.59258605957,84.1866666666666,25.96" Label="FromSquare" />
+    <Node Id="Move1" Bounds="426.221137967276,242.59248605957,96.1866717529297,113.925120043945" Group="Expanded" Label="Move" LayoutSettings="List" UseManualLocation="True" />
+    <Node Id="MoveAnnotations" Bounds="221.716663767497,419.006464674046,134.24,85.9202067138672" Group="Expanded" LayoutSettings="List" />
+    <Node Id="MoveErrors" Bounds="623.013346761068,150.046815521475,134.040008951823,113.880228686524" Group="Expanded" LayoutSettings="List" />
+    <Node Id="MoveNumber" Bounds="73.6034347559643,-26.1520589799254,96.4330155466668,32.7231060241027" />
+    <Node Id="MoveWarnings" Bounds="385.956666666667,417.810641843295,180.666666666667,85.9200000000001" Group="Expanded" LayoutSettings="List" />
+    <Node Id="Pawn" Bounds="12.7116670735677,499.006534156468,67.7233333333334,25.0000000000001" Label="Pawn" />
+    <Node Id="Piece" Bounds="4.06901030203244E-07,419.006464674046,93.1466666666667,111.000169482422" Group="Expanded" Label="PieceType" LayoutSettings="List" />
+    <Node Id="Piece1" Bounds="602.623333333333,471.770641843295,79.54,25.96" Label="WhitePawn" />
+    <Node Id="Piece2" Bounds="596.623333333333,417.810641843295,94.58,85.92" Group="Expanded" Label="Piece" LayoutSettings="List" />
+    <Node Id="Piece3" Bounds="326.463592529297,-23.3945046812498,50,25.96" Label="Piece" />
+    <Node Id="Position" Bounds="37.372724202474,237.832856975478,131.526666666667,141.840174365234" Group="Expanded" Label="PositionCore" LayoutSettings="List" UseManualLocation="True" />
+    <Node Id="Position1" Bounds="67.6034333333341,-80.1121739610381,118.193333333333,92.6831060241027" Group="Expanded" Label="Position" LayoutSettings="List" UseManualLocation="True" />
+    <Node Id="PromoteTo" Bounds="432.221154753083,296.552569590402,78.956144,26.0049377234937" />
+    <Node Id="Promotion" Bounds="250.795010884603,472.966571387913,76.0833333333333,25.96" />
+    <Node Id="PromotionHintIsNotNeeded" Bounds="391.956666666667,471.770641843295,168.666666666667,25.96" />
+    <Node Id="Repetition" Bounds="-108.000008036296,221.869964599256,102.936666666667,25" />
+    <Node Id="Squares" Bounds="43.3727646891276,347.712931340713,69.12,25.96" Label="Squares[]" />
+    <Node Id="To" Bounds="432.221137967276,324.557506103516,70.1033333333334,25.96" Label="ToSquare" />
+    <Node Id="ToOccupiedCell" Bounds="629.013346761068,204.00695275292,103.063333333333,25.96" />
+    <Node Id="ValidatedMove" Bounds="320.463533333334,-105.349064306803,168.689756194163,113.914988349588" Group="Expanded" Label="ValidationResult" LayoutSettings="List" UseManualLocation="True" />
+    <Node Id="Warnings" Bounds="412.903539802621,-79.3489516505323,70.249805160384,26.0970738702056" Label="Warnings" />
+    <Node Id="WrongSideToMove" Bounds="629.013355712891,231.966944207998,122.04,25.9600000000001" />
   </Nodes>
   <Links>
-    <Link Source="&quot;e2-e4=Q&quot;" Target="Move1" Bounds="-150.408673570253,-45.4103846740723,10.9388275684799,21.9452961239434" Label="Parse" LabelBounds="-175.099216227013,-33.545516942218,28.37,15.96" />
+    <Link Source="&quot;e2-e4=Q&quot;" Target="Move1" Bounds="377.8408902185,335.492296448224,40.8195220282871,26.35820892287" Label="Parse" LabelBounds="368.795728146571,331.031239638439,28.3699999999999,15.96" />
     <Link Source="Castlings1" Target="BK" Category="Contains" />
     <Link Source="Castlings1" Target="BQ" Category="Contains" />
     <Link Source="Castlings1" Target="BQ1" Category="Contains" />
@@ -61,12 +66,15 @@
     <Link Source="GameStates" Target="Mate" Category="Contains" />
     <Link Source="GameStates" Target="Repetition" Category="Contains" />
     <Link Source="IllegalMove" Target="Errors" Category="Contains" />
-    <Link Source="LegalMove" Target="Position1" Bounds="8.29997808260136,357.404517489158,118.943566088503,21.1771805630206" />
-    <Link Source="LegalMove" Target="Warnings" Category="Contains" />
+    <Link Source="IllegalMove" Target="ValidatedMove" Bounds="498.151590937579,-51.8440706656612,84.3350670123381,1.63873107467752" />
+    <Link Source="LegalMove" Target="Move1" Bounds="349.747736615244,201.925704119801,69.3897863899279,54.3843351350514" Label="Source" LabelBounds="385.676361458974,211.583735029081,36.1866666666666,15.96" />
+    <Link Source="LegalMove" Target="Position" Bounds="176.652404036816,201.925704119801,107.690720552264,63.4870518099135" Label="ResultPosition" LabelBounds="231.513462985622,235.392121839797,74.8533333333335,15.9599999999999" />
+    <Link Source="LegalMove" Target="Position1" Bounds="164.180526733398,19.0565891265869,146.358291625977,138.857870101929" Label="OriginalPosition" LabelBounds="243.516544333895,75.3579280026179,84.4466666666667,15.96" />
+    <Link Source="LegalMove" Target="ValidatedMove" Bounds="329.683618512969,17.022689353357,51.3046816863918,140.891775361334" />
     <Link Source="Move1" Target="Move" Category="Contains" />
     <Link Source="Move1" Target="PromoteTo" Category="Contains" />
     <Link Source="Move1" Target="To" Category="Contains" />
-    <Link Source="Move1" Target="ValidatedMove" Bounds="-93.263557434082,98.3186950683594,34.3848114013672,172.484069824219" Label="Validate(PositionCore)" LabelBounds="-66.9969027738604,194.260264995642,117.583333333333,15.96" />
+    <Link Source="Move1" Target="ValidatedMove" Bounds="417.949295288425,17.3915560255326,44.9862972338202,225.200930034038" Label="Validate(PositionCore)" LabelBounds="444.443209458455,121.620240043944,117.583333333333,15.96" />
     <Link Source="MoveAnnotations" Target="Capture" Category="Contains" />
     <Link Source="MoveAnnotations" Target="Promotion" Category="Contains" />
     <Link Source="MoveErrors" Target="EmptyCell" Category="Contains" />
@@ -79,16 +87,19 @@
     <Link Source="Piece" Target="Pawn" Category="Contains" />
     <Link Source="Piece2" Target="BlackQueen" Category="Contains" />
     <Link Source="Piece2" Target="Piece1" Category="Contains" />
+    <Link Source="Position" Target="ActiveColor" Category="Contains" />
     <Link Source="Position" Target="CastlingAvailability" Category="Contains" />
+    <Link Source="Position" Target="EnPassant" Category="Contains" />
     <Link Source="Position" Target="Squares" Category="Contains" />
     <Link Source="Position1" Target="FiftyMovesClock" Category="Contains" />
-    <Link Source="Position1" Target="LegalMove" Bounds="17.1606339440487,358.982103526431,118.943566088503,21.1771805630206" />
+    <Link Source="Position1" Target="GameStates" Bounds="5.70421483393273,12.5709320630646,81.9809002068914,97.3759758433475" Label="Properties" LabelBounds="48.224641544051,62.54700832916,53.77,15.9599999999999" />
+    <Link Source="Position1" Target="LegalMove" Bounds="149.579071044922,12.5709323883057,146.032653808594,139.010473251343" Label="Move" LabelBounds="189.927785229817,82.7985237886957,29.8300000000001,15.9599999999999" />
     <Link Source="Position1" Target="MoveNumber" Category="Contains" />
-    <Link Source="Position1" Target="Position" Bounds="254.297541767098,386.871296772937,105.282410978996,2.44011132820583" Label="Includes" LabelBounds="285.0624060644,368.131352292845,43.66,15.96" />
-    <Link Source="Position1" Target="ValidatedMove" Index="2147483647" Bounds="40.5280570983887,384.664215087891,95.5761451721191,6.17019653320313" Label="PreviousMove" LabelBounds="46.9720378986548,368.188783760624,74.5666666666667,15.96" Weight="1" />
-    <Link Source="ValidatedMove" Target="IllegalMove" Category="Contains" />
-    <Link Source="ValidatedMove" Target="LegalMove" Category="Contains" />
-    <Link Source="ValidatedMove" Target="Position1" Index="2147483647" Bounds="31.587854385376,389.668579101563,95.5171794891357,7.0745849609375" Label="OriginalPosition" LabelBounds="35.8693391273452,399.564135885673,84.4466666666667,15.96" Weight="1" />
+    <Link Source="Position1" Target="Position" Bounds="108.63273115522,12.5709320630646,14.8792836025543,216.283147237177" Label="Includes" LabelBounds="120.072384103451,112.869772018901,43.66,15.96" />
+    <Link Source="ValidatedMove" Target="Annotations" Category="Contains" />
+    <Link Source="ValidatedMove" Target="Castling" Category="Contains" />
+    <Link Source="ValidatedMove" Target="Piece3" Category="Contains" />
+    <Link Source="ValidatedMove" Target="Warnings" Category="Contains" />
   </Links>
   <Categories>
     <Category Id="Contains" Label="Contains" Description="Whether the source of the link contains the target object" CanBeDataDriven="False" CanLinkedNodesBeDataDriven="True" IncomingActionLabel="Contained By" IsContainment="True" OutgoingActionLabel="Contains" />
@@ -112,7 +123,6 @@
     <Property Id="UseManualLocation" DataType="System.Boolean" />
     <Property Id="Value" DataType="System.String" />
     <Property Id="ValueLabel" DataType="System.String" />
-    <Property Id="Weight" Label="Weight" Description="Weight" DataType="System.Double" />
     <Property Id="ZoomLevel" DataType="System.String" />
   </Properties>
   <Styles>

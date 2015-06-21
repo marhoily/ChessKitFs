@@ -180,7 +180,7 @@ type LegalMove =
       /// The castling, if the move was castling, -or- None
       Castling : Castlings
       /// Annotations (capture, promotion, etc.) to the move
-      Observations : MoveAnnotations
+      Annotations : MoveAnnotations
       /// Warnings to the move
       Warnings : MoveWarnings }
 

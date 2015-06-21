@@ -18,7 +18,7 @@ let MoveToString (move : MoveInfo) =
     let strings = 
         match move with
         | LegalMove m -> 
-            getStrings m.Piece m.Castling m.Observations m.Warnings MoveErrors.None
+            getStrings m.Piece m.Castling m.Annotations m.Warnings MoveErrors.None
         | IllegalMove m -> 
             getStrings m.Piece m.Castling m.Observations m.Warnings m.Errors
     
