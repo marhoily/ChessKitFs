@@ -3,7 +3,7 @@ module ChessKit.ChessLogic.GetLegalMoves
 
 open PositionCoreExt
 
-let FromSquare from position = 
+let FromSquare (fromIdx64:int) position = 
     let legalOnly moves = 
         [ for move in moves do
               match move with
@@ -14,10 +14,10 @@ let FromSquare from position =
     let rank2 = 6
     let p (f, t) = Move.Create f t PieceType.Queen
     let u (f, t) = Move.Create f t PieceType.None
-    let fromX88 = from |> X88.fromCoordinate
+    let fromX88 = fromIdx64 |> X88.fromIdx64
     let validate createMove toX88 = 
-        let toCoordinate = toX88 |> Coordinate.fromX88
-        let move = createMove (from, toCoordinate)
+        let toCoordinate = toX88 |> Idx64.fromX88
+        let move = createMove (fromIdx64, toCoordinate)
         position |> MoveLegality.Validate(move)
     let atX88 = position.Core.atX88
     
@@ -33,13 +33,13 @@ let FromSquare from position =
               if atX88 curr = Piece.EmptyCell then yield! step curr increment ]
     
     let iter = List.collect (step fromX88)
-    let piece = position.Core.at from
+    let piece = position.Core.atIdx64 fromIdx64
     match piece |> getColor, piece |> getPieceType with
     | Color.White, PieceType.Pawn -> 
-        if snd from = rank7 then gen p [ -16; -15; -17 ]
+        if Idx64.Rank fromIdx64 = rank7 then gen p [ -16; -15; -17 ]
         else gen u [ -16; -32; -15; -17 ]
     | Color.Black, PieceType.Pawn -> 
-        if snd from = rank2 then gen p [ +16; +15; +17 ]
+        if Idx64.Rank fromIdx64 = rank2 then gen p [ +16; +15; +17 ]
         else gen u [ +16; +32; +15; +17 ]
     | _, PieceType.Bishop -> iter [ -15; +17; +15; -17 ]
     | _, PieceType.Rook -> iter [ -1; +1; +16; -16 ]
@@ -51,8 +51,7 @@ let FromSquare from position =
     |> legalOnly
 
 let All(position : Position) = 
-    [ for i = 0 to 63 do
-          let coordinate = Coordinate.FromIdx64 i
-          let colr = position.Core.at coordinate |> getColor
+    [ for idx64 = 0 to 63 do
+          let colr = position.Core.atIdx64 idx64 |> getColor
           if colr = position.Core.ActiveColor then 
-              yield! position |> FromSquare coordinate ]
+              yield! position |> FromSquare idx64 ]

@@ -5,7 +5,7 @@ open Xunit
 open ChessKit.ChessLogic
 open ChessKit.ChessLogic.BoardTextExtensions
 
-let toString (m : LegalMove) = Coordinate.ToString m.Move.End
+let toString (m : LegalMove) = Idx64.ToString m.Move.ToIdx64
 
 let check from (expected : string list) position = 
     let p = position |> Fen.Parse
@@ -21,10 +21,9 @@ let check from (expected : string list) position =
     // Now do full search and make sure ValidateMove agrees
     let expected2 = 
         [ for i = 0 to 63 do
-              let e = Coordinate.FromIdx64 i
-              let t = Move.Create f e PieceType.None
+              let t = Move.Create f i PieceType.None
               match MoveLegality.Validate t p with
-              | LegalMove _ -> yield Coordinate.ToString e
+              | LegalMove _ -> yield Idx64.ToString i
               | _ -> () ]
     actual |> should equal (expected2 |> List.sort)
 
@@ -41,10 +40,9 @@ let checkAll expected position =
     let expected2 = 
         [ for i = 0 to 63 do
               for j = 0 to 63 do
-                  let e = Coordinate.FromIdx64 i
-                  let t = Move.Create (Coordinate.FromIdx64 j) e PieceType.None
+                  let t = Move.Create j i PieceType.None
                   match MoveLegality.Validate t p with
-                  | LegalMove _ -> yield Coordinate.ToString e
+                  | LegalMove _ -> yield Idx64.ToString i
                   | _ -> () ]
     actual |> should equal (expected2 |> List.sort)
 

@@ -35,36 +35,39 @@ let ToString(legalMove : LegalMove) =
     let mate = obs |> test Properties.Mate
     let append (str : string) = sb.Append(str) |> ignore
     let appendc (str : char) = sb.Append(str) |> ignore
-    let file, rank, fileAndRankStr = fst, snd, Coordinate.ToString
+    let file, rank, fileAndRankStr = Idx64.File, Idx64.Rank, Idx64.ToString
     let fileStr x = fileToStirng (x |> file)
     let rankStr x = rankToString (x |> rank)
     let at = legalMove.OriginalPosition.Core.at
+    let atIdx64 = legalMove.OriginalPosition.Core.atIdx64
     let isSimilarTo (a:LegalMove) (b:LegalMove) = 
         let x, y = a.Move, b.Move
-        (x.Start <> y.Start) && (x.End = y.End) && (at x.Start = at y.Start)
+        (x.FromIdx64 <> y.FromIdx64) 
+        && (x.ToIdx64 = y.ToIdx64) 
+        && (atIdx64 x.FromIdx64 = atIdx64 y.FromIdx64)
     
     let disambiguationList = 
         lazy ([ for m in legalMove.OriginalPosition |> GetLegalMoves.All do
-                    if m |> isSimilarTo legalMove then yield m.Move.Start ])
+                    if m |> isSimilarTo legalMove then yield m.Move.FromIdx64 ])
     let ambiguous() = not (disambiguationList.Value |> List.isEmpty)
     let unique fn = 
         disambiguationList.Value 
-        |> List.forall (fun x -> (move.Start |> fn) <> (x |> fn))
+        |> List.forall (fun x -> (move.FromIdx64 |> fn) <> (x |> fn))
     //     __________________
     // ___/ Actual algorithm \________________________________
     if shortCastling then append "O-O"
     else if longCastling then append "O-O-O"
     else 
         if legalMove.Piece = PieceType.Pawn then 
-            if capture then append (fileStr move.Start)
+            if capture then append (fileStr move.FromIdx64)
         else 
             appendc (legalMove.Piece |> typeToString)
             if ambiguous() then 
-                if unique file then append (fileStr move.Start)
-                else if unique rank then append (rankStr move.Start)
-                else append (fileAndRankStr move.Start)
+                if unique file then append (fileStr move.FromIdx64)
+                else if unique rank then append (rankStr move.FromIdx64)
+                else append (fileAndRankStr move.FromIdx64)
         if capture then appendc 'x'
-        append (fileAndRankStr move.End)
+        append (fileAndRankStr move.ToIdx64)
     if promotion then 
         appendc '='
         appendc (move.PromoteTo |> typeToString)
@@ -82,15 +85,15 @@ type internal SanCapture =
 type internal Hint = 
     | FileHint of File
     | RankHint of Rank
-    | SquareHint of (File * Rank)
+    | SquareHint of int
     | NoHint
 
 type internal Moves = 
     | ShortCastling
     | LongCastling
-    | PawnPush of (File * Rank) * PieceType
-    | PawnCapture of File * ((File * Rank) * PieceType)
-    | Usual of (PieceType * (Hint * (SanCapture option * (File * Rank))))
+    | PawnPush of int * PieceType
+    | PawnCapture of File * (int * PieceType)
+    | Usual of (PieceType * (Hint * (SanCapture option * int)))
 
 let internal ParseSanString str = 
     let parseRank (c : char) : Rank = (int '8') - (int c)
@@ -114,7 +117,7 @@ let internal ParseSanString str =
     let capture = anyOf "x:" >>% SanCapture
     let promotion = skipChar '=' >>. anyOf "NBRQ" |>> parsePiece
     let ending = check <|> mate
-    let square = file .>>. rank
+    let square = file .>>. rank |>> Idx64.FromCoordinate
     let pawn = square .>>. (opt promotion |>> (fun x -> x ?|? PieceType.None))
     let pawnPush = pawn |>> PawnPush
     let pawnCapture = attempt (file .>> capture .>>. pawn) |>> PawnCapture
@@ -157,7 +160,7 @@ let internal sanScanners board =
     let project = 
         Seq.map (fun f -> f())
         >> Seq.filter (fun x -> x <> -1)
-        >> Seq.map Coordinate.fromX88
+        >> Seq.map Idx64.fromX88
         >> Seq.toList
 
     let findPushingPawns square = 
@@ -235,14 +238,14 @@ let TryParse str board =
     let validate promoteTo toSquare fromSquare = 
         MoveLegality.Validate (Move.Create fromSquare toSquare promoteTo) board
 
-    let legal (m : LegalMove) = m.Move.Start
-    let illegal (m : IllegalMove) = m.Move.Start
+    let legal (m : LegalMove) = m.Move.FromIdx64
+    let illegal (m : IllegalMove) = m.Move.FromIdx64
 
     let disambiguate getStart hint moves = 
         let satisfyHint start = 
             match hint with
-            | FileHint f -> start |> fst = f
-            | RankHint r -> start |> snd = r
+            | FileHint f -> start |> Idx64.File = f
+            | RankHint r -> start |> Idx64.Rank = r
             | SquareHint s -> start = s
             | NoHint -> true
         
@@ -258,7 +261,7 @@ let TryParse str board =
                 | IllegalMove m -> invalid <- m::invalid
             (valid, invalid)
 
-        find (toSquare |> X88.fromCoordinate)
+        find (toSquare |> X88.fromIdx64)
         |> List.map (validate toSquare)
         |> separateToLegalAndIllegal
 

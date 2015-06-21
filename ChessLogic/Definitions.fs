@@ -62,8 +62,8 @@ type Properties =
 
 [<StructuredFormatDisplay("{AsString}")>]
 type Move = 
-    { Start : File * Rank
-      End : File * Rank
+    { FromIdx64 : int
+      ToIdx64 : int
       PromoteTo : PieceType }
 
 [<Flags>]
@@ -143,8 +143,8 @@ module Side =
 
 type Move with
     static member internal Create f t p = 
-        { Start = f
-          End = t
+        { FromIdx64 = f
+          ToIdx64 = t
           PromoteTo = p }
 
 [<AutoOpen>]
@@ -178,6 +178,19 @@ module internal Text =
         | _ -> failwith "Unexpected"
 
 open Text
+
+[<RequireQualifiedAccess>]
+module Idx64 = 
+    let GetColor(c : int) = 
+        let file, rank = c % 8, c / 8
+        if (file % 2) = (rank % 2) then Color.White
+        else Color.Black
+    let FromCoordinate(file, rank) = file + rank * 8
+    let internal fromX88 i = i % 16 + (i / 16)*8
+    let Rank(idx64 : int) = idx64 / 8
+    let File(idx64 : int) = idx64 % 8
+    let ToString(idx64 : int) = (fileToStirng (File idx64)) + (rankToString (Rank idx64))
+
 open FParsec
 
 [<RequireQualifiedAccess>]
@@ -187,29 +200,22 @@ module Coordinate =
         let parseRank c = 8 - (int c - int '0')
         let file = anyOf "abcdefgh" |>> parseFile
         let rank = anyOf "12345678" |>> parseRank
-        file .>>. rank
+        file .>>. rank |>> Idx64.FromCoordinate
     
     let TryParse(str : string) = run parser str
     let Parse(str : string) = TryParse str |> Operators.getSuccess
     let internal fromX88 i = (i % 16, i / 16)
     let FromIdx64 i = (i % 8, i / 8)
-    let ToIdx64(file, rank) = rank * 8 + file
-    let At coordinate position = position.Placement.[ToIdx64 coordinate]
+    //let ToIdx64(file, rank) = rank * 8 + file
+    let At coordinate position = position.Placement.[Idx64.FromCoordinate coordinate]
     let ToString(file, rank) = fileToStirng file + rankToString rank
-
-[<RequireQualifiedAccess>]
-module Idx64 = 
-    let GetColor(c : int) = 
-        let file, rank = c % 8, c / 8
-        if (file % 2) = (rank % 2) then Color.White
-        else Color.Black
 
 type Move with
     
     static member internal toString this = 
-        let toStr = Coordinate.ToString
+        let toStr = Coordinate.FromIdx64 >> Coordinate.ToString
         let vectorToString (f, t) = toStr f + "-" + toStr t
-        let vector = vectorToString (this.Start, this.End)
+        let vector = vectorToString (this.FromIdx64, this.ToIdx64)
         if this.PromoteTo = PieceType.None then vector
         else 
             let p = pieceToChar (Color.White +|+ this.PromoteTo)
@@ -226,7 +232,8 @@ type Move with
             | 'Q' -> PieceType.Queen
             | _ -> failwith ("unknown promotion hint")
         
-        let f = Coordinate.parser .>> (pchar '-' <|> pchar 'x')
+        let fIdx64 = Coordinate.parser 
+        let f = fIdx64 .>> (pchar '-' <|> pchar 'x')
         let hint = anyOf "NBRQK" |>> parsePromotionHint
         let p = opt (pchar '=' >>. hint) |>> (fun x -> x ?|? PieceType.None)
         let notation = pipe3 f Coordinate.parser p (Move.Create)
@@ -278,14 +285,14 @@ module BoardTextExtensions =
 [<RequireQualifiedAccess>]
 module internal X88 = 
     let fromCoordinate (x, y) = x + y * 16
-    let parse = Coordinate.Parse >> fromCoordinate
     let toIdx64 i = i % 16 + (i / 16) * 8
-    let at cX88 position = position.Placement.[toIdx64 cX88]
     let fromIdx64 i = i % 8 + (i / 8) * 16
+    let parse = Coordinate.Parse >> fromIdx64
+    let at cX88 position = position.Placement.[toIdx64 cX88]
 
 module internal PositionCoreExt = 
     type PositionCore with
         member this.at c = Coordinate.At c this
         member this.atIdx64 c64 = this.Placement.[c64]
         member this.atX88 cX88 = X88.at cX88 this
-        member this.atStr = Coordinate.Parse >> this.at
+        member this.atStr = Coordinate.Parse >> this.atIdx64

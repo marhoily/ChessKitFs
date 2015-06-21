@@ -24,21 +24,21 @@ let Validate move position =
     
     //   ___________
     //__/ Shortcats \_____________________________________________________
-    let moveFrom, moveTo, promoteTo = 
-        (move.Start, move.End, 
+    let moveFromIdx64, moveToIdx64, promoteTo = 
+        (move.FromIdx64, move.ToIdx64, 
          if move.PromoteTo = PieceType.None then PieceType.Queen
          else move.PromoteTo)
     
     let positionCore = position.Core
     let at = positionCore.atX88
     let color = positionCore.ActiveColor
-    let pieceTo = positionCore.at moveTo
+    let pieceTo = positionCore.atIdx64 moveToIdx64
     if pieceTo |> getColor = color then
         err MoveErrors.ToOccupiedCell
     else if pieceTo <> Piece.EmptyCell then
         info MoveObservations.Capture
     
-    let pieceFrom = positionCore.at moveFrom
+    let pieceFrom = positionCore.atIdx64 moveFromIdx64
     let pieceType = pieceFrom |> getPieceType
     if pieceFrom = Piece.EmptyCell then err MoveErrors.EmptyCell
     else if pieceFrom |> getColor <> color then 
@@ -153,8 +153,8 @@ let Validate move position =
     //   _______
     //__/ Steps \_________________________________________________________
     let validate() = 
-        validateByPieceType () (X88.fromCoordinate moveFrom) 
-            (X88.fromCoordinate moveTo)
+        validateByPieceType () (X88.fromIdx64 moveFromIdx64) 
+            (X88.fromIdx64 moveToIdx64)
     
     let setupResultPosition() = 
         let newPlacement = Array.copy positionCore.Placement
@@ -163,15 +163,15 @@ let Validate move position =
             let increment = 
                 if color = Color.White then +8
                 else -8
-            newPlacement.[(moveTo |> Coordinate.ToIdx64) + increment] <- Piece.EmptyCell
+            newPlacement.[moveToIdx64 + increment] <- Piece.EmptyCell
         // Remove the piece from the old square and put it to the new square
         let effectivePieceType = 
             if !observations |> test MoveObservations.Promotion then promoteTo
             else pieceType
         
         let effectivePiece = color +|+ effectivePieceType
-        newPlacement.[moveTo |> Coordinate.ToIdx64] <- effectivePiece
-        newPlacement.[moveFrom |> Coordinate.ToIdx64] <- Piece.EmptyCell
+        newPlacement.[moveToIdx64] <- effectivePiece
+        newPlacement.[moveFromIdx64] <- Piece.EmptyCell
         // Move the rook if it was a castling
         let moveCastlingRook f t = 
             let rook = newPlacement.[f |> X88.toIdx64]
@@ -185,7 +185,7 @@ let Validate move position =
         | _ -> ()
         // Figure out new castling availability
         let optionsInvalidatedBy p = 
-            match p |> X88.fromCoordinate with
+            match p |> X88.fromIdx64 with
             | A1 -> Castlings.WQ
             | E1 -> Castlings.W
             | H1 -> Castlings.WK
@@ -196,13 +196,13 @@ let Validate move position =
         
         let newCastlingAvailability = 
             positionCore.CastlingAvailability 
-            &&& ~~~((optionsInvalidatedBy moveFrom) 
-                    ||| (optionsInvalidatedBy moveTo))
+            &&& ~~~((optionsInvalidatedBy moveFromIdx64) 
+                    ||| (optionsInvalidatedBy moveToIdx64))
         
         // Figure out new en-passant option
         let newEnPassant = 
             if !observations |> test MoveObservations.DoublePush then 
-                Some(fst moveFrom)
+                Some(Idx64.File moveFromIdx64)
             else None
         
         // Construct new position
