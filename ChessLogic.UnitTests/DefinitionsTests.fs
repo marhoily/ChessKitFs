@@ -6,7 +6,6 @@ open TestUtils
 open ChessKit.ChessLogic
 
 open ChessKit.ChessLogic
-open ChessKit.ChessLogic.Text
 open ChessKit.ChessLogic.BoardTextExtensions
 
 [<Fact>]

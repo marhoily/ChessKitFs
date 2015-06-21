@@ -4,9 +4,6 @@ open FsUnit.Xunit
 open Xunit
 open ChessKit.ChessLogic
 open ChessKit.ChessLogic.BoardTextExtensions
-open ChessKit.ChessLogic
-open ChessKit.ChessLogic
-open ChessKit.ChessLogic
 
 let toString (m : LegalMove) = Coordinate.ToString m.Move.End
 
