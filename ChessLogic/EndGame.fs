@@ -45,7 +45,7 @@ let ToPosition(move : LegalMove) =
           Move = Some(move)
           HalfMoveClock = 0
           FullMoveNumber = 0
-          Properties = Properties.None }
+          Properties = MoveOutcomes.None }
     
     let newHalfMoveClock = 
         if piece = PieceType.Pawn || (obs |> test MoveObservations.Capture) then 0
@@ -85,13 +85,13 @@ let ToPosition(move : LegalMove) =
         isInsufficient a && isInsufficient b
     
     let newObs = 
-        [ if isCheck && noMoves then yield Properties.Mate
-          if isCheck && not noMoves then yield Properties.Check
-          if not isCheck && noMoves then yield Properties.Stalemate
-          if isRepetition then yield Properties.Repetition
-          if insufficientMaterial then yield Properties.InsufficientMaterial
-          if prev.HalfMoveClock >= 50 then yield Properties.FiftyMoveRule ]
-        |> List.fold (|||) Properties.None
+        [ if isCheck && noMoves then yield MoveOutcomes.Mate
+          if isCheck && not noMoves then yield MoveOutcomes.Check
+          if not isCheck && noMoves then yield MoveOutcomes.Stalemate
+          if isRepetition then yield MoveOutcomes.Repetition
+          if insufficientMaterial then yield MoveOutcomes.InsufficientMaterial
+          if prev.HalfMoveClock >= 50 then yield MoveOutcomes.FiftyMoveRule ]
+        |> List.fold (|||) MoveOutcomes.None
     
     { Core = core
       HalfMoveClock = newHalfMoveClock

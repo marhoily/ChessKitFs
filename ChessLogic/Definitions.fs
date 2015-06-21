@@ -8,10 +8,12 @@ type File = int
 
 type Rank = int
 
+/// Represents chess piece/player's side color
 type Color = 
     | Black       = 0b01000000
     | White       = 0b10000000
 
+/// Represents different piece types
 type PieceType = 
     | None        = 0b00000000
     | Pawn        = 0b00000001
@@ -21,6 +23,7 @@ type PieceType =
     | Queen       = 0b00010000
     | King        = 0b00100000
 
+/// Represents pieces on the board (color + type)
 type Piece = 
     | EmptyCell = 0
     | WhitePawn   = 0b10000001
@@ -36,6 +39,7 @@ type Piece =
     | BlackQueen  = 0b01010000
     | BlackKing   = 0b01100000
 
+/// Represents different castling options that can be available to players
 [<Flags>]
 type Castlings = 
     | None = 0b0000
@@ -49,8 +53,9 @@ type Castlings =
     | BK   = 0b1000
     | All  = 0b1111
 
+/// Represents different outcomes to the position a move can have
 [<Flags>]
-type Properties = 
+type MoveOutcomes = 
     | None                 = 0b00000000
     | Check                = 0b00000001
     | Mate                 = 0b00000010
@@ -116,7 +121,7 @@ and Position =
     { Core : PositionCore
       HalfMoveClock : int
       FullMoveNumber : int
-      Properties : Properties
+      Properties : MoveOutcomes
       Move : LegalMove option }
 
 [<StructuredFormatDisplay("{AsString}")>]

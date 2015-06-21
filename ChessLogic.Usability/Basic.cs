@@ -17,7 +17,7 @@ namespace ChessLogic.Usability
                 .MakeMove("g4")
                 .MakeMove("Qh4#");
             Console.WriteLine(position.Dump());
-            position.Properties.Should().Be(Properties.Mate);
+            position.Properties.Should().Be(MoveOutcomes.Mate);
         }
 
         [Fact]
