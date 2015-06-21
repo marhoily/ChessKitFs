@@ -132,6 +132,7 @@ let internal ParseSanString str =
     let san = moves .>>. opt ending
     run san str
 
+[<NoComparison; NoEquality>]
 type Error = 
     | PieceNotFound of Piece
     | AmbiguousChoice of LegalMove list
@@ -148,6 +149,7 @@ type Warning =
     | IsNotMate                 = 0b0100000
     | DisambiguationIsExcessive = 0b1000000
 
+[<NoComparison; NoEquality>]
 type Move = 
     | Legal of LegalMove * Warning
     | Illegal of IllegalMove

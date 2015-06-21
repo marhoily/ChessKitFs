@@ -120,6 +120,7 @@ and Position =
       Move : LegalMove option }
 
 [<StructuredFormatDisplay("{AsString}")>]
+[<NoComparison; NoEquality>]
 type IllegalMove = 
     { Move : Move
       OriginalPosition : Position
@@ -129,6 +130,7 @@ type IllegalMove =
       Warnings : MoveWarnings
       Errors : MoveErrors }
 
+[<NoComparison; NoEquality>]
 type MoveInfo = 
     | LegalMove of LegalMove
     | IllegalMove of IllegalMove
