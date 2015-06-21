@@ -163,15 +163,15 @@ let Validate move position =
             let increment = 
                 if color = Color.White then +8
                 else -8
-            newPlacement.[(moveTo |> Coordinate.toIdx64) + increment] <- Piece.EmptyCell
+            newPlacement.[(moveTo |> Coordinate.ToIdx64) + increment] <- Piece.EmptyCell
         // Remove the piece from the old square and put it to the new square
         let effectivePieceType = 
             if !observations |> test MoveObservations.Promotion then promoteTo
             else pieceType
         
         let effectivePiece = color +|+ effectivePieceType
-        newPlacement.[moveTo |> Coordinate.toIdx64] <- effectivePiece
-        newPlacement.[moveFrom |> Coordinate.toIdx64] <- Piece.EmptyCell
+        newPlacement.[moveTo |> Coordinate.ToIdx64] <- effectivePiece
+        newPlacement.[moveFrom |> Coordinate.ToIdx64] <- Piece.EmptyCell
         // Move the rook if it was a castling
         let moveCastlingRook f t = 
             let rook = newPlacement.[f |> X88.toIdx64]

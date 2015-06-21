@@ -52,7 +52,7 @@ let FromSquare from position =
 
 let All(position : Position) = 
     [ for i = 0 to 63 do
-          let coordinate = Coordinate.fromIdx64 i
+          let coordinate = Coordinate.FromIdx64 i
           let colr = position.Core.at coordinate |> getColor
           if colr = position.Core.ActiveColor then 
               yield! position |> FromSquare coordinate ]

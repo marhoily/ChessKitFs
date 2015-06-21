@@ -151,12 +151,11 @@ type Move with
 module internal FlagsOperators = 
     let private colors = int (Color.White ||| Color.Black)
     let (+|+) color pieceType = enum<Piece> (int (color) ||| int (pieceType))
-    let getColor (piece: Piece) = enum<Color> (int(piece) &&& colors)
-    let getPieceType (piece: Piece) = enum<PieceType> (int(piece) &&& ~~~colors)
+    let getColor (piece : Piece) = enum<Color> (int (piece) &&& colors)
+    let getPieceType (piece : Piece) = 
+        enum<PieceType> (int (piece) &&& ~~~colors)
 
 module internal Text = 
-    open Microsoft.FSharp.Reflection
-    
     let parseFile (p : char) : File = int (p) - int ('a')
     let fileToStirng (f : File) = char (int 'a' + f) |> string
     let rankToString (rank : Rank) = string (8 - rank)
@@ -177,13 +176,6 @@ module internal Text =
         | Piece.BlackKing -> 'k'
         | Piece.EmptyCell -> ' '
         | _ -> failwith "Unexpected"
-    
-    let fieldName (x : 'a) = 
-        match FSharpValue.GetUnionFields(x, typeof<'a>) with
-        | case, _ -> case.Name
-    
-    let concatFieldNames sep list = 
-        String.concat sep (list |> List.map fieldName)
 
 open Text
 open FParsec
@@ -200,9 +192,9 @@ module Coordinate =
     let TryParse(str : string) = run parser str
     let Parse(str : string) = TryParse str |> Operators.getSuccess
     let internal fromX88 i = (i % 16, i / 16)
-    let internal fromIdx64 i = (i % 8, i / 8)
-    let internal toIdx64 (file, rank) = rank * 8 + file
-    let At coordinate position = position.Placement.[toIdx64 coordinate]
+    let FromIdx64 i = (i % 8, i / 8)
+    let ToIdx64(file, rank) = rank * 8 + file
+    let At coordinate position = position.Placement.[ToIdx64 coordinate]
     let ToString(file, rank) = fileToStirng file + rankToString rank
 
 [<RequireQualifiedAccess>]
@@ -215,8 +207,8 @@ module Idx64 =
 type Move with
     
     static member internal toString this = 
-        let vectorToString (f, t) = 
-            Coordinate.ToString f + "-" + Coordinate.ToString t
+        let toStr = Coordinate.ToString
+        let vectorToString (f, t) = toStr f + "-" + toStr t
         let vector = vectorToString (this.Start, this.End)
         if this.PromoteTo = PieceType.None then vector
         else 
@@ -253,12 +245,10 @@ type IllegalMove with
 
 [<Extension>]
 module BoardTextExtensions = 
-    open System.Text
-    
     [<Extension>]
     let Dump board = 
         let sb = 
-            StringBuilder
+            System.Text.StringBuilder
                 (" ╔═══╤═══╤═══╤═══╤═══╤═══╤═══╤═══╗\r\n" 
                  + "8║   │ r │   │   │ k │   │   │ r ║\r\n" 
                  + " ╟───┼───┼───┼───┼───┼───┼───┼───╢\r\n" 
@@ -279,7 +269,7 @@ module BoardTextExtensions =
                  + "   A   B   C   D   E   F   G   H  \r\n")
         for index = 0 to 63 do
             let piece = board.Core.Placement.[index]
-            let file, rank = Coordinate.fromIdx64 index
+            let file, rank = Coordinate.FromIdx64 index
             let i = (rank * 2 + 1) * 36 + file * 4 + 3
             sb.[i] <- pieceToChar piece
         string sb
@@ -289,9 +279,9 @@ module BoardTextExtensions =
 module internal X88 = 
     let fromCoordinate (x, y) = x + y * 16
     let parse = Coordinate.Parse >> fromCoordinate
-    let toIdx64 = Coordinate.fromX88 >> Coordinate.toIdx64
+    let toIdx64 i = i % 16 + (i / 16) * 8
     let at cX88 position = position.Placement.[toIdx64 cX88]
-    let fromIdx64 i = (i % 8, i / 8) |> fromCoordinate
+    let fromIdx64 i = i % 8 + (i / 8) * 16
 
 module internal PositionCoreExt = 
     type PositionCore with
