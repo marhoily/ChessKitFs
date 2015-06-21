@@ -6,9 +6,8 @@ open System.Runtime.CompilerServices
 [<RequireQualifiedAccess>]
 module BoardExtensions = 
     [<Extension>]
-    let IsAttackedBy (position : PositionCore) (side : Color) coordinate = 
-        Scanning.IsAttackedBy side position 
-            (coordinate |> X88.fromCoordinate)
+    let IsAttackedBy (position : PositionCore) (side : Color) idx64 = 
+        Scanning.IsAttackedBy side position (idx64 |> X88.fromIdx64)
     
     [<Extension>]
     let FindKing (position : PositionCore) (color : Color) = 

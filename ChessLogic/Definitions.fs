@@ -204,9 +204,7 @@ module Coordinate =
     
     let TryParse(str : string) = run parser str
     let Parse(str : string) = TryParse str |> Operators.getSuccess
-    let internal fromX88 i = (i % 16, i / 16)
     let FromIdx64 i = (i % 8, i / 8)
-    //let ToIdx64(file, rank) = rank * 8 + file
     let At coordinate position = position.Placement.[Idx64.FromCoordinate coordinate]
     let ToString(file, rank) = fileToStirng file + rankToString rank
 
@@ -284,7 +282,6 @@ module BoardTextExtensions =
 /// https://chessprogramming.wikispaces.com/0x88
 [<RequireQualifiedAccess>]
 module internal X88 = 
-    let fromCoordinate (x, y) = x + y * 16
     let toIdx64 i = i % 16 + (i / 16) * 8
     let fromIdx64 i = i % 8 + (i / 8) * 16
     let parse = Coordinate.Parse >> fromIdx64
@@ -292,7 +289,6 @@ module internal X88 =
 
 module internal PositionCoreExt = 
     type PositionCore with
-        member this.at c = Coordinate.At c this
         member this.atIdx64 c64 = this.Placement.[c64]
         member this.atX88 cX88 = X88.at cX88 this
         member this.atStr = Coordinate.Parse >> this.atIdx64

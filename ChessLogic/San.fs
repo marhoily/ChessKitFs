@@ -38,7 +38,6 @@ let ToString(legalMove : LegalMove) =
     let file, rank, fileAndRankStr = Idx64.File, Idx64.Rank, Idx64.ToString
     let fileStr x = fileToStirng (x |> file)
     let rankStr x = rankToString (x |> rank)
-    let at = legalMove.OriginalPosition.Core.at
     let atIdx64 = legalMove.OriginalPosition.Core.atIdx64
     let isSimilarTo (a:LegalMove) (b:LegalMove) = 
         let x, y = a.Move, b.Move
