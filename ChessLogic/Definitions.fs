@@ -200,8 +200,8 @@ module Coordinate =
 
 [<RequireQualifiedAccess>]
 module Idx64 = 
-    let GetColor(c : int) = 
-        let file, rank = c % 8, c / 8
+    let GetColor(idx64 : int) = 
+        let file, rank = Coordinate.FromIdx64 idx64
         if (file % 2) = (rank % 2) then Color.White
         else Color.Black
     let FromCoordinate(file, rank) = file + rank * 8
@@ -216,11 +216,11 @@ module Idx64 =
 /// https://chessprogramming.wikispaces.com/0x88
 [<RequireQualifiedAccess>]
 module internal X88 = 
-    let toIdx64 i = i % 16 + (i / 16) * 8
+   // let toIdx64 i = i % 16 + (i / 16) * 8
     let fromIdx64 i = i % 8 + (i / 8) * 16
     let fromCoordinate (file, rank) = file + rank * 16
     let parse = Coordinate.Parse >> fromCoordinate
-    let at cX88 position = position.Placement.[toIdx64 cX88]
+    let at cX88 position = position.Placement.[Idx64.fromX88 cX88]
 
 type Move with
     

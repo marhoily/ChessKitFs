@@ -16,7 +16,8 @@ let Validate move position =
     let info i = observations := i ||| !observations
     let enPassant() = 
         observations 
-        := MoveObservations.Capture ||| MoveObservations.EnPassant ||| !observations
+        := MoveObservations.Capture ||| MoveObservations.EnPassant 
+           ||| !observations
     
     let hasNoEnPassant() = 
         err MoveErrors.HasNoEnPassant
@@ -33,17 +34,18 @@ let Validate move position =
     let at = positionCore.atX88
     let color = positionCore.ActiveColor
     let pieceTo = positionCore.atIdx64 moveToIdx64
-    if pieceTo |> getColor = color then
-        err MoveErrors.ToOccupiedCell
-    else if pieceTo <> Piece.EmptyCell then
-        info MoveObservations.Capture
-    
+    if pieceTo
+       |> getColor
+       = color then err MoveErrors.ToOccupiedCell
+    else 
+        if pieceTo <> Piece.EmptyCell then info MoveObservations.Capture
     let pieceFrom = positionCore.atIdx64 moveFromIdx64
     let pieceType = pieceFrom |> getPieceType
     if pieceFrom = Piece.EmptyCell then err MoveErrors.EmptyCell
-    else if pieceFrom |> getColor <> color then 
-        err MoveErrors.WrongSideToMove
-    
+    else 
+        if pieceFrom
+           |> getColor
+           <> color then err MoveErrors.WrongSideToMove
     //   _______________________
     //__/ Validateion functions \_________________________________________
     let validatePawnMove fromSquare toSquare = 
@@ -51,11 +53,13 @@ let Validate move position =
             if fromSquare / 16 <> c then err MoveErrors.DoesNotMoveThisWay
             else if at toSquare <> Piece.EmptyCell then 
                 err MoveErrors.DoesNotCaptureThisWay
-            else if at (fromSquare + v) <> Piece.EmptyCell then err MoveErrors.DoesNotJump
+            else if at (fromSquare + v) <> Piece.EmptyCell then 
+                err MoveErrors.DoesNotJump
             else info MoveObservations.DoublePush
         
         let validatePush c = 
-            if at toSquare <> Piece.EmptyCell then err MoveErrors.DoesNotCaptureThisWay
+            if at toSquare <> Piece.EmptyCell then 
+                err MoveErrors.DoesNotCaptureThisWay
             else 
                 if fromSquare / 16 = c then info MoveObservations.Promotion
         
@@ -77,10 +81,14 @@ let Validate move position =
         | (Color.Black, +32) -> validateDoublePush +16 1
         | (Color.White, -16) -> validatePush 1
         | (Color.Black, +16) -> validatePush 6
-        | (Color.White, -15) -> validateCapture 1 (looksEnPassanty 3 -31 +1 Color.Black)
-        | (Color.White, -17) -> validateCapture 1 (looksEnPassanty 3 -33 -1 Color.Black)
-        | (Color.Black, +17) -> validateCapture 6 (looksEnPassanty 4 +33 +1 Color.White)
-        | (Color.Black, +15) -> validateCapture 6 (looksEnPassanty 4 +31 -1 Color.White)
+        | (Color.White, -15) -> 
+            validateCapture 1 (looksEnPassanty 3 -31 +1 Color.Black)
+        | (Color.White, -17) -> 
+            validateCapture 1 (looksEnPassanty 3 -33 -1 Color.Black)
+        | (Color.Black, +17) -> 
+            validateCapture 6 (looksEnPassanty 4 +33 +1 Color.White)
+        | (Color.Black, +15) -> 
+            validateCapture 6 (looksEnPassanty 4 +31 -1 Color.White)
         | _ -> err MoveErrors.DoesNotMoveThisWay
     
     let validateKnightMove f t = 
@@ -92,8 +100,10 @@ let Validate move position =
         let avail = test positionCore.CastlingAvailability
         
         let long B C D E attacked castlingOpt = 
-            if at D <> Piece.EmptyCell || at B <> Piece.EmptyCell then err MoveErrors.DoesNotJump
-            else if at C <> Piece.EmptyCell then err MoveErrors.DoesNotCaptureThisWay
+            if at D <> Piece.EmptyCell || at B <> Piece.EmptyCell then 
+                err MoveErrors.DoesNotJump
+            else if at C <> Piece.EmptyCell then 
+                err MoveErrors.DoesNotCaptureThisWay
             else if not (avail castlingOpt) then err MoveErrors.HasNoCastling
             else if attacked E then err MoveErrors.CastleFromCheck
             else 
@@ -102,7 +112,8 @@ let Validate move position =
         
         let short E F G attacked castlingOpt = 
             if at F <> Piece.EmptyCell then err MoveErrors.DoesNotJump
-            else if at G <> Piece.EmptyCell then err MoveErrors.DoesNotCaptureThisWay
+            else if at G <> Piece.EmptyCell then 
+                err MoveErrors.DoesNotCaptureThisWay
             else if not (avail castlingOpt) then err MoveErrors.HasNoCastling
             else if attacked E then err MoveErrors.CastleFromCheck
             else 
@@ -174,9 +185,9 @@ let Validate move position =
         newPlacement.[moveFromIdx64] <- Piece.EmptyCell
         // Move the rook if it was a castling
         let moveCastlingRook f t = 
-            let rook = newPlacement.[f |> X88.toIdx64]
-            newPlacement.[f |> X88.toIdx64] <- Piece.EmptyCell
-            newPlacement.[t |> X88.toIdx64] <- rook
+            let rook = newPlacement.[Idx64.fromX88 f]
+            newPlacement.[Idx64.fromX88 f] <- Piece.EmptyCell
+            newPlacement.[Idx64.fromX88 t] <- rook
         match !castling with
         | Castlings.WK -> moveCastlingRook H1 F1
         | Castlings.WQ -> moveCastlingRook A1 D1
