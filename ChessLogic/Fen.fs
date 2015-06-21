@@ -1,4 +1,8 @@
-﻿[<RequireQualifiedAccess>]
+﻿/// Contains functions to work with the FEN
+/// representation of chess positions
+/// http://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation
+/// "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+[<RequireQualifiedAccess>]
 module ChessKit.ChessLogic.Fen
 
 open Text
@@ -6,32 +10,39 @@ open System
 open System.Text
 open Operators
 
-let Print p = 
+/// Converts the chess position to FEN representation like
+/// "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+let Print position = 
     let color = 
-        match p.Core.ActiveColor with
+        match position.Core.ActiveColor with
         | Color.White -> "w"
         | Color.Black -> "b"
         | _ -> failwith "unexpected"
     
     let castling = 
         let specialCase predicate value source = 
-            if predicate source then value else source
-
-        [ (Castlings.WK, 'K');
-          (Castlings.WQ, 'Q');
-          (Castlings.BK, 'k');
+            if predicate source then value
+            else source
+        [ (Castlings.WK, 'K')
+          (Castlings.WQ, 'Q')
+          (Castlings.BK, 'k')
           (Castlings.BQ, 'q') ]
-        |> Seq.filter (fst >> test p.Core.CastlingAvailability) 
-        |> Seq.map snd |> Seq.toArray
+        |> Seq.filter (fst >> test position.Core.CastlingAvailability)
+        |> Seq.map snd
+        |> Seq.toArray
         // This can be just "String" in F# 4.0
         |> (fun arr -> (String(arr)))
         |> specialCase ((=) "") "-"
     
     let enPassant = 
-        match p.Core.EnPassant with
+        match position.Core.EnPassant with
         | Some(file) -> 
-            (fileToStirng file) + (if p.Core.ActiveColor = Color.Black then "3"
-                                   else "6")
+            let enPassantFile = 
+                match position.Core.ActiveColor with
+                | Color.White -> "6"
+                | Color.Black -> "3"
+                | _ -> failwith "unexpected"
+            (fileToStirng file) + enPassantFile
         | None -> "-"
     
     let sb = new StringBuilder()
@@ -40,7 +51,7 @@ let Print p =
     let appendi (i : int) = sb.Append(i) |> ignore
     let mutable skip = 0
     let mutable file = 0
-    for square in p.Core.Placement do
+    for square in position.Core.Placement do
         if file = 8 then 
             appendc '/'
             file <- 0
@@ -62,9 +73,9 @@ let Print p =
     appendc ' '
     appends enPassant
     appendc ' '
-    appendi p.HalfMoveClock
+    appendi position.HalfMoveClock
     appendc ' '
-    appendi p.FullMoveNumber
+    appendi position.FullMoveNumber
     string sb
 
 open FParsec
@@ -94,7 +105,7 @@ let TryParse str =
     let parseGap c = Gap(int c - int '0')
     let parsePiece c = Piece(parsePieceLetter c)
     let fold = List.fold (|||) Castlings.None
-
+    
     let castlingHintParse = 
         function 
         | 'Q' -> Castlings.WQ
@@ -108,7 +119,8 @@ let TryParse str =
                for square in rank do
                    match square with
                    | Piece(p) -> yield p
-                   | Gap(n) -> for _ in 1..n -> Piece.EmptyCell |]
+                   | Gap(n) -> 
+                       for _ in 1..n -> Piece.EmptyCell |]
     
     let createCore plcmnt clr ca enp = 
         { Placement = parsePlacement (plcmnt)
@@ -146,4 +158,3 @@ let TryParse str =
 
 let Parse str = TryParse str |> Operators.getSuccess
 let ParseCore str = (Parse str).Core
-
