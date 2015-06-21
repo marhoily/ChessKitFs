@@ -178,7 +178,6 @@ module internal Text =
         | _ -> failwith "Unexpected"
 
 open Text
-
 open FParsec
 
 [<RequireQualifiedAccess>]
@@ -188,14 +187,16 @@ module Coordinate =
         let parseRank c = 8 - (int c - int '0')
         let file = anyOf "abcdefgh" |>> parseFile
         let rank = anyOf "12345678" |>> parseRank
-        file .>>. rank 
+        file .>>. rank
     
     let TryParse(str : string) = run parser str
     let Parse(str : string) = TryParse str |> Operators.getSuccess
     let FromIdx64 i = (i % 8, i / 8)
+    
     let At coordinate position = 
-        let toIdx64(file, rank) = file + rank * 8
+        let toIdx64 (file, rank) = file + rank * 8
         position.Placement.[toIdx64 coordinate]
+    
     let ToString(file, rank) = fileToStirng file + rankToString rank
 
 [<RequireQualifiedAccess>]
@@ -204,19 +205,20 @@ module Idx64 =
         let file, rank = Coordinate.FromIdx64 idx64
         if (file % 2) = (rank % 2) then Color.White
         else Color.Black
+    
     let FromCoordinate(file, rank) = file + rank * 8
     let internal parser = Coordinate.parser |>> FromCoordinate
-    let internal fromX88 i = i % 16 + (i / 16)*8
+    let internal fromX88 i = i % 16 + (i / 16) * 8
     let Rank(idx64 : int) = idx64 / 8
     let File(idx64 : int) = idx64 % 8
     let TryParse(str : string) = run parser str
     let Parse(str : string) = TryParse str |> Operators.getSuccess
-    let ToString(idx64 : int) = (fileToStirng (File idx64)) + (rankToString (Rank idx64))
+    let ToString(idx64 : int) = 
+        Coordinate.ToString (idx64 |> Coordinate.FromIdx64)
 
 /// https://chessprogramming.wikispaces.com/0x88
 [<RequireQualifiedAccess>]
 module internal X88 = 
-   // let toIdx64 i = i % 16 + (i / 16) * 8
     let fromIdx64 i = i % 8 + (i / 8) * 16
     let fromCoordinate (file, rank) = file + rank * 16
     let parse = Coordinate.Parse >> fromCoordinate
