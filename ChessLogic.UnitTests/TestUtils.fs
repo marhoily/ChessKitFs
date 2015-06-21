@@ -10,7 +10,7 @@ let ErrorMessageShouldMatch parse (input : string) (msg : string) =
 
 let EmptyPosition = 
     { Core = 
-          { Placement = [||]
+          { Squares = [||]
             ActiveColor = Color.White
             CastlingAvailability = Castlings.All
             EnPassant = None }

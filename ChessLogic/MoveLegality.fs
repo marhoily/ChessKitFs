@@ -168,7 +168,7 @@ let Validate move position =
             (X88.fromIdx64 moveToIdx64)
     
     let setupResultPosition() = 
-        let newPlacement = Array.copy positionCore.Placement
+        let newPlacement = Array.copy positionCore.Squares
         // Remove the pawn captured en-passant
         if !observations |> test MoveAnnotations.EnPassant then 
             let increment = 
@@ -218,7 +218,7 @@ let Validate move position =
         
         // Construct new position
         let updatedPosition = 
-            { positionCore with Placement = newPlacement
+            { positionCore with Squares = newPlacement
                                 ActiveColor = color |> Side.Invert
                                 EnPassant = newEnPassant
                                 CastlingAvailability = newCastlingAvailability }

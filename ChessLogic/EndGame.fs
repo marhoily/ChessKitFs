@@ -10,7 +10,7 @@ let internal countMaterial (board : PositionCore) =
     let white = Array.zeroCreate 5
     let black = Array.zeroCreate 5
     for i in 0..63 do
-        let piece = board.Placement.[i]
+        let piece = board.Squares.[i]
         if piece <> Piece.EmptyCell then 
             let squareColor = Idx64.GetColor i
             

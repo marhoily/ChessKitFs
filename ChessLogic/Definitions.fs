@@ -155,7 +155,7 @@ type PositionCore =
     { /// An array of the 64 squares the chess board consists of
       /// Note that index 0 corresponds to a8, and NOT a1!
       /// Indexes read left to right, top to bottom!
-      Placement : Piece array
+      Squares : Piece array
       /// The color of the side that makes the next move
       ActiveColor : Color
       /// Castlings available to the both sides
@@ -297,7 +297,7 @@ module Coordinate =
     /// Gets the piece on the board by the coordinate (file, rank)
     let At coordinate positionCore =
         let toIdx64 (file, rank) = file + rank * 8
-        positionCore.Placement.[toIdx64 coordinate]
+        positionCore.Squares.[toIdx64 coordinate]
 
     /// Converts the coordinate (file, rank) to string like "e3"
     let ToString(file, rank) = fileToStirng file + rankToString rank
@@ -334,7 +334,7 @@ module internal X88 =
     let fromIdx64 i = i % 8 + (i / 8) * 16
     let fromCoordinate (file, rank) = file + rank * 16
     let parse = Coordinate.Parse >> fromCoordinate
-    let at cX88 position = position.Placement.[Idx64.fromX88 cX88]
+    let at cX88 position = position.Squares.[Idx64.fromX88 cX88]
 
 type Move with
 
@@ -403,7 +403,7 @@ module BoardTextExtensions =
                  + " ╚═══╧═══╧═══╧═══╧═══╧═══╧═══╧═══╝\r\n"
                  + "   A   B   C   D   E   F   G   H  \r\n")
         for index = 0 to 63 do
-            let piece = board.Core.Placement.[index]
+            let piece = board.Core.Squares.[index]
             let file, rank = Coordinate.FromIdx64 index
             let i = (rank * 2 + 1) * 36 + file * 4 + 3
             sb.[i] <- pieceToChar piece
@@ -411,6 +411,6 @@ module BoardTextExtensions =
 
 module internal PositionCoreExt =
     type PositionCore with
-        member this.atIdx64 c64 = this.Placement.[c64]
+        member this.atIdx64 c64 = this.Squares.[c64]
         member this.atX88 cX88 = X88.at cX88 this
         member this.atStr = Idx64.Parse >> this.atIdx64

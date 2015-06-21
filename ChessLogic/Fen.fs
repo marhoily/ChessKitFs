@@ -51,7 +51,7 @@ let Print position =
     let appendi (i : int) = sb.Append(i) |> ignore
     let mutable skip = 0
     let mutable file = 0
-    for square in position.Core.Placement do
+    for square in position.Core.Squares do
         if file = 8 then 
             appendc '/'
             file <- 0
@@ -125,7 +125,7 @@ let TryParse str =
                        for _ in 1..n -> Piece.EmptyCell |]
     
     let createCore plcmnt clr ca enp = 
-        { Placement = parsePlacement (plcmnt)
+        { Squares = parsePlacement (plcmnt)
           ActiveColor = clr
           CastlingAvailability = ca
           EnPassant = map fst enp }
