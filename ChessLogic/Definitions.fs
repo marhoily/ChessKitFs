@@ -292,7 +292,7 @@ module Coordinate =
     /// Parses strings like "e3" to the coordinate (file, rank) -or- throws
     let Parse(str : string) = TryParse str |> Operators.getSuccess
     /// Gets (file, rank) from Idx64
-    let FromIdx64 i = (i % 8, i / 8)
+    let FromIdx64 i = i % 8, i / 8
 
     /// Gets the piece on the board by the coordinate (file, rank)
     let At coordinate positionCore =
